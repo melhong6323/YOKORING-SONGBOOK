@@ -187,7 +187,7 @@ let searchKeyword = "";
 let lyricsData = [];
 
 /* lyrics.json 로드 */
-fetch("data/lyrics.json")
+fetch("data/lyrics_list.json")
   .then(res => res.json())
   .then(json => lyricsData = json)
   .catch(() => lyricsData = []);
@@ -331,3 +331,4 @@ loadGuide();
 </script>
 </body>
 </html>
+
