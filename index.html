@@ -4,35 +4,101 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>요코링 노래책</title>
+
   <style>
-    body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", sans-serif; background: #0f1115; color: #eaeaf0; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", sans-serif;
+      background: #0f1115;
+      color: #eaeaf0;
+    }
     h1 { text-align: center; margin: 24px 0 16px; }
     .container { max-width: 1200px; margin: 0 auto; padding: 0 16px 40px; }
-    .guide { background: #181b22; border-radius: 12px; padding: 16px; margin-bottom: 20px; font-size: 14px; line-height: 1.6; color: #cfd3ff; }
+
+    .guide {
+      background: #181b22;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #cfd3ff;
+    }
+
     .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
-    .tab { padding: 8px 14px; border-radius: 20px; background: #1f2330; color: #cfd3ff; cursor: pointer; font-size: 14px; user-select: none; }
+    .tab {
+      padding: 8px 14px;
+      border-radius: 20px;
+      background: #1f2330;
+      color: #cfd3ff;
+      cursor: pointer;
+      font-size: 14px;
+      user-select: none;
+    }
     .tab.active { background: #ff4f9a; color: #000; font-weight: 600; }
 
     .artist-filter { display: none; margin: 12px 0 16px; }
     .artist-list { display: flex; flex-wrap: wrap; gap: 6px; }
-    .artist { padding: 6px 12px; border-radius: 14px; background: #1f2330; font-size: 13px; cursor: pointer; color: #cfd3ff; }
+    .artist {
+      padding: 6px 12px;
+      border-radius: 14px;
+      background: #1f2330;
+      font-size: 13px;
+      cursor: pointer;
+      color: #cfd3ff;
+    }
     .artist.active { background: #6c7bff; color: #000; font-weight: 600; }
 
     .list { display: none; }
-    .song { display: grid; grid-template-columns: 1.4fr 2fr auto auto auto auto; gap: 8px; padding: 10px 8px; border-bottom: 1px solid #232736; align-items: center; font-size: 14px; }
-    .song strong { font-weight: 600; }
-    .song small { color: #9aa0ff; font-size: 12px; }
-    .mr, .lyrics-btn { text-decoration: none; color: #ff4f9a; font-weight: bold; cursor: pointer; }
-    .mr.disabled, .lyrics-btn.disabled { color: #555; font-weight: normal; pointer-events: none; text-decoration: none; }
+    .song {
+      display: grid;
+      grid-template-columns: 1.4fr 2fr auto auto auto auto;
+      gap: 8px;
+      padding: 10px 8px;
+      border-bottom: 1px solid #232736;
+      align-items: center;
+      font-size: 14px;
+    }
 
-    /* 모달 스타일 */
-    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); color: #fff; justify-content: center; align-items: center; z-index: 999; }
-    .modal-content { background: #181b22; padding: 20px; max-width: 600px; max-height: 80%; overflow-y: auto; border-radius: 12px; position: relative; }
-    .modal-close { position: absolute; top: 10px; right: 15px; cursor: pointer; font-weight: bold; color: #ff4f9a; }
+    .song small { color: #9aa0ff; font-size: 12px; }
+    .mr, .lyrics-btn { color: #ff4f9a; font-weight: bold; cursor: pointer; }
+    .disabled { color: #555; pointer-events: none; font-weight: normal; }
+
+    /* 가사 모달 */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.8);
+      z-index: 999;
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background: #181b22;
+      border-radius: 12px;
+      padding: 20px;
+      max-width: 700px;
+      max-height: 80%;
+      overflow-y: auto;
+      position: relative;
+    }
+    .modal-close {
+      position: absolute;
+      right: 12px;
+      top: 10px;
+      cursor: pointer;
+      color: #ff4f9a;
+      font-weight: bold;
+    }
+
+    pre { white-space: pre-wrap; }
   </style>
 </head>
+
 <body>
 <h1>요코링 노래책</h1>
+
 <div class="container">
   <div id="guide" class="guide"></div>
   <div class="tabs" id="tabs"></div>
@@ -45,12 +111,13 @@
 <!-- 가사 모달 -->
 <div id="lyricsModal" class="modal">
   <div class="modal-content">
-    <span id="modalClose" class="modal-close">✕</span>
+    <span class="modal-close" onclick="closeLyrics()">✕</span>
     <pre id="lyricsText"></pre>
   </div>
 </div>
 
 <script>
+/* ================= 기본 설정 ================= */
 const SHEET_ID = "1bSs04gJ8HyVil5PM0TBAm-4c_BeAqbU7ENMZ2AQcUVI";
 const SHEET_NAMES = ["사용설명서", "K-POP", "POP", "J-POP", "숙제곡", "신곡"];
 
@@ -62,12 +129,18 @@ const artistListEl = document.getElementById("artistList");
 
 const lyricsModal = document.getElementById("lyricsModal");
 const lyricsText = document.getElementById("lyricsText");
-const modalClose = document.getElementById("modalClose");
 
 let currentSongs = [];
 let currentArtist = "전체";
+let lyricsMap = [];
 
-// 시트 fetch
+/* ================= 가사 JSON 로드 ================= */
+fetch("data/lyrics.json")
+  .then(res => res.json())
+  .then(data => lyricsMap = data)
+  .catch(() => lyricsMap = []);
+
+/* ================= 시트 fetch ================= */
 async function fetchSheet(sheetName) {
   const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}`;
   const res = await fetch(url);
@@ -76,13 +149,22 @@ async function fetchSheet(sheetName) {
   return json.table.rows.map(r => r.c.map(c => c ? c.v : ""));
 }
 
-// 아티스트 정규화
+/* ================= 유틸 ================= */
 function normalizeArtist(name) {
-  if (!name) return "";
-  return name.replace(/\([^)]*feat[^)]*\)/i, "").replace(/feat\.?\s.*$/i, "").trim();
+  return name
+    .replace(/\([^)]*feat[^)]*\)/i, "")
+    .replace(/feat\.?\s.*$/i, "")
+    .trim();
 }
 
-// 탭 렌더링
+function findLyricsFile(artist, title) {
+  const song = lyricsMap.find(
+    s => s.artist === artist && s.title === title
+  );
+  return song ? song.file : "";
+}
+
+/* ================= UI 렌더 ================= */
 function renderTabs() {
   SHEET_NAMES.slice(1).forEach(name => {
     const tab = document.createElement("div");
@@ -93,35 +175,31 @@ function renderTabs() {
   });
 }
 
-// 사용설명서 로드
 async function loadGuide() {
   const rows = await fetchSheet("사용설명서");
   guideEl.innerHTML = rows.map(r => r.join(" ")).join("<br>");
 }
 
-// 가수 필터
 function renderArtistFilter(songs) {
-  const set = new Set();
-  songs.forEach(s => set.add(s.filterArtist));
-  const artists = ["전체", ...Array.from(set).sort()];
-
+  const artists = ["전체", ...new Set(songs.map(s => s.filterArtist))];
   artistListEl.innerHTML = "";
+
   artists.forEach(a => {
     const btn = document.createElement("div");
     btn.className = "artist" + (a === "전체" ? " active" : "");
     btn.textContent = a;
     btn.onclick = () => {
       currentArtist = a;
-      document.querySelectorAll('.artist').forEach(x => x.classList.remove('active'));
-      btn.classList.add('active');
+      document.querySelectorAll(".artist").forEach(x => x.classList.remove("active"));
+      btn.classList.add("active");
       renderSongList();
     };
     artistListEl.appendChild(btn);
   });
+
   artistFilterEl.style.display = "block";
 }
 
-// 노래 목록 렌더링
 function renderSongList() {
   listEl.innerHTML = "";
   const filtered = currentArtist === "전체"
@@ -129,46 +207,45 @@ function renderSongList() {
     : currentSongs.filter(s => s.filterArtist === currentArtist);
 
   filtered.forEach(s => {
+    const lyricsFile = findLyricsFile(s.artist, s.title);
+
     const div = document.createElement("div");
     div.className = "song";
-
-    const mrButton = s.mr ? `<a class="mr" href="${s.mr}" target="_blank">MR</a>` : `<span class="mr disabled">MR</span>`;
-    const lyricsButton = s.lyricsFile ? `<span class="lyrics-btn" onclick="showLyrics('${s.lyricsFile}')">가사보기</span>` : `<span class="lyrics-btn disabled">가사보기</span>`;
-
     div.innerHTML = `
       <strong>${s.artist}</strong>
       <div>${s.title}</div>
-      <small class="memo">${s.memo || ""}</small>
+      <small>${s.memo || ""}</small>
       <small>${s.keyUp || ""}</small>
-      <small class="key">${s.key || ""}</small>
-      ${mrButton} ${lyricsButton}
+      <small>${s.key || ""}</small>
+      ${s.mr ? `<a class="mr" href="${s.mr}" target="_blank">MR</a>` : `<span class="mr disabled">MR</span>`}
+      ${lyricsFile ? `<span class="lyrics-btn" onclick="openLyrics('${lyricsFile}')">가사</span>` : `<span class="lyrics-btn disabled">가사</span>`}
     `;
     listEl.appendChild(div);
   });
 }
 
-// 가사 모달 열기
-function showLyrics(fileName) {
-  fetch(`data/lyrics/${fileName}`)
+/* ================= 가사 모달 ================= */
+function openLyrics(file) {
+  fetch(`data/lyrics/${file}`)
     .then(res => res.text())
     .then(text => {
       lyricsText.textContent = text;
       lyricsModal.style.display = "flex";
     })
-    .catch(err => {
-      lyricsText.textContent = "가사를 불러오지 못했습니다.";
+    .catch(() => {
+      lyricsText.textContent = "가사를 불러올 수 없습니다.";
       lyricsModal.style.display = "flex";
     });
 }
 
-// 모달 닫기
-modalClose.onclick = () => lyricsModal.style.display = "none";
-lyricsModal.onclick = (e) => { if(e.target===lyricsModal) lyricsModal.style.display="none"; };
+function closeLyrics() {
+  lyricsModal.style.display = "none";
+}
 
-// 카테고리 선택
+/* ================= 카테고리 ================= */
 async function selectCategory(name, tabEl) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  tabEl.classList.add('active');
+  document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+  tabEl.classList.add("active");
 
   listEl.style.display = "block";
   artistFilterEl.style.display = "none";
@@ -185,8 +262,7 @@ async function selectCategory(name, tabEl) {
       memo: r[2],
       keyUp: r[3],
       key: r[4],
-      mr: r[5],
-      lyricsFile: r[6] ? r[6] : null // G열: 가사 파일명
+      mr: r[5]
     });
   });
 
@@ -194,6 +270,7 @@ async function selectCategory(name, tabEl) {
   renderSongList();
 }
 
+/* ================= 시작 ================= */
 renderTabs();
 loadGuide();
 </script>
