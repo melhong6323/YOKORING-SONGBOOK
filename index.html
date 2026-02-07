@@ -14,9 +14,31 @@
     h1 { text-align: center; margin: 24px 0 16px; }
     .container { max-width: 1200px; margin: 0 auto; padding: 0 16px 40px; }
     .guide { background: #181b22; border-radius: 12px; padding: 16px; margin-bottom: 20px; font-size: 14px; line-height: 1.6; color: #cfd3ff; }
-    .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+
+    /* 탭 + 검색창 컨테이너 */
+    .tabs-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .tabs { display: flex; gap: 8px; flex-wrap: wrap; }
     .tab { padding: 8px 14px; border-radius: 20px; background: #1f2330; color: #cfd3ff; cursor: pointer; font-size: 14px; user-select: none; }
     .tab.active { background: #ff4f9a; color: #000; font-weight: 600; }
+
+    #searchInput {
+      padding: 6px 12px;
+      border-radius: 14px;
+      border: 1px solid #555;
+      background-color: #1f2330;
+      color: #eaeaf0;
+      font-size: 14px;
+      outline: none;
+      width: 180px;
+    }
+    #searchInput::placeholder { color: #888; }
 
     .artist-filter { display: none; margin: 12px 0 16px; }
     .artist-list { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -40,9 +62,7 @@
       text-align: center;
       transition: background 0.2s;
     }
-    .mr:hover {
-      background-color: #ff80b3;
-    }
+    .mr:hover { background-color: #ff80b3; }
     .mr.disabled {
       display: inline-block;
       padding: 4px 10px;
@@ -57,6 +77,7 @@
     @media (max-width: 720px) {
       .song { grid-template-columns: 1fr 1.6fr auto auto; }
       .song .memo, .song .key { display: none; }
+      #searchInput { width: 100%; margin-top: 6px; }
     }
   </style>
 </head>
@@ -64,10 +85,16 @@
 <h1>요코링 노래책</h1>
 <div class="container">
   <div id="guide" class="guide"></div>
-  <div class="tabs" id="tabs"></div>
+
+  <div class="tabs-container">
+    <div class="tabs" id="tabs"></div>
+    <input type="text" id="searchInput" placeholder="검색..." />
+  </div>
+
   <div id="artistFilter" class="artist-filter">
     <div class="artist-list" id="artistList"></div>
   </div>
+
   <div id="list" class="list"></div>
 </div>
 
@@ -80,6 +107,7 @@ const tabsEl = document.getElementById("tabs");
 const listEl = document.getElementById("list");
 const artistFilterEl = document.getElementById("artistFilter");
 const artistListEl = document.getElementById("artistList");
+const searchInput = document.getElementById("searchInput");
 
 let currentSongs = [];
 let currentArtist = "전체";
@@ -138,9 +166,10 @@ function renderArtistFilter(songs) {
 
 function renderSongList() {
   listEl.innerHTML = "";
-  const filtered = currentArtist === "전체"
-    ? currentSongs
-    : currentSongs.filter(s => s.filterArtist === currentArtist);
+  const keyword = searchInput.value.toLowerCase();
+  const filtered = currentSongs
+    .filter(s => currentArtist === "전체" || s.filterArtist === currentArtist)
+    .filter(s => s.artist.toLowerCase().includes(keyword) || s.title.toLowerCase().includes(keyword));
 
   filtered.forEach(s => {
     const div = document.createElement("div");
@@ -162,6 +191,9 @@ function renderSongList() {
   });
 }
 
+// 검색창 입력 이벤트
+searchInput.addEventListener("input", renderSongList);
+
 async function selectCategory(name, tabEl) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   tabEl.classList.add('active');
@@ -169,6 +201,7 @@ async function selectCategory(name, tabEl) {
   listEl.style.display = "block";
   artistFilterEl.style.display = "none";
   currentArtist = "전체";
+  searchInput.value = ""; // 카테고리 변경 시 검색 초기화
   currentSongs = [];
 
   const rows = await fetchSheet(name);
