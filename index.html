@@ -95,7 +95,6 @@ h1 { text-align: center; margin: 24px 0 16px; }
   color: #ff4f9a;
   font-weight: 600;
   cursor: pointer;
-  text-decoration: none;
   text-align: center;
 }
 .disabled {
@@ -185,9 +184,15 @@ const lyricsText = document.getElementById("lyricsText");
 let currentSongs = [];
 let currentArtist = "전체";
 let searchKeyword = "";
-let lyricsMap = {};
+let lyricsData = [];
 
-/* 시트 */
+/* lyrics.json 로드 */
+fetch("data/lyrics.json")
+  .then(res => res.json())
+  .then(json => lyricsData = json)
+  .catch(() => lyricsData = []);
+
+/* 시트 fetch */
 async function fetchSheet(sheetName) {
   const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}`;
   const res = await fetch(url);
@@ -196,12 +201,6 @@ async function fetchSheet(sheetName) {
   return json.table.rows.map(r => r.c.map(c => c ? c.v : ""));
 }
 
-/* 가사 매핑 JSON */
-fetch("data/lyrics-map.json")
-  .then(res => res.json())
-  .then(json => lyricsMap = json);
-
-/* 유틸 */
 function normalizeArtist(name) {
   return name.replace(/\([^)]*feat[^)]*\)/i, "").replace(/feat\.?\s.*$/i, "").trim();
 }
@@ -262,8 +261,11 @@ function renderSongList() {
   });
 
   filtered.forEach(s => {
-    const key = `${s.artist} - ${s.title}`;
-    const lyricFile = lyricsMap[key];
+    const lyric = lyricsData.find(l =>
+      l.artist === s.artist && l.title === s.title
+    );
+
+    const lyricFile = lyric ? lyric.file : null;
 
     listEl.innerHTML += `
       <div class="song">
@@ -274,25 +276,31 @@ function renderSongList() {
         <small class="key">${s.key || ""}</small>
         ${s.mr ? `<a class="mr" href="${s.mr}" target="_blank">MR</a>` : `<span class="mr disabled">MR</span>`}
         ${lyricFile ? `<span class="lyrics-btn" onclick="openLyrics('${lyricFile}')">가사</span>` : `<span class="lyrics-btn disabled">가사</span>`}
-      </div>`;
+      </div>
+    `;
   });
 
   listEl.style.display = "block";
 }
 
-/* 가사 */
+/* 가사 열기 */
 function openLyrics(file) {
   fetch(`data/lyrics/${file}`)
-    .then(r => r.text())
-    .then(t => {
-      lyricsText.textContent = t;
+    .then(res => res.text())
+    .then(text => {
+      lyricsText.textContent = text;
+      lyricsModal.style.display = "flex";
+    })
+    .catch(() => {
+      lyricsText.textContent = "가사를 불러오지 못했습니다.";
       lyricsModal.style.display = "flex";
     });
 }
+
 document.getElementById("modalClose").onclick = () => lyricsModal.style.display = "none";
 lyricsModal.onclick = e => { if (e.target === lyricsModal) lyricsModal.style.display = "none"; };
 
-/* 카테고리 */
+/* 카테고리 선택 */
 async function selectCategory(name, tabEl) {
   document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
   tabEl.classList.add("active");
