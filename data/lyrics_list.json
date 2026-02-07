@@ -5,14 +5,75 @@
     "file": "Auburn.txt"
   },
   {
-    "artist": "가수명",
-    "title": "노래제목",
-    "file": "파일명"
+    "artist": "10CM",
+    "title": "고백",
+    "file": "고백.txt"
   },
   {
-    "artist": "가수명",
-    "title": "노래제목",
-    "file": "파일명"
+    "artist": "10CM",
+    "title": "그라데이션",
+    "file": "그라데이션.txt"
   }
-
+  {
+    "artist": "10CM",
+    "title": "너에게 닿기를",
+    "file": "너에게닿기를.txt"
+  },
+  {
+    "artist": "10CM",
+    "title": "매트리스",
+    "file": "매트리스.txt"
+  },
+  {
+    "artist": "10CM",
+    "title": "봄이좋냐??",
+    "file": "봄이좋냐.txt"
+  },
+  {
+    "artist": "10CM",
+    "title": "부동의 첫사랑",
+    "file": "부동의첫사랑.txt"
+  },
+  {
+    "artist": "10CM",
+    "title": "사랑은 은하수 다방에서",
+    "file": "사랑은은하수다방에서.txt"
+  },
+  {
+    "artist": "10CM",
+    "title": "서랍",
+    "file": "서랍.txt"
+  },
+  {
+    "artist": "10CM",
+    "title": "스토커",
+    "file": "스토커.txt"
+  },
+  {
+    "artist": "10CM",
+    "title": "어제 너는 나를 버렸어",
+    "file": "어제나는나를버렸어.txt"
+  },
+  {
+    "artist": "10CM",
+    "title": "우연인 듯 운명",
+    "file": "우연인듯운명.txt"
+  },
+  {
+    "artist": "10CM",
+    "title": "이 밤을 빌려 말해요",
+    "file": "이밤을빌려말해요.txt"
+  },
+  {
+    "artist": "10CM",
+    "title": "폰서트",
+    "file": "폰서트.txt"
+  },
+  {
+    "artist": "10CM",
+    "title": "pet",
+    "file": "pet.txt"
+  }
+  
 ]
+
