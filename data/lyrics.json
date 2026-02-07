@@ -1,6 +1,6 @@
 [
   {
-    "artist": "데이먼스 이어",
+    "artist": "데이먼스 이어(Damons year)",
     "title": "Auburn",
     "file": "Auburn.txt"
   },
@@ -14,4 +14,5 @@
     "title": "노래제목",
     "file": "파일명"
   }
+
 ]
