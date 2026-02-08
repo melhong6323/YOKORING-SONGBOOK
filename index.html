@@ -146,20 +146,19 @@
   }
   .modal-content {
     background: #181b22;
-    padding: 24px;
+    padding: 30px 40px; /* 좌우 여백 확대 */
     max-width: 600px;
     max-height: 80%;
     overflow-y: auto;
     border-radius: 12px;
-    position: relative;
+    position: fixed; /* 드래그 가능 */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     white-space: pre-wrap;
-  }
-  #lyricsText {
-    padding: 14px 18px;
-    font-size: 15.5px;
-    line-height: 1.75;
-    letter-spacing: 0.02em;
-    color: #f1f2ff;
+    border: 2px solid #ff4f9a; /* 외곽선 */
+    box-shadow: 0 0 20px rgba(255, 79, 154, 0.4); /* 떠 있는 느낌 */
+    cursor: grab;
   }
   .modal-content.broadcast-mode { transform: scale(1.08); transform-origin: center top; }
   .modal-close {
@@ -169,6 +168,13 @@
     cursor: pointer;
     font-weight: bold;
     color: #ff4f9a;
+  }
+  #lyricsText {
+    padding: 14px 0;
+    font-size: 15.5px;
+    line-height: 1.75;
+    letter-spacing: 0.02em;
+    color: #f1f2ff;
   }
 
   @media (max-width: 720px) {
@@ -228,12 +234,14 @@ const lyricsText = document.getElementById('lyricsText');
 const modalClose = document.getElementById('modalClose');
 const searchInput = document.getElementById('searchInput');
 const toggleBtn = document.getElementById('toggleLargeText');
+const modalContent = document.querySelector('.modal-content');
 
 let currentSongs = [];
 let currentArtist = '전체';
 let lyricsList = [];
 let largeTextOn = false;
 
+/* ====================== 데이터 로드 ====================== */
 async function fetchSheet(sheetName) {
   const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}`;
   const res = await fetch(url);
@@ -256,6 +264,7 @@ function normalizeArtist(name) {
   return name.replace(/(\([^)]*feat[^)]*\))/i,'').replace(/feat.*$/i,'').trim();
 }
 
+/* ====================== UI 렌더 ====================== */
 function renderTabs() {
   SHEET_NAMES.slice(1).forEach(name => {
     const tab = document.createElement('div');
@@ -298,10 +307,8 @@ function renderSongList(searchQuery = '') {
   filtered.forEach(s => {
     const div = document.createElement('div');
     div.className = 'song';
-
     const mrBtn = s.mr ? `<a class="mr" href="${s.mr}" target="_blank">MR</a>` : `<span class="mr disabled">MR</span>`;
     const lyricsBtn = s.lyricsFile ? `<span class="lyrics-btn" onclick="showLyrics('${s.lyricsFile}')">가사</span>` : `<span class="lyrics-btn disabled">가사</span>`;
-
     div.innerHTML = `
       <strong>${s.artist}</strong>
       <div>${s.title}</div>
@@ -315,13 +322,14 @@ function renderSongList(searchQuery = '') {
   });
 }
 
+/* ====================== 가사 모달 ====================== */
 function showLyrics(file) {
   fetch(`data/lyrics/${file}`)
     .then(res => res.text())
     .then(text => {
       lyricsText.textContent = text;
       lyricsModal.style.display = 'flex';
-      if (largeTextOn) lyricsModal.querySelector('.modal-content').classList.add('broadcast-mode');
+      if (largeTextOn) modalContent.classList.add('broadcast-mode');
     })
     .catch(() => {
       lyricsText.textContent = '가사를 불러올 수 없습니다.';
@@ -332,17 +340,20 @@ function showLyrics(file) {
 modalClose.onclick = () => lyricsModal.style.display = 'none';
 lyricsModal.onclick = e => { if(e.target===lyricsModal) lyricsModal.style.display='none'; };
 
+/* ====================== 검색 ====================== */
 searchInput.addEventListener('input', () => {
   const query = searchInput.value.toLowerCase();
   renderSongList(query);
 });
 
+/* ====================== 큰 글씨모드 ====================== */
 toggleBtn.onclick = () => {
   largeTextOn = !largeTextOn;
   listWrapper.classList.toggle('broadcast-mode', largeTextOn);
-  document.querySelector('.modal-content')?.classList.toggle('broadcast-mode', largeTextOn);
+  modalContent.classList.toggle('broadcast-mode', largeTextOn);
 };
 
+/* ====================== 카테고리 선택 ====================== */
 async function selectCategory(name, tabEl) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   tabEl.classList.add('active');
@@ -371,6 +382,26 @@ async function selectCategory(name, tabEl) {
   renderSongList(searchInput.value.toLowerCase());
 }
 
+/* ====================== 모달 드래그 ====================== */
+let isDragging = false;
+let offsetX = 0;
+let offsetY = 0;
+
+modalContent.addEventListener('mousedown', (e) => {
+  isDragging = true;
+  offsetX = e.clientX - modalContent.getBoundingClientRect().left;
+  offsetY = e.clientY - modalContent.getBoundingClientRect().top;
+});
+
+document.addEventListener('mousemove', (e) => {
+  if (!isDragging) return;
+  modalContent.style.left = `${e.clientX - offsetX}px`;
+  modalContent.style.top = `${e.clientY - offsetY}px`;
+});
+
+document.addEventListener('mouseup', () => { isDragging = false; });
+
+/* ====================== 초기 실행 ====================== */
 (async () => {
   await loadLyricsList();
   renderTabs();
