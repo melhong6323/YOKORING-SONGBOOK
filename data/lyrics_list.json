@@ -65,7 +65,7 @@
     "file": "이밤을빌려말해요.txt"
   },
   {
-    "artist": "10CM",
+    "artist": "0208",
     "title": "폰서트",
     "file": "폰서트.txt"
   },
@@ -73,6 +73,55 @@
     "artist": "10CM",
     "title": "pet",
     "file": "pet.txt"
+  },
+    {
+    "artist": "심규선",
+    "title": "난설헌 蘭雪軒",
+    "file": "난설헌.txt"
+  },
+  {
+    "artist": "심규선",
+    "title": "소로 小路",
+    "file": "소로.txt"
+  },
+    {
+    "artist": "심규선",
+    "title": "수피樹皮",
+    "file": "수피.txt"
+  },
+  {
+    "artist": "심규선",
+    "title": "심야의 아이",
+    "file": "심야의아이.txt"
+  },
+    {
+    "artist": "심규선",
+    "title": "아라리",
+    "file": "아라리.txt"
+  },
+  {
+    "artist": "심규선",
+    "title": "야래향 夜來香",
+    "file": "야래향.txt"
+  },
+    {
+    "artist": "심규선",
+    "title": "요란 搖亂",
+    "file": "요란.txt"
+  },
+  {
+    "artist": "심규선",
+    "title": "잿빛의 노래",
+    "file": "잿빛의노래.txt"
+  },
+    {
+    "artist": "심규선",
+    "title": "창백한 푸른 점 (Pale blue dot)",
+    "file": "창백한푸른점.txt"
+  },
+  {
+    "artist": "심규선",
+    "title": "화조도 花鳥圖",
+    "file": "화조도.txt"
   }
 ]
-
