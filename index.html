@@ -69,7 +69,7 @@
     <div id="listWrapper">
       <div id="list" class="list"></div>
     </div>
-    <div style="height:120px;"></div> <!-- 오른쪽 하단 빈 캠 공간 -->
+    <div style="height:120px;"></div>
   </div>
 </div>
 
@@ -107,6 +107,7 @@ const toggleBtn=document.getElementById('toggleLargeText');
 
 let currentSongs=[],currentArtist='전체',lyricsList=[],largeTextOn=false,selectedSongIndex=null;
 
+// ====================== 데이터 로드 ======================
 async function fetchSheet(sheetName){
   const url=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}`;
   const res=await fetch(url);
@@ -128,9 +129,47 @@ function findLyricsFile(artist,title){
 function normalizeArtist(name){return name.replace(/(\([^)]*feat[^)]*\))/i,'').replace(/feat.*$/i,'').trim();}
 
 // ====================== UI 렌더 ======================
-function renderTabs(){SHEET_NAMES.slice(1).forEach(name=>{const tab=document.createElement('div');tab.className='tab';tab.textContent=name;tab.onclick=()=>selectCategory(name,tab);tabsEl.appendChild(tab);});}
+function renderTabs(){
+  // 전체곡 탭
+  const allTab=document.createElement('div');
+  allTab.className='tab active';
+  allTab.textContent='전체곡';
+  allTab.onclick=async()=>{
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    allTab.classList.add('active');
+    currentSongs=[];
+    for(const name of SHEET_NAMES.slice(1)){
+      const rows=await fetchSheet(name);
+      rows.forEach(r=>{if(r[0]&&r[1]) currentSongs.push({
+        artist:r[0],
+        filterArtist:normalizeArtist(r[0]),
+        title:r[1],
+        memo:r[2],
+        keyUp:r[3],
+        key:r[4],
+        mr:r[5],
+        lyricsFile:findLyricsFile(r[0],r[1])
+      });});
+    }
+    renderArtistFilter(currentSongs);
+    renderSongList(searchInput.value.toLowerCase());
+  };
+  tabsEl.appendChild(allTab);
 
-async function loadGuide(){const rows=await fetchSheet('사용설명서');guideEl.innerHTML=rows.map(r=>r.join(' ')).join('<br>');}
+  // 개별 시트 탭
+  SHEET_NAMES.slice(1).forEach(name=>{
+    const tab=document.createElement('div');
+    tab.className='tab';
+    tab.textContent=name;
+    tab.onclick=()=>selectCategory(name,tab);
+    tabsEl.appendChild(tab);
+  });
+}
+
+async function loadGuide(){
+  const rows=await fetchSheet('사용설명서');
+  guideEl.innerHTML=rows.map(r=>r.join(' ')).join('<br>');
+}
 
 function renderArtistFilter(songs){
   const counts={};
@@ -160,10 +199,12 @@ function renderSongList(searchQuery=''){
   filtered.forEach((s,index)=>{
     const div=document.createElement('div');
     div.className='song';
+    div.style.fontSize = largeTextOn ? '1.35em' : '1em'; // 큰글씨모드 반영
     const mrBtn=s.mr?`<a class="mr" href="${s.mr}" target="_blank">MR</a>`:`<span class="mr disabled">MR</span>`;
     const lyricsBtn=s.lyricsFile?`<span class="lyrics-btn" onclick="showLyrics('${s.lyricsFile}')">가사</span>`:`<span class="lyrics-btn disabled">가사</span>`;
     div.innerHTML=`<strong>${s.artist}</strong><div>${s.title}</div><small class="memo">${s.memo||''}</small><small>${s.keyUp||''}</small><small class="key">${s.key||''}</small>${mrBtn}${lyricsBtn}`;
     listEl.appendChild(div);
+
     div.onclick=()=>{
       document.querySelectorAll('.song').forEach(x=>x.classList.remove('selected'));
       div.classList.add('selected');
@@ -177,7 +218,7 @@ function renderSongList(searchQuery=''){
 // ====================== 큰 글씨모드 ======================
 toggleBtn.onclick=()=>{
   largeTextOn=!largeTextOn;
-  document.querySelectorAll('.song').forEach(s=>{s.style.fontSize=largeTextOn?'1.35em':'1em';});
+  renderSongList(searchInput.value.toLowerCase()); // 새로 렌더링 시 반영
 };
 
 // ====================== 가사 모달 ======================
@@ -247,6 +288,28 @@ async function selectCategory(name,tabEl){
   renderArtistFilter(currentSongs);
   renderSongList(searchInput.value.toLowerCase());
 }
+
+// ====================== 가나다순 버튼 ======================
+alphabetBtn.onclick=()=>{
+  alphabetList.innerHTML='';
+  const artists=currentSongs.map(s=>s.filterArtist).filter((v,i,a)=>a.indexOf(v)===i).sort((a,b)=>a.localeCompare(b,'ko'));
+  artists.forEach(a=>{
+    const btn=document.createElement('div');
+    btn.className='artist';
+    btn.textContent=a;
+    btn.onclick=()=>{
+      currentArtist=a;
+      document.querySelectorAll('.artist').forEach(x=>x.classList.remove('active'));
+      btn.classList.add('active');
+      renderSongList(searchInput.value.toLowerCase());
+      alphabetModal.style.display='none';
+    };
+    alphabetList.appendChild(btn);
+  });
+  alphabetModal.style.display='flex';
+};
+alphabetClose.onclick=()=>alphabetModal.style.display='none';
+alphabetModal.onclick=e=>{if(e.target===alphabetModal)alphabetModal.style.display='none';};
 
 // ====================== 초기 실행 ======================
 (async()=>{
