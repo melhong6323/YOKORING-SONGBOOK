@@ -5,247 +5,125 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>요코링 노래책</title>
 <style>
-  body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans KR', sans-serif;
-    background: #0f1115;
-    color: #eaeaf0;
-    overflow: hidden; /* 전체 페이지 스크롤 없음 */
-  }
+/* 기본 스타일 */
+body {
+  margin: 0;
+  font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Noto Sans KR',sans-serif;
+  background:#0f1115;
+  color:#eaeaf0;
+  overflow:hidden;
+}
+.title-line{
+  display:flex;align-items:center;justify-content:center;gap:16px;
+  margin:24px 0 16px;font-size:28px;color:#eaeaf0;
+  position:sticky;top:0;background:#0f1115;z-index:100;padding:8px 0;
+}
+.youtube-btn{
+  display:flex;align-items:center;gap:6px;
+  background:#ff4f9a;color:#000;font-weight:600;font-size:16px;
+  padding:6px 12px;border-radius:8px;text-decoration:none;
+  transition:transform 0.15s, background 0.15s;
+}
+.youtube-btn:hover{transform:scale(1.05);background:#ff78b2;}
 
-  /* 상단 제목 + 유튜브 */
-  .title-line {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 16px;
-    margin: 24px 0 16px;
-    font-size: 28px;
-    color: #eaeaf0;
-    position: sticky;
-    top: 0;
-    background: #0f1115;
-    z-index: 100;
-    padding: 8px 0;
-  }
-  .youtube-btn {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    background: #ff4f9a;
-    color: #000;
-    font-weight: 600;
-    font-size: 16px;
-    padding: 6px 12px;
-    border-radius: 8px;
-    text-decoration: none;
-    transition: transform 0.15s, background 0.15s;
-  }
-  .youtube-btn:hover {
-    transform: scale(1.05);
-    background: #ff78b2;
-  }
+/* 좌우 레이아웃 */
+.container{
+  display:flex;gap:16px;max-width:1200px;margin:0 auto;
+  padding:0 16px 16px;height:calc(100vh - 80px);
+}
+.left-pane{flex:1;max-width:33%;display:flex;flex-direction:column;overflow-y:auto;gap:12px;}
+.right-pane{flex:2;max-width:67%;display:flex;flex-direction:column;overflow:hidden;}
 
-  /* 좌우 1:2 레이아웃 */
-  .container {
-    display: flex;
-    gap: 16px;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 16px 16px;
-    height: calc(100vh - 80px); /* 상단 헤더 제외 */
-  }
-  .left-pane {
-    flex: 1;
-    max-width: 33%;
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto;
-    gap: 12px;
-  }
-  .right-pane {
-    flex: 2;
-    max-width: 67%;
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto;
-  }
+/* 가이드 */
+.guide{
+  background:#181b22;border-radius:12px;padding:16px;
+  font-size:14px;line-height:1.6;color:#cfd3ff;
+}
 
-  /* 가이드 */
-  .guide {
-    background: #181b22;
-    border-radius: 12px;
-    padding: 16px;
-    font-size: 14px;
-    line-height: 1.6;
-    color: #cfd3ff;
-  }
+/* 탭 + 검색 + 큰 글씨 버튼 */
+.top-controls{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:12px;}
+#tabs{display:flex;flex-wrap:wrap;gap:8px;}
+.tab{
+  padding:8px 14px;border-radius:20px;background:#1f2330;color:#cfd3ff;
+  cursor:pointer;font-size:14px;user-select:none;
+}
+.tab.active{background:#ff4f9a;color:#000;font-weight:600;}
+#searchInput{margin-left:auto;padding:6px 12px;border-radius:8px;border:none;font-size:14px;flex-shrink:0;}
+#toggleLargeText{margin-left:8px;padding:6px 12px;border-radius:6px;background:#ff4f9a;color:#000;border:none;cursor:pointer;font-size:14px;flex-shrink:0;}
 
-  /* 탭 + 검색 + 큰 글씨 버튼 */
-  .top-controls {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 12px;
-  }
-  #tabs { display: flex; flex-wrap: wrap; gap: 8px; }
-  .tab {
-    padding: 8px 14px;
-    border-radius: 20px;
-    background: #1f2330;
-    color: #cfd3ff;
-    cursor: pointer;
-    font-size: 14px;
-    user-select: none;
-  }
-  .tab.active { background: #ff4f9a; color: #000; font-weight: 600; }
+/* 아티스트 필터 */
+.artist-filter{margin:12px 0;}
+.artist-list{display:flex;flex-wrap:wrap;gap:6px;}
+.artist{padding:6px 12px;border-radius:14px;background:#1f2330;font-size:13px;cursor:pointer;color:#cfd3ff;}
+.artist.active{background:#6c7bff;color:#000;font-weight:600;}
+#showAllArtists{
+  margin-top:8px;padding:6px 12px;border-radius:6px;
+  background:#6c7bff;color:#fff;border:none;cursor:pointer;display:none;
+}
 
-  #searchInput {
-    margin-left: auto;
-    padding: 6px 12px;
-    border-radius: 8px;
-    border: none;
-    font-size: 14px;
-    flex-shrink: 0;
-  }
-  #toggleLargeText {
-    margin-left: 8px;
-    padding: 6px 12px;
-    border-radius: 6px;
-    background: #ff4f9a;
-    color: #000;
-    border: none;
-    cursor: pointer;
-    font-size: 14px;
-    flex-shrink: 0;
-  }
+/* 노래 목록 */
+#list{flex:1;overflow-y:auto;}
+.song{
+  display:grid;grid-template-columns:1.4fr 2fr auto auto auto auto auto;
+  gap:8px;padding:12px 8px;border-bottom:1px solid #232736;
+  align-items:center;font-size:15px;transition:background 0.2s,box-shadow 0.2s;
+  cursor:pointer;min-height:45px;
+}
+.song:hover{background:#1f2030;}
+.song strong{font-size:15.5px;font-weight:600;color:#fff;}
+.song>div{font-size:14.5px;color:#eaeaf0;}
+.song small{font-size:12.5px;color:#aab0ff;}
+.mr,.lyrics-btn{color:#ff4f9a;font-weight:bold;cursor:pointer;white-space:nowrap;font-size:14px;}
+.disabled{color:#555;pointer-events:none;font-weight:normal;}
+.song.selected{
+  background:#1f2230;border-left:4px solid #ff4f9a;border-radius:6px;
+  box-shadow:0 2px 10px rgba(255,79,154,0.3);
+}
+.song.selected strong{color:#ff4f9a;font-size:16px;}
+.song.selected div{color:#fff;font-weight:600;}
 
-  /* 아티스트 필터 */
-  .artist-filter { margin: 12px 0; }
-  .artist-list { display: flex; flex-wrap: wrap; gap: 6px; }
-  .artist {
-    padding: 6px 12px;
-    border-radius: 14px;
-    background: #1f2330;
-    font-size: 13px;
-    cursor: pointer;
-    color: #cfd3ff;
-  }
-  .artist.active { background: #6c7bff; color: #000; font-weight: 600; }
+/* 큰 글씨 모드 */
+.right-pane.broadcast-mode #list{font-size:37.5px;}
+.right-pane.broadcast-mode .song{padding:30px 20px;min-height:70px;line-height:1.3;}
 
-  /* 노래 목록 */
-  #list { flex: 1; overflow-y: auto; }
-  .song {
-    display: grid;
-    grid-template-columns: 1.4fr 2fr auto auto auto auto auto;
-    gap: 8px;
-    padding: 12px 8px;
-    border-bottom: 1px solid #232736;
-    align-items: center;
-    font-size: 15px;
-    transition: background 0.2s, box-shadow 0.2s;
-    cursor: pointer;
-  }
-  .song:hover { background: #1f2030; }
-  .song strong { font-size: 15.5px; font-weight: 600; color: #ffffff; }
-  .song > div { font-size: 14.5px; color: #eaeaf0; }
-  .song small { font-size: 12.5px; color: #aab0ff; }
-  .mr, .lyrics-btn {
-    color: #ff4f9a;
-    font-weight: bold;
-    cursor: pointer;
-    white-space: nowrap;
-    font-size: 14px;
-  }
-  .disabled { color: #555; pointer-events: none; font-weight: normal; }
+/* 가사 모달 */
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);justify-content:center;align-items:center;z-index:999;}
+.modal-content{
+  background:#181b22;padding:30px 40px;max-width:600px;max-height:80%;overflow-y:auto;
+  border-radius:12px;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  white-space:pre-wrap;border:2px solid #ff4f9a;box-shadow:0 0 20px rgba(255,79,154,0.4);cursor:grab;transition:transform 0.15s;
+}
+.modal-content.broadcast-mode{transform:scale(2.5);transform-origin:center top;}
+.modal-close{position:absolute;top:10px;right:15px;cursor:pointer;font-weight:bold;color:#ff4f9a;}
+#lyricsText{padding:14px 0;font-size:15.5px;line-height:1.75;letter-spacing:0.02em;color:#f1f2ff;}
 
-  /* 선택 강조 */
-  .song.selected {
-    background: #1f2230;
-    border-left: 4px solid #ff4f9a;
-    border-radius: 6px;
-    box-shadow: 0 2px 10px rgba(255, 79, 154, 0.3);
-  }
-  .song.selected strong { color: #ff4f9a; font-size: 16px; }
-  .song.selected div { color: #fff; font-weight: 600; }
-
-  /* 가사 모달 */
-  .modal {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.8);
-    justify-content: center;
-    align-items: center;
-    z-index: 999;
-  }
-  .modal-content {
-    background: #181b22;
-    padding: 30px 40px;
-    max-width: 600px;
-    max-height: 80%;
-    overflow-y: auto;
-    border-radius: 12px;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    white-space: pre-wrap;
-    border: 2px solid #ff4f9a;
-    box-shadow: 0 0 20px rgba(255, 79, 154, 0.4);
-    cursor: grab;
-    transition: transform 0.15s;
-  }
-  .modal-content.broadcast-mode { transform: scale(1.08); transform-origin: center top; }
-  .modal-close {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    cursor: pointer;
-    font-weight: bold;
-    color: #ff4f9a;
-  }
-  #lyricsText {
-    padding: 14px 0;
-    font-size: 15.5px;
-    line-height: 1.75;
-    letter-spacing: 0.02em;
-    color: #f1f2ff;
-  }
-
-  /* 모바일 대응 */
-  @media (max-width: 720px) {
-    .container { flex-direction: column; }
-    .left-pane, .right-pane { max-width: 100%; flex: unset; height: auto; }
-    .song { grid-template-columns: 1fr 1.6fr auto auto auto; }
-    .song .memo, .song .key { display: none; }
-    #lyricsText { font-size: 14.5px; line-height: 1.8; padding: 10px 12px; }
-    #searchInput { flex-basis: 100%; margin-left: 0; }
-  }
+/* 모바일 대응 */
+@media (max-width:720px){
+  .container{flex-direction:column;}
+  .left-pane,.right-pane{max-width:100%;flex:unset;height:auto;}
+  .song{grid-template-columns:1fr 1.6fr auto auto auto;}
+  .song .memo,.song .key{display:none;}
+  #lyricsText{font-size:14.5px;line-height:1.8;padding:10px 12px;}
+  #searchInput{flex-basis:100%;margin-left:0;}
+}
 </style>
 </head>
 <body>
 
 <h1 class="title-line">
   요코링 노래책
-  <a href="https://www.youtube.com/@%EC%9A%94%EC%BD%94%EB%A7%81" target="_blank" class="youtube-btn">
-    ▶ 요코링 YouTube
-  </a>
+  <a href="https://www.youtube.com/@%EC%9A%94%EC%BD%94%EB%A7%81" target="_blank" class="youtube-btn">▶ 요코링 YouTube</a>
 </h1>
 
 <div class="container">
-  <!-- 왼쪽 UI -->
   <div class="left-pane">
     <div id="tabs"></div>
     <div id="artistFilter" class="artist-filter">
       <div class="artist-list" id="artistList"></div>
-      <button id="showAllArtists" style="margin-top:8px;padding:6px 12px;border-radius:6px;background:#6c7bff;color:#fff;border:none;cursor:pointer;display:none;">전체보기</button>
+      <button id="showAllArtists">전체보기</button>
     </div>
     <div id="guide" class="guide"></div>
   </div>
-
-  <!-- 오른쪽 UI -->
   <div class="right-pane">
     <div class="top-controls">
       <input type="text" id="searchInput" placeholder="곡 검색">
@@ -255,7 +133,6 @@
   </div>
 </div>
 
-<!-- 가사 모달 -->
 <div id="lyricsModal" class="modal">
   <div class="modal-content">
     <span id="modalClose" class="modal-close">✕</span>
@@ -264,215 +141,108 @@
 </div>
 
 <script>
-const SHEET_ID = '1bSs04gJ8HyVil5PM0TBAm-4c_BeAqbU7ENMZ2AQcUVI';
-const SHEET_NAMES = ['사용설명서', 'K-POP', 'POP', 'J-POP', '숙제곡', '신곡'];
+// --- 변수 ---
+const SHEET_ID='1bSs04gJ8HyVil5PM0TBAm-4c_BeAqbU7ENMZ2AQcUVI';
+const SHEET_NAMES=['사용설명서','K-POP','POP','J-POP','숙제곡','신곡'];
+const guideEl=document.getElementById('guide'),tabsEl=document.getElementById('tabs'),
+listEl=document.getElementById('list'),artistFilterEl=document.getElementById('artistFilter'),
+artistListEl=document.getElementById('artistList'),showAllBtn=document.getElementById('showAllArtists'),
+lyricsModal=document.getElementById('lyricsModal'),lyricsText=document.getElementById('lyricsText'),
+modalClose=document.getElementById('modalClose'),searchInput=document.getElementById('searchInput'),
+toggleBtn=document.getElementById('toggleLargeText'),modalContent=document.querySelector('.modal-content');
 
-const guideEl = document.getElementById('guide');
-const tabsEl = document.getElementById('tabs');
-const listEl = document.getElementById('list');
-const artistFilterEl = document.getElementById('artistFilter');
-const artistListEl = document.getElementById('artistList');
-const showAllBtn = document.getElementById('showAllArtists');
-const lyricsModal = document.getElementById('lyricsModal');
-const lyricsText = document.getElementById('lyricsText');
-const modalClose = document.getElementById('modalClose');
-const searchInput = document.getElementById('searchInput');
-const toggleBtn = document.getElementById('toggleLargeText');
-const modalContent = document.querySelector('.modal-content');
+let currentSongs=[],currentArtist='전체',lyricsList=[],largeTextOn=false;
 
-let currentSongs = [];
-let currentArtist = '전체';
-let lyricsList = [];
-let largeTextOn = false;
+// --- 데이터 ---
+async function fetchSheet(name){const res=await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(name)}`);const text=await res.text();const json=JSON.parse(text.substring(47,text.length-2));return json.table.rows.map(r=>r.c.map(c=>c?c.v:''));}
+async function loadLyricsList(){lyricsList=await(await fetch('data/lyrics_list.json')).json();}
+function findLyricsFile(artist,title){const f=lyricsList.find(l=>l.artist===artist&&l.title===title);return f?f.file:null;}
+function normalizeArtist(name){return name.replace(/(\([^)]*feat[^)]*\))/i,'').replace(/feat.*$/i,'').trim();}
 
-/* ====================== 데이터 로드 ====================== */
-async function fetchSheet(sheetName) {
-  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}`;
-  const res = await fetch(url);
-  const text = await res.text();
-  const json = JSON.parse(text.substring(47, text.length - 2));
-  return json.table.rows.map(r => r.c.map(c => c ? c.v : ''));
+// --- UI ---
+function renderTabs(){SHEET_NAMES.slice(1).forEach(name=>{const tab=document.createElement('div');tab.className='tab';tab.textContent=name;tab.onclick=()=>selectCategory(name,tab);tabsEl.appendChild(tab);});}
+async function loadGuide(){const rows=await fetchSheet('사용설명서');guideEl.innerHTML=rows.map(r=>r.join(' ')).join('<br>');}
+
+// --- 아티스트 필터 ---
+function renderArtistFilter(songs){
+  const countMap={};
+  songs.forEach(s=>{const k=normalizeArtist(s.artist);countMap[k]=(countMap[k]||0)+1;s.filterArtist=k;});
+  const sortedArtists=Object.entries(countMap).sort((a,b)=>b[1]-a[1]).map(e=>e[0]);
+  const artists=['전체',...sortedArtists];
+  artistListEl.innerHTML='';artists.forEach(a=>{const btn=document.createElement('div');btn.className='artist'+(a==='전체'?' active':'');btn.textContent=a;btn.onclick=()=>{
+    currentArtist=a;document.querySelectorAll('.artist').forEach(x=>x.classList.remove('active'));btn.classList.add('active');renderSongList(searchInput.value.toLowerCase());};artistListEl.appendChild(btn);});
+  showAllBtn.style.display=artists.length>10?'block':'none';
 }
-
-async function loadLyricsList() {
-  const res = await fetch('data/lyrics_list.json');
-  lyricsList = await res.json();
-}
-
-function findLyricsFile(artist, title) {
-  const found = lyricsList.find(l => l.artist === artist && l.title === title);
-  return found ? found.file : null;
-}
-
-function normalizeArtist(name) {
-  return name.replace(/(\([^)]*feat[^)]*\))/i,'').replace(/feat.*$/i,'').trim();
-}
-
-/* ====================== UI 렌더 ====================== */
-function renderTabs() {
-  SHEET_NAMES.slice(1).forEach(name => {
-    const tab = document.createElement('div');
-    tab.className = 'tab';
-    tab.textContent = name;
-    tab.onclick = () => selectCategory(name, tab);
-    tabsEl.appendChild(tab);
-  });
-}
-
-async function loadGuide() {
-  const rows = await fetchSheet('사용설명서');
-  guideEl.innerHTML = rows.map(r => r.join(' ')).join('<br>');
-}
-
-/* ====================== 가수 필터 ====================== */
-function renderArtistFilter(songs) {
-  const countMap = {};
-  songs.forEach(s => {
-    const key = normalizeArtist(s.artist);
-    countMap[key] = (countMap[key] || 0) + 1;
-    s.filterArtist = key;
-  });
-  const sortedArtists = Object.entries(countMap)
-    .sort((a,b) => b[1]-a[1])
-    .map(e => e[0]);
-  const artists = ['전체', ...sortedArtists];
-
-  artistListEl.innerHTML = '';
-  artists.forEach(a => {
-    const btn = document.createElement('div');
-    btn.className = 'artist' + (a === '전체' ? ' active' : '');
-    btn.textContent = a;
-    btn.onclick = () => {
-      currentArtist = a;
-      document.querySelectorAll('.artist').forEach(x => x.classList.remove('active'));
-      btn.classList.add('active');
-      renderSongList(searchInput.value.toLowerCase());
-    };
-    artistListEl.appendChild(btn);
-  });
-
-  // 전체보기 버튼 표시
-  if(artists.length > 10) { showAllBtn.style.display = 'block'; }
-  else { showAllBtn.style.display = 'none'; }
-}
-
-/* 전체보기 모달 */
-showAllBtn.onclick = () => {
-  const artistButtons = Array.from(artistListEl.querySelectorAll('.artist')).map(b => b.textContent);
-  const modal = document.createElement('div');
-  modal.className = 'modal';
-  modal.innerHTML = `<div class="modal-content">
-    <span class="modal-close">✕</span>
-    ${artistButtons.map(a => `<div class="artist">${a}</div>`).join('')}
-  </div>`;
+showAllBtn.onclick=()=>{
+  const artistButtons=Array.from(artistListEl.querySelectorAll('.artist')).map(b=>b.textContent);
+  const modal=document.createElement('div');modal.className='modal';
+  modal.innerHTML=`<div class="modal-content"><span class="modal-close">✕</span>${artistButtons.map(a=>`<div class="artist">${a}</div>`).join('')}</div>`;
   document.body.appendChild(modal);
-  modal.style.display = 'flex';
-  modal.querySelector('.modal-close').onclick = () => modal.remove();
+  modal.style.display='flex';
+  modal.querySelector('.modal-close').onclick=()=>modal.remove();
 };
 
-/* ====================== 노래 목록 ====================== */
-function renderSongList(searchQuery='') {
-  listEl.innerHTML = '';
-  const filtered = currentSongs.filter(s => 
-    (currentArtist==='전체' || s.filterArtist===currentArtist) &&
-    (s.title.toLowerCase().includes(searchQuery) || s.artist.toLowerCase().includes(searchQuery))
-  );
+// --- 노래 목록 ---
+function renderSongList(searchQuery=''){
+  listEl.innerHTML='';
+  const filtered=currentSongs.filter(s=>(currentArtist==='전체'||s.filterArtist===currentArtist)&&(s.title.toLowerCase().includes(searchQuery)||s.artist.toLowerCase().includes(searchQuery)));
   filtered.forEach((s,index)=>{
-    const div = document.createElement('div');
-    div.className = 'song';
-    const mrBtn = s.mr ? `<a class="mr" href="${s.mr}" target="_blank">MR</a>` : `<span class="mr disabled">MR</span>`;
-    const lyricsBtn = s.lyricsFile ? `<span class="lyrics-btn" onclick="showLyrics('${s.lyricsFile}')">가사</span>` : `<span class="lyrics-btn disabled">가사</span>`;
-    div.innerHTML = `
-      <strong>${s.artist}</strong>
-      <div>${s.title}</div>
-      <small class="memo">${s.memo||''}</small>
-      <small>${s.keyUp||''}</small>
-      <small class="key">${s.key||''}</small>
-      ${mrBtn}
-      ${lyricsBtn}
-    `;
+    const div=document.createElement('div');div.className='song';
+    const mrBtn=s.mr?`<a class="mr" href="${s.mr}" target="_blank">MR</a>`:`<span class="mr disabled">MR</span>`;
+    const lyricsBtn=s.lyricsFile?`<span class="lyrics-btn" onclick="showLyrics('${s.lyricsFile}')">가사</span>`:`<span class="lyrics-btn disabled">가사</span>`;
+    div.innerHTML=`<strong>${s.artist}</strong><div>${s.title}</div><small class="memo">${s.memo||''}</small><small>${s.keyUp||''}</small><small>${s.key||''}</small>${mrBtn}${lyricsBtn}`;
     listEl.appendChild(div);
-    div.onclick = () => {
-      document.querySelectorAll('.song').forEach(x=>x.classList.remove('selected'));
-      div.classList.add('selected');
-      div.scrollIntoView({behavior:"smooth", block:"center"});
-    };
+    div.onclick=()=>{document.querySelectorAll('.song').forEach(x=>x.classList.remove('selected'));div.classList.add('selected');div.scrollIntoView({behavior:"smooth",block:"center"});};
   });
 }
 
-/* ====================== 가사 모달 ====================== */
-function showLyrics(file) {
-  fetch(`data/lyrics/${file}`).then(r=>r.text()).then(text=>{
-    lyricsText.textContent = text;
-    lyricsModal.style.display='flex';
-    if(largeTextOn) modalContent.classList.add('broadcast-mode');
-  }).catch(()=>{ lyricsText.textContent='가사를 불러올 수 없습니다.'; lyricsModal.style.display='flex'; });
+// --- 가사 모달 ---
+function showLyrics(file){
+  fetch(`data/lyrics/${file}`).then(r=>r.text()).then(text=>{lyricsText.textContent=text;lyricsModal.style.display='flex';if(largeTextOn) modalContent.classList.add('broadcast-mode');})
+  .catch(()=>{lyricsText.textContent='가사를 불러올 수 없습니다.';lyricsModal.style.display='flex';});
 }
-modalClose.onclick = () => lyricsModal.style.display='none';
-lyricsModal.onclick = e => { if(e.target===lyricsModal) lyricsModal.style.display='none'; };
+modalClose.onclick=()=>lyricsModal.style.display='none';
+lyricsModal.onclick=e=>{if(e.target===lyricsModal) lyricsModal.style.display='none';};
 
-/* ====================== 검색 ====================== */
+// --- 검색 ---
 searchInput.addEventListener('input',()=>renderSongList(searchInput.value.toLowerCase()));
 
-/* ====================== 큰 글씨모드 ====================== */
-toggleBtn.onclick = ()=>{
+// --- 큰 글씨 모드 ---
+toggleBtn.onclick=()=>{
   largeTextOn=!largeTextOn;
-  listEl.classList.toggle('broadcast-mode',largeTextOn);
+  document.querySelector('.right-pane').classList.toggle('broadcast-mode',largeTextOn);
   modalContent.classList.toggle('broadcast-mode',largeTextOn);
 };
 
-/* ====================== 카테고리 선택 ====================== */
+// --- 카테고리 선택 ---
 async function selectCategory(name,tabEl){
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  tabEl.classList.add('active');
-  currentArtist='전체';
-  currentSongs=[];
-  const rows = await fetchSheet(name);
-  rows.forEach(r=>{
-    if(!r[0]||!r[1]) return;
-    currentSongs.push({
-      artist:r[0],
-      title:r[1],
-      memo:r[2],
-      keyUp:r[3],
-      key:r[4],
-      mr:r[5],
-      lyricsFile: findLyricsFile(r[0],r[1])
-    });
-  });
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));tabEl.classList.add('active');
+  currentArtist='전체';currentSongs=[];
+  const rows=await fetchSheet(name);
+  rows.forEach(r=>{if(!r[0]||!r[1]) return;currentSongs.push({artist:r[0],title:r[1],memo:r[2],keyUp:r[3],key:r[4],mr:r[5],lyricsFile:findLyricsFile(r[0],r[1])});});
   renderArtistFilter(currentSongs);
   renderSongList(searchInput.value.toLowerCase());
 }
 
-/* ====================== 모달 드래그 ====================== */
-let isDragging=false, offsetX=0, offsetY=0;
-modalContent.addEventListener('mousedown',(e)=>{
-  isDragging=true;
-  const rect=modalContent.getBoundingClientRect();
-  modalContent.style.left=rect.left+'px';
-  modalContent.style.top=rect.top+'px';
-  modalContent.style.transform='none';
-  offsetX=e.clientX-rect.left;
-  offsetY=e.clientY-rect.top;
+// --- 모달 드래그 ---
+let isDragging=false,offsetX=0,offsetY=0;
+modalContent.addEventListener('mousedown',e=>{
+  isDragging=true;const rect=modalContent.getBoundingClientRect();
+  modalContent.style.left=rect.left+'px';modalContent.style.top=rect.top+'px';modalContent.style.transform='none';
+  offsetX=e.clientX-rect.left;offsetY=e.clientY-rect.top;
 });
-document.addEventListener('mousemove',(e)=>{
+document.addEventListener('mousemove',e=>{
   if(!isDragging) return;
-  const vw=window.innerWidth, vh=window.innerHeight;
-  const mw=modalContent.offsetWidth, mh=modalContent.offsetHeight;
-  let l=e.clientX-offsetX, t=e.clientY-offsetY;
-  if(l<0) l=0; if(t<0) t=0;
-  if(l+mw>vw) l=vw-mw; if(t+mh>vh) t=vh-mh;
-  modalContent.style.left=l+'px';
-  modalContent.style.top=t+'px';
+  const vw=window.innerWidth,vh=window.innerHeight;
+  const mw=modalContent.offsetWidth,mh=modalContent.offsetHeight;
+  let l=e.clientX-offsetX,t=e.clientY-offsetY;
+  if(l<0)l=0;if(t<0)t=0;if(l+mw>vw)l=vw-mw;if(t+mh>vh)t=vh-mh;
+  modalContent.style.left=l+'px';modalContent.style.top=t+'px';
 });
-document.addEventListener('mouseup',()=>{isDragging=false});
+document.addEventListener('mouseup',()=>{isDragging=false;});
 
-/* ====================== 초기 실행 ====================== */
-(async()=>{
-  await loadLyricsList();
-  renderTabs();
-  loadGuide();
-})();
+// --- 초기 실행 ---
+(async()=>{await loadLyricsList();renderTabs();loadGuide();})();
 </script>
 </body>
 </html>
