@@ -185,9 +185,38 @@
     "file": "물망초.txt"
   },
     {
-    "artist": "v. et(영비)",
+    "artist": "v. et",
     "title": "Things You Always Did (분명 이쯤에는)",
     "file": "분명이쯤에는"
+  },
+  {
+    "artist": "ASH ISLAND",
+    "title": "악몽",
+    "file": "악몽.txt"
+  },
+  {
+    "artist": "ASH ISLAND",
+    "title": "Paranoid",
+    "file": "Paranoid.txt"
+  },
+  {
+    "artist": "ASH ISLAND(Feat.CHANMINA)",
+    "title": "OST",
+    "file": "OST.txt"
+  },
+  {
+    "artist": "ASH ISLAND(Feat. Paul Blanco)",
+    "title": "작별인사",
+    "file": "작별인사.txt"
+  },
+    {
+    "artist": "ASH ISLAND(Feat.루피)",
+    "title": "Error",
+    "file": "Error.txt"
+  },
+  {
+    "artist": "ASH ISLAND(Feat.스키니브라운)",
+    "title": "Stay With Me",
+    "file": "StayWithMe.txt"
   }
 ]
-
