@@ -146,18 +146,18 @@
   }
   .modal-content {
     background: #181b22;
-    padding: 30px 40px; /* 좌우 여백 확대 */
+    padding: 30px 40px;
     max-width: 600px;
     max-height: 80%;
     overflow-y: auto;
     border-radius: 12px;
-    position: fixed; /* 드래그 가능 */
+    position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     white-space: pre-wrap;
-    border: 2px solid #ff4f9a; /* 외곽선 */
-    box-shadow: 0 0 20px rgba(255, 79, 154, 0.4); /* 떠 있는 느낌 */
+    border: 2px solid #ff4f9a;
+    box-shadow: 0 0 20px rgba(255, 79, 154, 0.4);
     cursor: grab;
   }
   .modal-content.broadcast-mode { transform: scale(1.08); transform-origin: center top; }
@@ -382,21 +382,39 @@ async function selectCategory(name, tabEl) {
   renderSongList(searchInput.value.toLowerCase());
 }
 
-/* ====================== 모달 드래그 ====================== */
+/* ====================== 모달 드래그 (화면 제한) ====================== */
 let isDragging = false;
 let offsetX = 0;
 let offsetY = 0;
 
 modalContent.addEventListener('mousedown', (e) => {
   isDragging = true;
-  offsetX = e.clientX - modalContent.getBoundingClientRect().left;
-  offsetY = e.clientY - modalContent.getBoundingClientRect().top;
+  const rect = modalContent.getBoundingClientRect();
+  modalContent.style.left = rect.left + 'px';
+  modalContent.style.top = rect.top + 'px';
+  modalContent.style.transform = 'none';
+  offsetX = e.clientX - rect.left;
+  offsetY = e.clientY - rect.top;
 });
 
 document.addEventListener('mousemove', (e) => {
   if (!isDragging) return;
-  modalContent.style.left = `${e.clientX - offsetX}px`;
-  modalContent.style.top = `${e.clientY - offsetY}px`;
+
+  const viewportWidth = window.innerWidth;
+  const viewportHeight = window.innerHeight;
+  const modalWidth = modalContent.offsetWidth;
+  const modalHeight = modalContent.offsetHeight;
+
+  let newLeft = e.clientX - offsetX;
+  let newTop = e.clientY - offsetY;
+
+  if (newLeft < 0) newLeft = 0;
+  if (newTop < 0) newTop = 0;
+  if (newLeft + modalWidth > viewportWidth) newLeft = viewportWidth - modalWidth;
+  if (newTop + modalHeight > viewportHeight) newTop = viewportHeight - modalHeight;
+
+  modalContent.style.left = `${newLeft}px`;
+  modalContent.style.top = `${newTop}px`;
 });
 
 document.addEventListener('mouseup', () => { isDragging = false; });
