@@ -430,12 +430,12 @@
     "file": "Stars.txt"
   },
   {
-    "artist": "로이킴 ",
+    "artist": "로이킴",
     "title": "그때 헤어지면 돼",
     "file": "그때헤어지면돼.txt"
   },
    {
-    "artist": "로이킴 ",
+    "artist": "로이킴",
     "title": "봄봄봄",
     "file": "봄봄봄.txt"
   },
@@ -455,6 +455,7 @@
     "file": "Opening.txt"
   }
 ]
+
 
 
 
