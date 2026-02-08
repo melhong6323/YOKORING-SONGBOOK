@@ -10,9 +10,10 @@
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans KR', sans-serif;
     background: #0f1115;
     color: #eaeaf0;
+    overflow: hidden; /* 전체 페이지 스크롤 없음 */
   }
 
-  /* 제목 + YouTube 버튼 */
+  /* 상단 제목 + 유튜브 */
   .title-line {
     display: flex;
     align-items: center;
@@ -21,6 +22,11 @@
     margin: 24px 0 16px;
     font-size: 28px;
     color: #eaeaf0;
+    position: sticky;
+    top: 0;
+    background: #0f1115;
+    z-index: 100;
+    padding: 8px 0;
   }
   .youtube-btn {
     display: flex;
@@ -40,20 +46,42 @@
     background: #ff78b2;
   }
 
-  .container { max-width: 1200px; margin: 0 auto; padding: 0 16px 40px; }
+  /* 좌우 1:2 레이아웃 */
+  .container {
+    display: flex;
+    gap: 16px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 16px 16px;
+    height: calc(100vh - 80px); /* 상단 헤더 제외 */
+  }
+  .left-pane {
+    flex: 1;
+    max-width: 33%;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    gap: 12px;
+  }
+  .right-pane {
+    flex: 2;
+    max-width: 67%;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+  }
 
   /* 가이드 */
   .guide {
     background: #181b22;
     border-radius: 12px;
     padding: 16px;
-    margin-bottom: 12px;
     font-size: 14px;
     line-height: 1.6;
     color: #cfd3ff;
   }
 
-  /* 카테고리 + 검색 + 큰 글씨 버튼 */
+  /* 탭 + 검색 + 큰 글씨 버튼 */
   .top-controls {
     display: flex;
     flex-wrap: wrap;
@@ -61,11 +89,7 @@
     gap: 8px;
     margin-bottom: 12px;
   }
-  #tabs {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
+  #tabs { display: flex; flex-wrap: wrap; gap: 8px; }
   .tab {
     padding: 8px 14px;
     border-radius: 20px;
@@ -98,7 +122,7 @@
   }
 
   /* 아티스트 필터 */
-  .artist-filter { display: none; margin: 12px 0 16px; }
+  .artist-filter { margin: 12px 0; }
   .artist-list { display: flex; flex-wrap: wrap; gap: 6px; }
   .artist {
     padding: 6px 12px;
@@ -111,8 +135,7 @@
   .artist.active { background: #6c7bff; color: #000; font-weight: 600; }
 
   /* 노래 목록 */
-  #listWrapper.broadcast-mode { transform: scale(1.08); transform-origin: top center; }
-  .list { display: none; }
+  #list { flex: 1; overflow-y: auto; }
   .song {
     display: grid;
     grid-template-columns: 1.4fr 2fr auto auto auto auto auto;
@@ -125,7 +148,6 @@
     cursor: pointer;
   }
   .song:hover { background: #1f2030; }
-
   .song strong { font-size: 15.5px; font-weight: 600; color: #ffffff; }
   .song > div { font-size: 14.5px; color: #eaeaf0; }
   .song small { font-size: 12.5px; color: #aab0ff; }
@@ -138,7 +160,7 @@
   }
   .disabled { color: #555; pointer-events: none; font-weight: normal; }
 
-  /* 선택된 곡 강조 */
+  /* 선택 강조 */
   .song.selected {
     background: #1f2230;
     border-left: 4px solid #ff4f9a;
@@ -192,7 +214,10 @@
     color: #f1f2ff;
   }
 
+  /* 모바일 대응 */
   @media (max-width: 720px) {
+    .container { flex-direction: column; }
+    .left-pane, .right-pane { max-width: 100%; flex: unset; height: auto; }
     .song { grid-template-columns: 1fr 1.6fr auto auto auto; }
     .song .memo, .song .key { display: none; }
     #lyricsText { font-size: 14.5px; line-height: 1.8; padding: 10px 12px; }
@@ -210,23 +235,27 @@
 </h1>
 
 <div class="container">
-  <div id="guide" class="guide"></div>
-
-  <div class="top-controls">
+  <!-- 왼쪽 UI -->
+  <div class="left-pane">
     <div id="tabs"></div>
-    <input type="text" id="searchInput" placeholder="곡 검색">
-    <button id="toggleLargeText">큰 글씨모드</button>
+    <div id="artistFilter" class="artist-filter">
+      <div class="artist-list" id="artistList"></div>
+      <button id="showAllArtists" style="margin-top:8px;padding:6px 12px;border-radius:6px;background:#6c7bff;color:#fff;border:none;cursor:pointer;display:none;">전체보기</button>
+    </div>
+    <div id="guide" class="guide"></div>
   </div>
 
-  <div id="artistFilter" class="artist-filter">
-    <div class="artist-list" id="artistList"></div>
-  </div>
-
-  <div id="listWrapper">
-    <div id="list" class="list"></div>
+  <!-- 오른쪽 UI -->
+  <div class="right-pane">
+    <div class="top-controls">
+      <input type="text" id="searchInput" placeholder="곡 검색">
+      <button id="toggleLargeText">큰 글씨모드</button>
+    </div>
+    <div id="list"></div>
   </div>
 </div>
 
+<!-- 가사 모달 -->
 <div id="lyricsModal" class="modal">
   <div class="modal-content">
     <span id="modalClose" class="modal-close">✕</span>
@@ -241,9 +270,9 @@ const SHEET_NAMES = ['사용설명서', 'K-POP', 'POP', 'J-POP', '숙제곡', '�
 const guideEl = document.getElementById('guide');
 const tabsEl = document.getElementById('tabs');
 const listEl = document.getElementById('list');
-const listWrapper = document.getElementById('listWrapper');
 const artistFilterEl = document.getElementById('artistFilter');
 const artistListEl = document.getElementById('artistList');
+const showAllBtn = document.getElementById('showAllArtists');
 const lyricsModal = document.getElementById('lyricsModal');
 const lyricsText = document.getElementById('lyricsText');
 const modalClose = document.getElementById('modalClose');
@@ -255,7 +284,6 @@ let currentSongs = [];
 let currentArtist = '전체';
 let lyricsList = [];
 let largeTextOn = false;
-let selectedSongIndex = null;
 
 /* ====================== 데이터 로드 ====================== */
 async function fetchSheet(sheetName) {
@@ -296,9 +324,19 @@ async function loadGuide() {
   guideEl.innerHTML = rows.map(r => r.join(' ')).join('<br>');
 }
 
+/* ====================== 가수 필터 ====================== */
 function renderArtistFilter(songs) {
-  const set = new Set(songs.map(s => s.filterArtist));
-  const artists = ['전체', ...Array.from(set).sort()];
+  const countMap = {};
+  songs.forEach(s => {
+    const key = normalizeArtist(s.artist);
+    countMap[key] = (countMap[key] || 0) + 1;
+    s.filterArtist = key;
+  });
+  const sortedArtists = Object.entries(countMap)
+    .sort((a,b) => b[1]-a[1])
+    .map(e => e[0]);
+  const artists = ['전체', ...sortedArtists];
+
   artistListEl.innerHTML = '';
   artists.forEach(a => {
     const btn = document.createElement('div');
@@ -312,15 +350,34 @@ function renderArtistFilter(songs) {
     };
     artistListEl.appendChild(btn);
   });
-  artistFilterEl.style.display = 'block';
+
+  // 전체보기 버튼 표시
+  if(artists.length > 10) { showAllBtn.style.display = 'block'; }
+  else { showAllBtn.style.display = 'none'; }
 }
 
-function renderSongList(searchQuery = '') {
+/* 전체보기 모달 */
+showAllBtn.onclick = () => {
+  const artistButtons = Array.from(artistListEl.querySelectorAll('.artist')).map(b => b.textContent);
+  const modal = document.createElement('div');
+  modal.className = 'modal';
+  modal.innerHTML = `<div class="modal-content">
+    <span class="modal-close">✕</span>
+    ${artistButtons.map(a => `<div class="artist">${a}</div>`).join('')}
+  </div>`;
+  document.body.appendChild(modal);
+  modal.style.display = 'flex';
+  modal.querySelector('.modal-close').onclick = () => modal.remove();
+};
+
+/* ====================== 노래 목록 ====================== */
+function renderSongList(searchQuery='') {
   listEl.innerHTML = '';
-  const filtered = currentSongs
-    .filter(s => (currentArtist === '전체' || s.filterArtist === currentArtist) &&
-                 (s.title.toLowerCase().includes(searchQuery) || s.artist.toLowerCase().includes(searchQuery)));
-  filtered.forEach((s, index) => {
+  const filtered = currentSongs.filter(s => 
+    (currentArtist==='전체' || s.filterArtist===currentArtist) &&
+    (s.title.toLowerCase().includes(searchQuery) || s.artist.toLowerCase().includes(searchQuery))
+  );
+  filtered.forEach((s,index)=>{
     const div = document.createElement('div');
     div.className = 'song';
     const mrBtn = s.mr ? `<a class="mr" href="${s.mr}" target="_blank">MR</a>` : `<span class="mr disabled">MR</span>`;
@@ -328,128 +385,90 @@ function renderSongList(searchQuery = '') {
     div.innerHTML = `
       <strong>${s.artist}</strong>
       <div>${s.title}</div>
-      <small class="memo">${s.memo || ''}</small>
-      <small>${s.keyUp || ''}</small>
-      <small class="key">${s.key || ''}</small>
+      <small class="memo">${s.memo||''}</small>
+      <small>${s.keyUp||''}</small>
+      <small class="key">${s.key||''}</small>
       ${mrBtn}
       ${lyricsBtn}
     `;
     listEl.appendChild(div);
-
-    // 클릭 시 선택 표시 + 자동 스크롤
     div.onclick = () => {
-      document.querySelectorAll('.song').forEach(s => s.classList.remove('selected'));
+      document.querySelectorAll('.song').forEach(x=>x.classList.remove('selected'));
       div.classList.add('selected');
-      selectedSongIndex = index;
-
-      // 자동 스크롤
-      const rect = div.getBoundingClientRect();
-      if(rect.top < 0 || rect.bottom > window.innerHeight){
-        div.scrollIntoView({behavior: "smooth", block: "center"});
-      }
+      div.scrollIntoView({behavior:"smooth", block:"center"});
     };
   });
 }
 
 /* ====================== 가사 모달 ====================== */
 function showLyrics(file) {
-  fetch(`data/lyrics/${file}`)
-    .then(res => res.text())
-    .then(text => {
-      lyricsText.textContent = text;
-      lyricsModal.style.display = 'flex';
-      if (largeTextOn) modalContent.classList.add('broadcast-mode');
-    })
-    .catch(() => {
-      lyricsText.textContent = '가사를 불러올 수 없습니다.';
-      lyricsModal.style.display = 'flex';
-    });
+  fetch(`data/lyrics/${file}`).then(r=>r.text()).then(text=>{
+    lyricsText.textContent = text;
+    lyricsModal.style.display='flex';
+    if(largeTextOn) modalContent.classList.add('broadcast-mode');
+  }).catch(()=>{ lyricsText.textContent='가사를 불러올 수 없습니다.'; lyricsModal.style.display='flex'; });
 }
-
-modalClose.onclick = () => lyricsModal.style.display = 'none';
+modalClose.onclick = () => lyricsModal.style.display='none';
 lyricsModal.onclick = e => { if(e.target===lyricsModal) lyricsModal.style.display='none'; };
 
 /* ====================== 검색 ====================== */
-searchInput.addEventListener('input', () => {
-  const query = searchInput.value.toLowerCase();
-  renderSongList(query);
-});
+searchInput.addEventListener('input',()=>renderSongList(searchInput.value.toLowerCase()));
 
 /* ====================== 큰 글씨모드 ====================== */
-toggleBtn.onclick = () => {
-  largeTextOn = !largeTextOn;
-  listWrapper.classList.toggle('broadcast-mode', largeTextOn);
-  modalContent.classList.toggle('broadcast-mode', largeTextOn);
+toggleBtn.onclick = ()=>{
+  largeTextOn=!largeTextOn;
+  listEl.classList.toggle('broadcast-mode',largeTextOn);
+  modalContent.classList.toggle('broadcast-mode',largeTextOn);
 };
 
 /* ====================== 카테고리 선택 ====================== */
-async function selectCategory(name, tabEl) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+async function selectCategory(name,tabEl){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   tabEl.classList.add('active');
-
-  listEl.style.display = 'block';
-  artistFilterEl.style.display = 'none';
-  currentArtist = '전체';
-  currentSongs = [];
-
+  currentArtist='전체';
+  currentSongs=[];
   const rows = await fetchSheet(name);
-  rows.forEach(r => {
-    if (!r[0] || !r[1]) return;
+  rows.forEach(r=>{
+    if(!r[0]||!r[1]) return;
     currentSongs.push({
-      artist: r[0],
-      filterArtist: normalizeArtist(r[0]),
-      title: r[1],
-      memo: r[2],
-      keyUp: r[3],
-      key: r[4],
-      mr: r[5],
-      lyricsFile: findLyricsFile(r[0], r[1])
+      artist:r[0],
+      title:r[1],
+      memo:r[2],
+      keyUp:r[3],
+      key:r[4],
+      mr:r[5],
+      lyricsFile: findLyricsFile(r[0],r[1])
     });
   });
-
   renderArtistFilter(currentSongs);
   renderSongList(searchInput.value.toLowerCase());
 }
 
-/* ====================== 모달 드래그 (화면 제한) ====================== */
-let isDragging = false;
-let offsetX = 0;
-let offsetY = 0;
-
-modalContent.addEventListener('mousedown', (e) => {
-  isDragging = true;
-  const rect = modalContent.getBoundingClientRect();
-  modalContent.style.left = rect.left + 'px';
-  modalContent.style.top = rect.top + 'px';
-  modalContent.style.transform = 'none';
-  offsetX = e.clientX - rect.left;
-  offsetY = e.clientY - rect.top;
+/* ====================== 모달 드래그 ====================== */
+let isDragging=false, offsetX=0, offsetY=0;
+modalContent.addEventListener('mousedown',(e)=>{
+  isDragging=true;
+  const rect=modalContent.getBoundingClientRect();
+  modalContent.style.left=rect.left+'px';
+  modalContent.style.top=rect.top+'px';
+  modalContent.style.transform='none';
+  offsetX=e.clientX-rect.left;
+  offsetY=e.clientY-rect.top;
 });
-
-document.addEventListener('mousemove', (e) => {
-  if (!isDragging) return;
-
-  const viewportWidth = window.innerWidth;
-  const viewportHeight = window.innerHeight;
-  const modalWidth = modalContent.offsetWidth;
-  const modalHeight = modalContent.offsetHeight;
-
-  let newLeft = e.clientX - offsetX;
-  let newTop = e.clientY - offsetY;
-
-  if (newLeft < 0) newLeft = 0;
-  if (newTop < 0) newTop = 0;
-  if (newLeft + modalWidth > viewportWidth) newLeft = viewportWidth - modalWidth;
-  if (newTop + modalHeight > viewportHeight) newTop = viewportHeight - modalHeight;
-
-  modalContent.style.left = `${newLeft}px`;
-  modalContent.style.top = `${newTop}px`;
+document.addEventListener('mousemove',(e)=>{
+  if(!isDragging) return;
+  const vw=window.innerWidth, vh=window.innerHeight;
+  const mw=modalContent.offsetWidth, mh=modalContent.offsetHeight;
+  let l=e.clientX-offsetX, t=e.clientY-offsetY;
+  if(l<0) l=0; if(t<0) t=0;
+  if(l+mw>vw) l=vw-mw; if(t+mh>vh) t=vh-mh;
+  modalContent.style.left=l+'px';
+  modalContent.style.top=t+'px';
 });
-
-document.addEventListener('mouseup', () => { isDragging = false; });
+document.addEventListener('mouseup',()=>{isDragging=false});
 
 /* ====================== 초기 실행 ====================== */
-(async () => {
+(async()=>{
   await loadLyricsList();
   renderTabs();
   loadGuide();
