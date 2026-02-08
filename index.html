@@ -12,7 +12,7 @@ body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'No
 
 /* 좌우 레이아웃 */
 .container{display:flex;gap:16px;max-width:1200px;margin:0 auto;padding:0 16px 16px;height:calc(100vh - 80px);}
-.left-pane{flex:1;max-width:33%;display:flex;flex-direction:column;overflow-y:auto;gap:12px;}
+.left-pane{flex:1;max-width:33%;display:flex;flex-direction:column;overflow:hidden;gap:12px;}
 .right-pane{flex:2;max-width:67%;display:flex;flex-direction:column;overflow:hidden;margin-right:220px;}
 
 /* 가이드 */
@@ -27,11 +27,11 @@ body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'No
 #toggleLargeText{margin-left:8px;padding:6px 12px;border-radius:6px;background:#ff4f9a;color:#000;border:none;cursor:pointer;font-size:14px;flex-shrink:0;}
 
 /* 아티스트 필터 */
-.artist-filter{margin:12px 0;}
-.artist-list{display:flex;flex-wrap:wrap;gap:6px;}
+.artist-filter{margin:12px 0;max-height:550px;overflow-y:auto;}
+.artist-list{display:flex;flex-direction:column;gap:4px;}
 .artist{padding:6px 12px;border-radius:14px;background:#1f2330;font-size:13px;cursor:pointer;color:#cfd3ff;}
 .artist.active{background:#6c7bff;color:#000;font-weight:600;}
-#showAllArtists{margin-top:8px;padding:6px 12px;border-radius:6px;background:#6c7bff;color:#fff;border:none;cursor:pointer;display:none;}
+#showAllArtists{margin-top:8px;padding:6px 12px;border-radius:6px;background:#6c7bff;color:#fff;border:none;cursor:pointer;}
 
 /* 노래 목록 */
 #list{flex:1;overflow-y:auto;}
@@ -83,7 +83,7 @@ body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'No
     <div id="tabs"></div>
     <div id="artistFilter" class="artist-filter">
       <div class="artist-list" id="artistList"></div>
-      <button id="showAllArtists">전체보기</button>
+      <button id="showAllArtists">가나다순</button>
     </div>
     <div id="guide" class="guide"></div>
   </div>
@@ -135,9 +135,8 @@ function renderArtistFilter(songs){
   const countMap={};
   songs.forEach(s=>{const k=normalizeArtist(s.artist);countMap[k]=(countMap[k]||0)+1;s.filterArtist=k;});
   const sortedArtists=Object.entries(countMap).sort((a,b)=>b[1]-a[1]).map(e=>e[0]);
-  const topArtists=sortedArtists.slice(0,20);
   artistListEl.innerHTML='';
-  topArtists.forEach(a=>{
+  sortedArtists.forEach(a=>{
     const btn=document.createElement('div');btn.className='artist'+(a==='전체'?' active':'');btn.textContent=a;
     btn.onclick=()=>{
       if(currentArtist===a){currentArtist='전체';document.querySelectorAll('.artist').forEach(x=>x.classList.remove('active'));return renderSongList(searchInput.value.toLowerCase());}
@@ -145,11 +144,11 @@ function renderArtistFilter(songs){
     };
     artistListEl.appendChild(btn);
   });
-  showAllBtn.style.display=sortedArtists.length>20?'block':'none';
 }
+
+/* 전체보기 모달 */
 showAllBtn.onclick=()=>{
-  const allArtists=Array.from(document.querySelectorAll('.artist')).map(b=>b.textContent);
-  allArtists.sort((a,b)=>a.localeCompare(b,'ko'));
+  const allArtists=Array.from(document.querySelectorAll('.artist')).map(b=>b.textContent).sort((a,b)=>a.localeCompare(b,'ko'));
   const modal=document.createElement('div');modal.className='modal';
   modal.innerHTML=`<div class="modal-content"><span class="modal-close">✕</span>${allArtists.map(a=>`<div class="artist">${a}</div>`).join('')}</div>`;
   document.body.appendChild(modal);modal.style.display='flex';
