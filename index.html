@@ -28,6 +28,8 @@ body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'No
 
 /* 가수 소분류 UI */
 .artist-controls{display:flex;gap:8px;margin-bottom:6px;}
+#btnGanada{padding:6px 12px;border-radius:14px;background:#1f2330;color:#cfd3ff;border:none;cursor:pointer;transition:0.15s;}
+#btnGanada:hover{background:#6c7bff;color:#000;font-weight:600;}
 .artist-list{display:flex;flex-wrap:wrap;gap:6px;max-height:550px;overflow-y:auto;}
 .artist{padding:6px 12px;border-radius:14px;background:#1f2330;font-size:13px;cursor:pointer;color:#cfd3ff;white-space:nowrap;}
 .artist.active{background:#6c7bff;color:#000;font-weight:600;}
@@ -80,7 +82,7 @@ body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'No
   <div class="left-pane">
     <div id="tabs"></div>
     <div class="artist-controls">
-      <button id="showAllArtists">전체보기 (가나다순)</button>
+      <button id="btnGanada">가나다순</button>
     </div>
     <div class="artist-list" id="artistList"></div>
     <div id="guide" class="guide"></div>
@@ -91,6 +93,14 @@ body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'No
       <button id="toggleLargeText">큰 글씨모드</button>
     </div>
     <div id="list"></div>
+  </div>
+</div>
+
+<!-- 가나다순 모달 -->
+<div id="ganadaModal" class="modal">
+  <div class="modal-content" id="ganadaContent">
+    <span id="ganadaClose" class="modal-close">✕</span>
+    <div id="ganadaList" style="display:flex;flex-wrap:wrap;gap:6px;max-height:500px;overflow-y:auto;"></div>
   </div>
 </div>
 
@@ -107,8 +117,11 @@ const SHEET_ID='1bSs04gJ8HyVil5PM0TBAm-4c_BeAqbU7ENMZ2AQcUVI';
 const SHEET_NAMES=['사용설명서','K-POP','POP','J-POP','숙제곡','신곡'];
 const guideEl=document.getElementById('guide'),tabsEl=document.getElementById('tabs'),
 listEl=document.getElementById('list'),artistListEl=document.getElementById('artistList'),
-showAllBtn=document.getElementById('showAllArtists'),lyricsModal=document.getElementById('lyricsModal'),
-lyricsText=document.getElementById('lyricsText'),modalClose=document.getElementById('modalClose'),
+btnGanada=document.getElementById('btnGanada'),
+ganadaModal=document.getElementById('ganadaModal'),ganadaClose=document.getElementById('ganadaClose'),
+ganadaList=document.getElementById('ganadaList'),
+lyricsModal=document.getElementById('lyricsModal'),lyricsText=document.getElementById('lyricsText'),
+modalClose=document.getElementById('modalClose'),
 searchInput=document.getElementById('searchInput'),toggleBtn=document.getElementById('toggleLargeText');
 
 let currentSongs=[],currentArtist='전체',artistMap={},largeTextOn=false,lyricsList=[];
@@ -144,19 +157,24 @@ function renderArtistFilter(songs){
   });
 }
 
-// 전체보기 (가나다순)
-showAllBtn.onclick=()=>{
-  let allArtists=Object.keys(artistMap).sort((a,b)=>a.localeCompare(b,'ko'));
-  artistListEl.innerHTML='';
+// 가나다순 모달
+btnGanada.onclick=()=>{
+  ganadaList.innerHTML='';
+  const allArtists=Object.keys(artistMap).sort((a,b)=>a.localeCompare(b,'ko'));
   allArtists.forEach(a=>{
     const btn=document.createElement('div');btn.className='artist';btn.textContent=a;
     btn.onclick=()=>{
-      currentArtist=a;document.querySelectorAll('.artist').forEach(x=>x.classList.remove('active'));
-      btn.classList.add('active');renderSongList(searchInput.value.toLowerCase());btn.scrollIntoView({behavior:'smooth',block:'center'});
+      currentArtist=a;renderArtistFilter(currentSongs);renderSongList(searchInput.value.toLowerCase());
+      ganadaModal.style.display='none';
+      const el=Array.from(artistListEl.children).find(x=>x.textContent===a);
+      if(el) el.scrollIntoView({behavior:'smooth',block:'center'}); el?.classList.add('active');
     };
-    artistListEl.appendChild(btn);
+    ganadaList.appendChild(btn);
   });
+  ganadaModal.style.display='flex';
 };
+ganadaClose.onclick=()=>ganadaModal.style.display='none';
+ganadaModal.onclick=e=>{if(e.target===ganadaModal) ganadaModal.style.display='none';};
 
 // 노래 목록
 function renderSongList(searchQuery=''){
@@ -201,19 +219,23 @@ async function selectCategory(name,tabEl){
 
 // 모달 드래그
 let isDragging=false,offsetX=0,offsetY=0;
-const modalContent=document.querySelector('.modal-content');
-modalContent.addEventListener('mousedown',e=>{
-  isDragging=true;const rect=modalContent.getBoundingClientRect();
-  modalContent.style.left=rect.left+'px';modalContent.style.top=rect.top+'px';modalContent.style.transform='none';
-  offsetX=e.clientX-rect.left;offsetY=e.clientY-rect.top;
+const modalContent=document.querySelectorAll('.modal-content');
+modalContent.forEach(mc=>{
+  mc.addEventListener('mousedown',e=>{
+    isDragging=true;const rect=mc.getBoundingClientRect();
+    mc.style.left=rect.left+'px';mc.style.top=rect.top+'px';mc.style.transform='none';
+    offsetX=e.clientX-rect.left;offsetY=e.clientY-rect.top;
+  });
 });
 document.addEventListener('mousemove',e=>{
   if(!isDragging)return;
   const vw=window.innerWidth,vh=window.innerHeight;
-  const mw=modalContent.offsetWidth,mh=modalContent.offsetHeight;
-  let l=e.clientX-offsetX,t=e.clientY-offsetY;
-  if(l<0)l=0;if(t<0)t=0;if(l+mw>vw)l=vw-mw;if(t+mh>vh)t=vh-mh;
-  modalContent.style.left=l+'px';modalContent.style.top=t+'px';
+  modalContent.forEach(mc=>{
+    const mw=mc.offsetWidth,mh=mc.offsetHeight;
+    let l=e.clientX-offsetX,t=e.clientY-offsetY;
+    if(l<0)l=0;if(t<0)t=0;if(l+mw>vw)l=vw-mw;if(t+mh>vh)t=vh-mh;
+    mc.style.left=l+'px';mc.style.top=t+'px';
+  });
 });
 document.addEventListener('mouseup',()=>{isDragging=false;});
 
