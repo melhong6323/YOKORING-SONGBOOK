@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>요코링 노래책</title>
 <style>
-/* 1. 기본 다크모드 및 레이아웃 */
+/* 기존 스타일 유지 */
 body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Noto Sans KR',sans-serif;background:#0f1115;color:#eaeaf0;overflow:hidden;}
 .title-line{display:flex;align-items:center;justify-content:center;gap:16px;margin:24px 0 16px;font-size:28px;color:#eaeaf0;position:sticky;top:0;background:#0f1115;z-index:50;padding:8px 0;}
 .youtube-btn{display:flex;align-items:center;gap:6px;background:#ff4f9a;color:#000;font-weight:600;font-size:16px;padding:6px 12px;border-radius:8px;text-decoration:none;transition:transform 0.15s, background 0.15s;}
@@ -30,6 +30,7 @@ body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'No
 .artist{padding:6px 12px;border-radius:14px;background:#1f2330;font-size:13px;cursor:pointer;color:#cfd3ff;white-space:nowrap;}
 .artist.active{background:#6c7bff;color:#000;font-weight:600;}
 
+/* 노래 목록 스타일 수정 (복사 버튼 열 추가) */
 #list{flex:1;overflow-y:auto;background:#0f1115;border-radius:8px;}
 .song{display:grid;grid-template-columns:40px 1.4fr 2fr auto auto auto auto auto;gap:8px;padding:14px 8px;border-bottom:1px solid #232736;align-items:center;font-size:15px;transition:background 0.2s;cursor:pointer;min-height:48px;}
 .song:nth-child(odd){background:#15181f;}
@@ -38,6 +39,7 @@ body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'No
 .song>div{font-size:14.5px;color:#eaeaf0;}
 .song small{font-size:12.5px;color:#aab0ff;}
 
+/* 복사 버튼 스타일 */
 .copy-btn{background:none;border:none;color:#555;cursor:pointer;font-size:16px;padding:0;display:flex;align-items:center;justify-content:center;transition:color 0.2s;}
 .copy-btn:hover{color:#ff4f9a;}
 
@@ -46,6 +48,7 @@ body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'No
 .song.selected{background:#251c2a !important;border-left:4px solid #ff4f9a;box-shadow:inset 0 0 10px rgba(255,79,154,0.1);}
 .song.selected strong{color:#ff4f9a;}
 
+/* 큰 글씨 모드 */
 .right-pane.broadcast-mode .song{grid-template-columns:50px 1.4fr 2fr auto auto auto auto auto;}
 .right-pane.broadcast-mode .song strong,.right-pane.broadcast-mode .song>div,.right-pane.broadcast-mode .song small{font-size:1.35em;}
 .right-pane.broadcast-mode .mr,.right-pane.broadcast-mode .lyrics-btn,.right-pane.broadcast-mode .copy-btn{font-size:1.45em;}
@@ -117,16 +120,11 @@ searchInput=document.getElementById('searchInput'),toggleBtn=document.getElement
 
 let currentSongs=[],currentArtist='전체',artistMap={},largeTextOn=false,lyricsList=[];
 
-// 칩 및 함수 인식을 위한 fetchSheet 수정
 async function fetchSheet(sheetName){
-  const res=await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}`);
+  const res=await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx:out:json&sheet=${encodeURIComponent(sheetName)}`);
   const text=await res.text();
   const json=JSON.parse(text.substring(47,text.length-2));
-  return json.table.rows.map(r => r.c.map(c => {
-    if (!c) return '';
-    // v(원본 값)가 있으면 v를, 없으면 f(표시 값)를 반환하여 칩 데이터 대응
-    return (c.v !== null && c.v !== undefined) ? c.v : (c.f || '');
-  }));
+  return json.table.rows.map(r=>r.c.map(c=>c?c.v:''));
 }
 
 async function loadLyricsList(){
@@ -149,14 +147,9 @@ async function selectCategory(name,tabEl){
   const rows=await fetchSheet(name);
   rows.slice(1).forEach(r=>{
     if(!r[0]||!r[1]) return;
-    
-    // MR 데이터 정제: 칩이나 텍스트에서 http 링크만 추출
-    let mrVal = String(r[5] || '').trim();
-    let finalMr = mrVal.startsWith('http') ? mrVal : '';
-
     currentSongs.push({
       artist:String(r[0]), title:String(r[1]), memo:r[2]||'', 
-      keyUp:r[3]||'', key:r[4]||'', mr:finalMr, 
+      keyUp:r[3]||'', key:r[4]||'', mr:r[5]||'', 
       lyricsFile:findLyricsFile(String(r[0]),String(r[1]))
     });
   });
@@ -194,6 +187,7 @@ function renderArtistFilter(songs){
   });
 }
 
+// 노래 목록 렌더링 (복사 버튼 추가)
 function renderSongList(searchQuery=''){
   listEl.innerHTML='';
   const filtered=currentSongs.filter(s=>(currentArtist==='전체'||s.filterArtist===currentArtist)&&(s.title.toLowerCase().includes(searchQuery)||s.artist.toLowerCase().includes(searchQuery)));
@@ -201,6 +195,8 @@ function renderSongList(searchQuery=''){
     const div=document.createElement('div'); div.className='song';
     const mrBtn=s.mr?`<a class="mr" href="${s.mr}" target="_blank">MR</a>`:`<span class="mr disabled">MR</span>`;
     const lyricsBtn=s.lyricsFile?`<span class="lyrics-btn" onclick="showLyrics('${s.lyricsFile}')">가사</span>`:`<span class="lyrics-btn disabled">가사</span>`;
+    
+    // 복사 버튼 추가
     const copyBtn = `<button class="copy-btn" onclick="copyToClipboard('${s.artist} - ${s.title}', this); event.stopPropagation();" title="가수-제목 복사">📋</button>`;
     
     div.innerHTML=`${copyBtn}<strong>${s.artist}</strong><div>${s.title}</div><small class="memo">${s.memo}</small><small>${s.keyUp}</small><small>${s.key}</small>${mrBtn}${lyricsBtn}`;
@@ -212,12 +208,15 @@ function renderSongList(searchQuery=''){
   });
 }
 
+// 클립보드 복사 함수
 function copyToClipboard(text, btnEl) {
   navigator.clipboard.writeText(text).then(() => {
     const originalText = btnEl.textContent;
-    btnEl.textContent = '✅';
+    btnEl.textContent = '✅'; // 성공 표시
     setTimeout(() => { btnEl.textContent = originalText; }, 1000);
-  }).catch(err => { console.error('복사 실패', err); });
+  }).catch(err => {
+    console.error('복사 실패: ', err);
+  });
 }
 
 function showLyrics(file){
