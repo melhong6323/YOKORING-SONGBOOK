@@ -353,8 +353,39 @@
     "artist": "뉴진스",
     "title": "Super shy",
     "file": "Supershy.txt"
+  },
+    {
+    "artist": "다비치",
+    "title": "모르시나요",
+    "file": "모르시나요.txt"
+  },
+  {
+    "artist": "다비치",
+    "title": "아로하",
+    "file": "아로하.txt"
+  },
+    {
+    "artist": "다비치",
+    "title": "이사랑",
+    "file": "이사랑.txt"
+  },
+  {
+    "artist": "달의하루",
+    "title": "염라",
+    "file": "염라.txt"
+  },
+  {
+    "artist": "도경수(D.O.)",
+    "title": "별 떨어진다 (I Do)",
+    "file": "별떨어진다.txt"
+  },
+  {
+    "artist": "디핵, 파테코",
+    "title": "OHAYO MY NIGHT",
+    "file": "OHAYOMYNIGHT.txt"
   }
 ]
+
 
 
 
