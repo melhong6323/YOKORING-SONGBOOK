@@ -5,18 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>요코링 노래책</title>
 <style>
-/* 기본 다크모드 최적화 배경 */
+/* 기존 스타일 유지 */
 body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Noto Sans KR',sans-serif;background:#0f1115;color:#eaeaf0;overflow:hidden;}
 .title-line{display:flex;align-items:center;justify-content:center;gap:16px;margin:24px 0 16px;font-size:28px;color:#eaeaf0;position:sticky;top:0;background:#0f1115;z-index:50;padding:8px 0;}
 .youtube-btn{display:flex;align-items:center;gap:6px;background:#ff4f9a;color:#000;font-weight:600;font-size:16px;padding:6px 12px;border-radius:8px;text-decoration:none;transition:transform 0.15s, background 0.15s;}
 .youtube-btn:hover{transform:scale(1.05);background:#ff78b2;}
 
-/* 레이아웃 */
 .container{display:flex;gap:16px;max-width:1200px;margin:0 auto;padding:0 16px 16px;height:calc(100vh - 80px);}
 .left-pane{flex:1;max-width:33%;display:flex;flex-direction:column;overflow:hidden;gap:12px;}
 .right-pane{flex:2;max-width:67%;display:flex;flex-direction:column;overflow:hidden;margin-right:220px;}
 
-/* 탭 및 컨트롤 */
 #tabs{display:flex;flex-wrap:wrap;gap:8px;}
 .tab{padding:8px 14px;border-radius:20px;background:#1f2330;color:#cfd3ff;cursor:pointer;font-size:14px;user-select:none;transition: 0.2s;}
 .tab.active{background:#ff4f9a;color:#000;font-weight:600;}
@@ -24,10 +22,7 @@ body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'No
 #searchInput{margin-left:auto;padding:8px 12px;border-radius:8px;border:1px solid #333;background:#181b22;color:#fff;font-size:14px;flex-shrink:0;}
 #toggleLargeText{margin-left:8px;padding:8px 12px;border-radius:6px;background:#ff4f9a;color:#000;border:none;cursor:pointer;font-size:14px;font-weight:600;}
 
-/* 가이드 */
 .guide{background:#181b22;border-radius:12px;padding:16px;font-size:14px;line-height:1.6;color:#cfd3ff;overflow-y:auto;flex-shrink:0;border:1px solid #232736;}
-
-/* 아티스트 UI */
 .artist-controls{display:flex;gap:8px;margin-bottom:6px;}
 #btnGanada{padding:6px 12px;border-radius:14px;background:#1f2330;color:#cfd3ff;border:none;cursor:pointer;transition:0.15s;}
 #btnGanada:hover{background:#6c7bff;color:#000;font-weight:600;}
@@ -35,38 +30,40 @@ body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'No
 .artist{padding:6px 12px;border-radius:14px;background:#1f2330;font-size:13px;cursor:pointer;color:#cfd3ff;white-space:nowrap;}
 .artist.active{background:#6c7bff;color:#000;font-weight:600;}
 
-/* 노래 목록 다크모드 최적화 (Zebra Striping) */
+/* 노래 목록 스타일 수정 (복사 버튼 열 추가) */
 #list{flex:1;overflow-y:auto;background:#0f1115;border-radius:8px;}
-.song{display:grid;grid-template-columns:1.4fr 2fr auto auto auto auto auto;gap:8px;padding:14px 8px;border-bottom:1px solid #232736;align-items:center;font-size:15px;transition:background 0.2s;cursor:pointer;min-height:48px;}
-.song:nth-child(odd){background:#15181f;} /* 줄무늬 효과 */
+.song{display:grid;grid-template-columns:40px 1.4fr 2fr auto auto auto auto auto;gap:8px;padding:14px 8px;border-bottom:1px solid #232736;align-items:center;font-size:15px;transition:background 0.2s;cursor:pointer;min-height:48px;}
+.song:nth-child(odd){background:#15181f;}
 .song:hover{background:#1f2330 !important;}
 .song strong{font-size:15.5px;font-weight:600;color:#fff;}
 .song>div{font-size:14.5px;color:#eaeaf0;}
 .song small{font-size:12.5px;color:#aab0ff;}
 
-/* 버튼 및 선택 효과 */
+/* 복사 버튼 스타일 */
+.copy-btn{background:none;border:none;color:#555;cursor:pointer;font-size:16px;padding:0;display:flex;align-items:center;justify-content:center;transition:color 0.2s;}
+.copy-btn:hover{color:#ff4f9a;}
+
 .mr,.lyrics-btn{color:#ff4f9a;font-weight:bold;cursor:pointer;white-space:nowrap;font-size:14px;}
 .disabled{color:#444;pointer-events:none;font-weight:normal;}
 .song.selected{background:#251c2a !important;border-left:4px solid #ff4f9a;box-shadow:inset 0 0 10px rgba(255,79,154,0.1);}
 .song.selected strong{color:#ff4f9a;}
 
-/* 모달 최적화 (Z-index 수정) */
+/* 큰 글씨 모드 */
+.right-pane.broadcast-mode .song{grid-template-columns:50px 1.4fr 2fr auto auto auto auto auto;}
+.right-pane.broadcast-mode .song strong,.right-pane.broadcast-mode .song>div,.right-pane.broadcast-mode .song small{font-size:1.35em;}
+.right-pane.broadcast-mode .mr,.right-pane.broadcast-mode .lyrics-btn,.right-pane.broadcast-mode .copy-btn{font-size:1.45em;}
+
 .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);justify-content:center;align-items:center;z-index:1000;}
 .modal-content{background:#181b22;padding:30px 40px;max-width:600px;max-height:80%;overflow-y:auto;border-radius:12px;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);white-space:pre-wrap;border:2px solid #ff4f9a;box-shadow:0 0 30px rgba(0,0,0,0.5);cursor:default;}
 .modal-close{position:absolute;top:10px;right:15px;cursor:pointer;font-weight:bold;color:#ff4f9a;font-size:20px;}
 #lyricsText{padding:14px 0;font-size:16px;line-height:1.8;color:#f1f2ff;text-align:center;}
 
-/* 큰 글씨 모드 */
-.right-pane.broadcast-mode .song strong,.right-pane.broadcast-mode .song>div,.right-pane.broadcast-mode .song small{font-size:1.35em;}
-.right-pane.broadcast-mode .mr,.right-pane.broadcast-mode .lyrics-btn{font-size:1.45em;}
-
-/* 캠 공간 확보 */
 .right-pane::after{content:"";display:block;width:220px;height:0;}
 
 @media(max-width:720px){
   .container{flex-direction:column;}
   .left-pane,.right-pane{max-width:100%;flex:unset;height:auto;margin-right:0;}
-  .song{grid-template-columns:1fr 1.6fr auto auto auto;}
+  .song{grid-template-columns:30px 1fr 1.6fr auto auto auto;}
 }
 </style>
 </head>
@@ -123,9 +120,8 @@ searchInput=document.getElementById('searchInput'),toggleBtn=document.getElement
 
 let currentSongs=[],currentArtist='전체',artistMap={},largeTextOn=false,lyricsList=[];
 
-// 데이터 로드
 async function fetchSheet(sheetName){
-  const res=await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}`);
+  const res=await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx:out:json&sheet=${encodeURIComponent(sheetName)}`);
   const text=await res.text();
   const json=JSON.parse(text.substring(47,text.length-2));
   return json.table.rows.map(r=>r.c.map(c=>c?c.v:''));
@@ -144,14 +140,11 @@ function normalizeArtist(name){
   return String(name).replace(/(\([^)]*feat[^)]*\))/i,'').replace(/feat.*$/i,'').trim();
 }
 
-// 카테고리 선택 (헤더 행 제외 적용)
 async function selectCategory(name,tabEl){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   tabEl.classList.add('active');
   currentArtist='전체'; currentSongs=[];
   const rows=await fetchSheet(name);
-  
-  // 첫 번째 행(헤더) 제외를 위해 .slice(1) 사용
   rows.slice(1).forEach(r=>{
     if(!r[0]||!r[1]) return;
     currentSongs.push({
@@ -178,7 +171,6 @@ async function loadGuide(){
   guideEl.innerHTML=rows.map(r=>r.join(' ')).join('<br>');
 }
 
-// 아티스트 필터 렌더링
 function renderArtistFilter(songs){
   artistMap={};
   songs.forEach(s=>{const k=normalizeArtist(s.artist); artistMap[k]=(artistMap[k]||0)+1; s.filterArtist=k;});
@@ -186,20 +178,16 @@ function renderArtistFilter(songs){
   artistListEl.innerHTML='';
   sortedArtists.forEach(a=>{
     const btn=document.createElement('div'); btn.className='artist'; btn.textContent=a;
+    if(currentArtist===a) btn.classList.add('active');
     btn.onclick=()=>{
       if(currentArtist===a){ currentArtist='전체'; renderArtistFilter(songs); renderSongList(searchInput.value.toLowerCase()); }
-      else{ 
-        currentArtist=a; 
-        document.querySelectorAll('.artist').forEach(x=>x.classList.remove('active'));
-        btn.classList.add('active'); renderSongList(searchInput.value.toLowerCase());
-        btn.scrollIntoView({behavior:'smooth',block:'center'});
-      }
+      else{ currentArtist=a; renderArtistFilter(songs); renderSongList(searchInput.value.toLowerCase()); btn.scrollIntoView({behavior:'smooth',block:'center'});}
     };
     artistListEl.appendChild(btn);
   });
 }
 
-// 노래 목록 렌더링
+// 노래 목록 렌더링 (복사 버튼 추가)
 function renderSongList(searchQuery=''){
   listEl.innerHTML='';
   const filtered=currentSongs.filter(s=>(currentArtist==='전체'||s.filterArtist===currentArtist)&&(s.title.toLowerCase().includes(searchQuery)||s.artist.toLowerCase().includes(searchQuery)));
@@ -207,7 +195,11 @@ function renderSongList(searchQuery=''){
     const div=document.createElement('div'); div.className='song';
     const mrBtn=s.mr?`<a class="mr" href="${s.mr}" target="_blank">MR</a>`:`<span class="mr disabled">MR</span>`;
     const lyricsBtn=s.lyricsFile?`<span class="lyrics-btn" onclick="showLyrics('${s.lyricsFile}')">가사</span>`:`<span class="lyrics-btn disabled">가사</span>`;
-    div.innerHTML=`<strong>${s.artist}</strong><div>${s.title}</div><small class="memo">${s.memo}</small><small>${s.keyUp}</small><small>${s.key}</small>${mrBtn}${lyricsBtn}`;
+    
+    // 복사 버튼 추가
+    const copyBtn = `<button class="copy-btn" onclick="copyToClipboard('${s.artist} - ${s.title}', this); event.stopPropagation();" title="가수-제목 복사">📋</button>`;
+    
+    div.innerHTML=`${copyBtn}<strong>${s.artist}</strong><div>${s.title}</div><small class="memo">${s.memo}</small><small>${s.keyUp}</small><small>${s.key}</small>${mrBtn}${lyricsBtn}`;
     listEl.appendChild(div);
     div.onclick=()=>{
       document.querySelectorAll('.song').forEach(x=>x.classList.remove('selected'));
@@ -216,7 +208,17 @@ function renderSongList(searchQuery=''){
   });
 }
 
-// 가사 모달
+// 클립보드 복사 함수
+function copyToClipboard(text, btnEl) {
+  navigator.clipboard.writeText(text).then(() => {
+    const originalText = btnEl.textContent;
+    btnEl.textContent = '✅'; // 성공 표시
+    setTimeout(() => { btnEl.textContent = originalText; }, 1000);
+  }).catch(err => {
+    console.error('복사 실패: ', err);
+  });
+}
+
 function showLyrics(file){
   fetch(`data/lyrics/${file}`).then(r=>r.text()).then(text=>{
     lyricsText.textContent=text; lyricsModal.style.display='flex';
@@ -225,7 +227,6 @@ function showLyrics(file){
   });
 }
 
-// 모달 드래그 로직 (수정된 버전)
 let isDragging=false, targetContent=null, offsetX=0, offsetY=0;
 document.querySelectorAll('.modal-content').forEach(mc=>{
   mc.addEventListener('mousedown',e=>{
@@ -246,7 +247,6 @@ document.addEventListener('mousemove',e=>{
 });
 document.addEventListener('mouseup',()=>{isDragging=false; targetContent=null;});
 
-// 이벤트 리스너
 btnGanada.onclick=()=>{
   ganadaList.innerHTML='';
   const allArtists=Object.keys(artistMap).sort((a,b)=>a.localeCompare(b,'ko'));
@@ -255,11 +255,16 @@ btnGanada.onclick=()=>{
     btn.onclick=()=>{
       currentArtist=a; renderArtistFilter(currentSongs); renderSongList(searchInput.value.toLowerCase());
       ganadaModal.style.display='none';
+      setTimeout(() => {
+        const artists = artistListEl.querySelectorAll('.artist');
+        artists.forEach(el => { if (el.textContent === a) el.scrollIntoView({ behavior: 'smooth', block: 'center' }); });
+      }, 150);
     };
     ganadaList.appendChild(btn);
   });
   ganadaModal.style.display='flex';
 };
+
 ganadaClose.onclick=()=>ganadaModal.style.display='none';
 modalClose.onclick=()=>lyricsModal.style.display='none';
 window.onclick=e=>{ if(e.target===lyricsModal) lyricsModal.style.display='none'; if(e.target===ganadaModal) ganadaModal.style.display='none'; };
@@ -269,7 +274,6 @@ toggleBtn.onclick=()=>{
   document.querySelector('.right-pane').classList.toggle('broadcast-mode',largeTextOn);
 };
 
-// 초기 실행
 (async()=>{ await loadLyricsList(); renderTabs(); loadGuide(); })();
 </script>
 </body>
