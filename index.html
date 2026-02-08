@@ -11,7 +11,35 @@
     background: #0f1115;
     color: #eaeaf0;
   }
-  h1 { text-align: center; margin: 24px 0 16px; }
+
+  /* 제목 + YouTube 버튼 */
+  .title-line {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin: 24px 0 16px;
+    font-size: 28px;
+    color: #eaeaf0;
+  }
+  .youtube-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #ff4f9a;
+    color: #000;
+    font-weight: 600;
+    font-size: 16px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: transform 0.15s, background 0.15s;
+  }
+  .youtube-btn:hover {
+    transform: scale(1.05);
+    background: #ff78b2;
+  }
+
   .container { max-width: 1200px; margin: 0 auto; padding: 0 16px 40px; }
 
   /* 가이드 */
@@ -25,7 +53,7 @@
     color: #cfd3ff;
   }
 
-  /* 카테고리 + 검색 + 토글 */
+  /* 카테고리 + 검색 + 큰 글씨모드 */
   .top-controls {
     display: flex;
     flex-wrap: wrap;
@@ -57,7 +85,6 @@
     font-size: 14px;
     flex-shrink: 0;
   }
-
   #toggleLargeText {
     margin-left: 8px;
     padding: 6px 12px;
@@ -98,7 +125,6 @@
   .song strong { font-size: 15.5px; font-weight: 600; color: #ffffff; }
   .song > div { font-size: 14.5px; color: #eaeaf0; }
   .song small { font-size: 12.5px; color: #aab0ff; }
-
   .mr, .lyrics-btn {
     color: #ff4f9a;
     font-weight: bold;
@@ -154,12 +180,17 @@
 </style>
 </head>
 <body>
-<h1>요코링 노래책</h1>
+
+<h1 class="title-line">
+  요코링 노래책
+  <a href="https://www.youtube.com/@%EC%9A%94%EC%BD%94%EB%A7%81" target="_blank" class="youtube-btn">
+    ▶ 요코링 YouTube
+  </a>
+</h1>
 
 <div class="container">
   <div id="guide" class="guide"></div>
 
-  <!-- 카테고리 + 검색 + 큰 글씨모드 -->
   <div class="top-controls">
     <div id="tabs"></div>
     <input type="text" id="searchInput" placeholder="곡 검색">
@@ -175,7 +206,6 @@
   </div>
 </div>
 
-<!-- 가사 모달 -->
 <div id="lyricsModal" class="modal">
   <div class="modal-content">
     <span id="modalClose" class="modal-close">✕</span>
@@ -204,7 +234,6 @@ let currentArtist = '전체';
 let lyricsList = [];
 let largeTextOn = false;
 
-// Fetch Google Sheet
 async function fetchSheet(sheetName) {
   const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}`;
   const res = await fetch(url);
@@ -213,7 +242,6 @@ async function fetchSheet(sheetName) {
   return json.table.rows.map(r => r.c.map(c => c ? c.v : ''));
 }
 
-// Load lyrics list
 async function loadLyricsList() {
   const res = await fetch('data/lyrics_list.json');
   lyricsList = await res.json();
@@ -228,7 +256,6 @@ function normalizeArtist(name) {
   return name.replace(/(\([^)]*feat[^)]*\))/i,'').replace(/feat.*$/i,'').trim();
 }
 
-// Render tabs
 function renderTabs() {
   SHEET_NAMES.slice(1).forEach(name => {
     const tab = document.createElement('div');
@@ -239,13 +266,11 @@ function renderTabs() {
   });
 }
 
-// Load guide
 async function loadGuide() {
   const rows = await fetchSheet('사용설명서');
   guideEl.innerHTML = rows.map(r => r.join(' ')).join('<br>');
 }
 
-// Render artist filter
 function renderArtistFilter(songs) {
   const set = new Set(songs.map(s => s.filterArtist));
   const artists = ['전체', ...Array.from(set).sort()];
@@ -265,7 +290,6 @@ function renderArtistFilter(songs) {
   artistFilterEl.style.display = 'block';
 }
 
-// Render song list
 function renderSongList(searchQuery = '') {
   listEl.innerHTML = '';
   const filtered = currentSongs
@@ -291,7 +315,6 @@ function renderSongList(searchQuery = '') {
   });
 }
 
-// Show lyrics
 function showLyrics(file) {
   fetch(`data/lyrics/${file}`)
     .then(res => res.text())
@@ -306,24 +329,20 @@ function showLyrics(file) {
     });
 }
 
-// Modal close
 modalClose.onclick = () => lyricsModal.style.display = 'none';
 lyricsModal.onclick = e => { if(e.target===lyricsModal) lyricsModal.style.display='none'; };
 
-// Search input
 searchInput.addEventListener('input', () => {
   const query = searchInput.value.toLowerCase();
   renderSongList(query);
 });
 
-// 큰 글씨모드 toggle
 toggleBtn.onclick = () => {
   largeTextOn = !largeTextOn;
   listWrapper.classList.toggle('broadcast-mode', largeTextOn);
   document.querySelector('.modal-content')?.classList.toggle('broadcast-mode', largeTextOn);
 };
 
-// Select category
 async function selectCategory(name, tabEl) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   tabEl.classList.add('active');
@@ -352,7 +371,6 @@ async function selectCategory(name, tabEl) {
   renderSongList(searchInput.value.toLowerCase());
 }
 
-// 초기 실행
 (async () => {
   await loadLyricsList();
   renderTabs();
