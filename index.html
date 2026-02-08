@@ -27,11 +27,11 @@ body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'No
 #toggleLargeText{margin-left:8px;padding:6px 12px;border-radius:6px;background:#ff4f9a;color:#000;border:none;cursor:pointer;font-size:14px;flex-shrink:0;}
 
 /* 아티스트 필터 */
-.artist-filter{margin:12px 0;max-height:550px;overflow-y:auto;}
-.artist-list{display:flex;flex-direction:column;gap:4px;}
-.artist{padding:6px 12px;border-radius:14px;background:#1f2330;font-size:13px;cursor:pointer;color:#cfd3ff;}
+.artist-filter{margin:12px 0;overflow-y:auto;}
+.artist-controls{display:flex;gap:8px;margin-bottom:6px;}
+.artist-list{display:flex;flex-wrap:wrap;gap:6px;max-height:550px;overflow-y:auto;}
+.artist{padding:6px 12px;border-radius:14px;background:#1f2330;font-size:13px;cursor:pointer;color:#cfd3ff;white-space:nowrap;}
 .artist.active{background:#6c7bff;color:#000;font-weight:600;}
-#showAllArtists{margin-top:8px;padding:6px 12px;border-radius:6px;background:#6c7bff;color:#fff;border:none;cursor:pointer;}
 
 /* 노래 목록 */
 #list{flex:1;overflow-y:auto;}
@@ -57,7 +57,7 @@ body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'No
 .modal-close{position:absolute;top:10px;right:15px;cursor:pointer;font-weight:bold;color:#ff4f9a;}
 #lyricsText{padding:14px 0;font-size:15.5px;line-height:1.75;letter-spacing:0.02em;color:#f1f2ff;}
 
-/* 캠 공간 빈 영역 확보 */
+/* 캠 공간 확보 */
 .right-pane::after{content:"";display:block;width:220px;height:0;}
 
 /* 모바일 대응 */
@@ -81,9 +81,11 @@ body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'No
 <div class="container">
   <div class="left-pane">
     <div id="tabs"></div>
-    <div id="artistFilter" class="artist-filter">
+    <div class="artist-filter">
+      <div class="artist-controls">
+        <button id="showAllArtists">전체보기 (가나다순)</button>
+      </div>
       <div class="artist-list" id="artistList"></div>
-      <button id="showAllArtists">가나다순</button>
     </div>
     <div id="guide" class="guide"></div>
   </div>
@@ -107,13 +109,12 @@ body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'No
 const SHEET_ID='1bSs04gJ8HyVil5PM0TBAm-4c_BeAqbU7ENMZ2AQcUVI';
 const SHEET_NAMES=['사용설명서','K-POP','POP','J-POP','숙제곡','신곡'];
 const guideEl=document.getElementById('guide'),tabsEl=document.getElementById('tabs'),
-listEl=document.getElementById('list'),artistFilterEl=document.getElementById('artistFilter'),
-artistListEl=document.getElementById('artistList'),showAllBtn=document.getElementById('showAllArtists'),
-lyricsModal=document.getElementById('lyricsModal'),lyricsText=document.getElementById('lyricsText'),
-modalClose=document.getElementById('modalClose'),searchInput=document.getElementById('searchInput'),
-toggleBtn=document.getElementById('toggleLargeText');
+listEl=document.getElementById('list'),artistListEl=document.getElementById('artistList'),
+showAllBtn=document.getElementById('showAllArtists'),lyricsModal=document.getElementById('lyricsModal'),
+lyricsText=document.getElementById('lyricsText'),modalClose=document.getElementById('modalClose'),
+searchInput=document.getElementById('searchInput'),toggleBtn=document.getElementById('toggleLargeText');
 
-let currentSongs=[],currentArtist='전체',lyricsList=[],largeTextOn=false;
+let currentSongs=[],currentArtist='전체',largeTextOn=false,artistMap={},lyricsList=[];
 
 /* ====================== 데이터 로드 ====================== */
 async function fetchSheet(sheetName){
@@ -132,35 +133,26 @@ async function loadGuide(){const rows=await fetchSheet('사용설명서');guideE
 
 /* ====================== 아티스트 필터 ====================== */
 function renderArtistFilter(songs){
-  const countMap={};
-  songs.forEach(s=>{const k=normalizeArtist(s.artist);countMap[k]=(countMap[k]||0)+1;s.filterArtist=k;});
-  const sortedArtists=Object.entries(countMap).sort((a,b)=>b[1]-a[1]).map(e=>e[0]);
+  artistMap={};
+  songs.forEach(s=>{const k=normalizeArtist(s.artist);artistMap[k]=(artistMap[k]||0)+1;s.filterArtist=k;});
+  let sortedArtists=Object.entries(artistMap).sort((a,b)=>b[1]-a[1]).map(e=>e[0]);
   artistListEl.innerHTML='';
   sortedArtists.forEach(a=>{
     const btn=document.createElement('div');btn.className='artist'+(a==='전체'?' active':'');btn.textContent=a;
-    btn.onclick=()=>{
-      if(currentArtist===a){currentArtist='전체';document.querySelectorAll('.artist').forEach(x=>x.classList.remove('active'));return renderSongList(searchInput.value.toLowerCase());}
-      currentArtist=a;document.querySelectorAll('.artist').forEach(x=>x.classList.remove('active'));btn.classList.add('active');renderSongList(searchInput.value.toLowerCase());
-    };
+    btn.onclick=()=>{currentArtist=a;document.querySelectorAll('.artist').forEach(x=>x.classList.remove('active'));btn.classList.add('active');renderSongList(searchInput.value.toLowerCase());btn.scrollIntoView({behavior:'smooth',block:'center'});};
     artistListEl.appendChild(btn);
   });
 }
 
-/* 전체보기 모달 */
+/* 전체보기 */
 showAllBtn.onclick=()=>{
-  const allArtists=Array.from(document.querySelectorAll('.artist')).map(b=>b.textContent).sort((a,b)=>a.localeCompare(b,'ko'));
-  const modal=document.createElement('div');modal.className='modal';
-  modal.innerHTML=`<div class="modal-content"><span class="modal-close">✕</span>${allArtists.map(a=>`<div class="artist">${a}</div>`).join('')}</div>`;
-  document.body.appendChild(modal);modal.style.display='flex';
-  const modalContent=modal.querySelector('.modal-content');
-  modalContent.querySelectorAll('.artist').forEach(el=>{
-    el.onclick=()=>{
-      currentArtist=el.textContent;
-      renderSongList(searchInput.value.toLowerCase());
-      modal.remove();
-    };
+  let allArtists=Object.keys(artistMap).sort((a,b)=>a.localeCompare(b,'ko'));
+  artistListEl.innerHTML='';
+  allArtists.forEach(a=>{
+    const btn=document.createElement('div');btn.className='artist';btn.textContent=a;
+    btn.onclick=()=>{currentArtist=a;document.querySelectorAll('.artist').forEach(x=>x.classList.remove('active'));btn.classList.add('active');renderSongList(searchInput.value.toLowerCase());btn.scrollIntoView({behavior:'smooth',block:'center'});};
+    artistListEl.appendChild(btn);
   });
-  modal.querySelector('.modal-close').onclick=()=>modal.remove();
 };
 
 /* ====================== 노래 목록 ====================== */
