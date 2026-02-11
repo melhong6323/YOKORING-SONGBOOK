@@ -3,27 +3,35 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>요코링 노래책 - High-End Premium</title>
+<title>요코링 노래책 - Premium Edition</title>
 <style>
-/* 폰트 차단 대비: 기본 폰트 우선 설정 */
+/* 기존 Pretendard 폰트 로드 유지 */
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
+
 :root {
   --bg-color: #050608; --glass-bg: rgba(255, 255, 255, 0.03); --inner-bg: rgba(15, 18, 25, 0.85);
   --accent-color: #ff7eb9; --text-main: #ffffff; --text-sub: #94a3b8;
   --glass-border: rgba(255, 255, 255, 0.1); --accent-glow: rgba(255, 126, 185, 0.2);
 }
+
 * { box-sizing: border-box; }
+
 body {
-  margin: 0; font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  margin: 0; 
+  /* 기존 폰트 설정 복구 */
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   background: radial-gradient(circle at 20% 20%, #1a1c22 0%, #050608 100%);
-  color: var(--text-main); height: 100vh; overflow: hidden;
+  color: var(--text-main); height: 100vh; overflow: hidden; position: relative;
 }
+
+/* 스크롤바 커스텀 */
 ::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--accent-color); }
 
 .title-line { display: flex; align-items: center; justify-content: center; height: 80px; gap: 20px; }
-.youtube-btn { background: var(--accent-color); color: #fff; padding: 8px 20px; border-radius: 50px; text-decoration: none; font-weight: 700; font-size: 12px; box-shadow: 0 4px 15px var(--accent-glow); }
+.youtube-btn { background: var(--accent-color); color: #fff; padding: 8px 20px; border-radius: 50px; text-decoration: none; font-weight: 700; font-size: 12px; box-shadow: 0 4px 15px var(--accent-glow); transition: 0.2s; }
 
 .container { display: flex; gap: 20px; max-width: 1500px; margin: 0 auto; padding: 0 20px 20px; height: calc(100vh - 80px); }
 .left-pane { flex: 0 0 320px; display: flex; flex-direction: column; gap: 15px; height: 100%; }
@@ -39,12 +47,12 @@ body {
 
 .list-header { padding: 20px; }
 .search-wrapper { position: relative; width: 100%; }
-.search-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; stroke: var(--text-sub); stroke-width: 2.5; fill: none; }
+.search-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; stroke: var(--text-sub); stroke-width: 2.5; fill: none; pointer-events: none; }
 #searchInput { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); border-radius: 14px; padding: 12px 12px 12px 42px; color: white; font-size: 14px; outline: none; }
 
-#list { flex: 1; overflow-y: auto; padding: 0 10px 10px; scroll-behavior: smooth; }
+#list { flex: 1; overflow-y: auto; padding: 0 10px 10px; }
 .song { display: flex; align-items: center; padding: 14px 20px; gap: 12px; border-radius: 14px; border-bottom: 1px solid rgba(255,255,255,0.02); }
-.song:hover { background: rgba(255,255,255,0.05); transform: translateX(5px); transition: 0.2s; }
+.song:hover { background: rgba(255,255,255,0.05); transition: 0.2s; }
 .song.selected { background: rgba(255, 126, 185, 0.1); border: 1px solid rgba(255,126,185,0.2); }
 
 .artist-name { flex: 1; font-weight: 500; color: var(--text-sub); font-size: 14px; }
@@ -108,26 +116,26 @@ function renderArtistFilter(){
   const sorted = Object.keys(map).sort((a,b)=>map[b]-map[a]);
   const listEl = document.getElementById('artistList'); listEl.innerHTML = '';
   const allBtn = document.createElement('div'); allBtn.className = 'tab' + (currentArtist==='전체'?' active':''); allBtn.textContent = `ALL`;
-  allBtn.onclick = () => { currentArtist='전체'; renderArtistFilter(); renderSongList(); document.getElementById('list').scrollTo({top:0, behavior:'smooth'}); };
+  allBtn.onclick = () => { currentArtist='전체'; renderArtistFilter(); renderSongList(); document.getElementById('list').scrollTop = 0; };
   listEl.appendChild(allBtn);
   sorted.forEach(a => {
     const btn = document.createElement('div'); btn.className = 'tab' + (currentArtist===a?' active':''); btn.textContent = a;
-    btn.onclick = () => { 
-      if(currentArtist === '전체') { currentArtist = a; renderArtistFilter(); renderSongList(); scrollToArtist(a); }
-      else if(currentArtist === a) { currentArtist = '전체'; renderArtistFilter(); renderSongList(); }
-      else { currentArtist = a; renderArtistFilter(); renderSongList(); scrollToArtist(a); }
-    };
+    btn.onclick = () => { toggleArtist(a); };
     listEl.appendChild(btn);
   });
+}
+
+function toggleArtist(a) {
+  if (currentArtist === a) { currentArtist = '전체'; } 
+  else { currentArtist = a; }
+  renderArtistFilter(); renderSongList(); document.getElementById('list').scrollTop = 0;
 }
 
 function renderSongList(){
   const query = document.getElementById('searchInput').value.toLowerCase(); 
   const listEl = document.getElementById('list'); listEl.innerHTML = '';
-  const renderedArtists = new Set();
   currentSongs.filter(s => (currentArtist==='전체' || s.filterArtist===currentArtist) && (s.title.toLowerCase().includes(query) || s.artist.toLowerCase().includes(query))).forEach(s => {
     const div = document.createElement('div'); div.className = 'song';
-    if(!renderedArtists.has(s.filterArtist)) { div.id = 'target-' + s.filterArtist; renderedArtists.add(s.filterArtist); }
     const mrBtn = s.mr ? `<a class="mr-btn" href="${s.mr}" target="_blank">MR</a>` : `<span class="mr-btn disabled">MR</span>`;
     const lyBtnClass = s.lyricsFile ? 'lyrics-btn active' : 'lyrics-btn disabled';
     const lyricsBtn = `<span class="${lyBtnClass}" onclick="showLyrics('${s.lyricsFile}')">LYRICS</span>`;
@@ -135,13 +143,6 @@ function renderSongList(){
     div.onclick = () => { document.querySelectorAll('.song').forEach(x=>x.classList.remove('selected')); div.classList.add('selected'); };
     listEl.appendChild(div);
   });
-}
-
-function scrollToArtist(name) {
-  setTimeout(() => {
-    const target = document.getElementById('target-' + name);
-    if(target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }, 100);
 }
 
 function showLyrics(file){
@@ -171,10 +172,7 @@ document.getElementById('btnGanada').onclick = () => {
   currentSongs.forEach(s=>{ map[s.filterArtist]=1; });
   Object.keys(map).sort((a,b)=>a.localeCompare(b,'ko')).forEach(a => {
     const b = document.createElement('div'); b.className='tab'; b.style.textAlign='center'; b.textContent=a;
-    b.onclick=()=>{ 
-      if(currentArtist !== '전체') { currentArtist = '전체'; renderArtistFilter(); renderSongList(); }
-      scrollToArtist(a); document.getElementById('ganadaModal').style.display='none'; 
-    };
+    b.onclick=()=>{ toggleArtist(a); document.getElementById('ganadaModal').style.display='none'; };
     list.appendChild(b);
   });
   document.getElementById('ganadaModal').style.display='flex';
