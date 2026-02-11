@@ -5,10 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>요코링 노래책 - Premium Edition</title>
 <style>
+/* 1. 가독성 최우선 폰트 및 글로벌 설정 */
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
+
 :root {
-  --bg-color: #0b0d11; /* 더 깊은 다크 */
+  --bg-color: #0b0d11;
   --card-bg: #15181f; 
-  --inner-bg: #0f1116; /* 리스트 배경 - 눈부심 방지 */
+  --inner-bg: #0f1116;
   --accent-color: #ff7eb9;
   --text-main: #d1d5db;
   --text-sub: #6b7280;
@@ -19,7 +22,7 @@
 body {
   margin: 0; font-family: 'Pretendard', -apple-system, sans-serif;
   background-color: var(--bg-color); color: var(--text-main);
-  height: 100vh; overflow: hidden; /* 전체 스크롤 제거 */
+  height: 100vh; overflow: hidden;
 }
 
 /* 헤더 */
@@ -35,7 +38,7 @@ body {
 /* 레이아웃 구성 */
 .container { 
   display: flex; gap: 20px; max-width: 1500px; margin: 0 auto; padding: 0 20px 20px; 
-  height: calc(100vh - 80px); /* 헤더 제외 높이 고정 */
+  height: calc(100vh - 80px);
 }
 .left-pane { flex: 0 0 320px; display: flex; flex-direction: column; gap: 15px; height: 100%; }
 .right-pane { 
@@ -75,7 +78,7 @@ body {
   padding: 12px 18px; color: white; font-size: 14px; outline: none;
 }
 
-#list { flex: 1; overflow-y: auto; background: var(--inner-bg); } /* 리스트 배경 어둡게 */
+#list { flex: 1; overflow-y: auto; background: var(--inner-bg); }
 .song { 
   display: flex; align-items: center; padding: 14px 20px; gap: 12px; 
   border-bottom: 1px solid rgba(255,255,255,0.02); transition: 0.2s;
@@ -83,7 +86,6 @@ body {
 .song:hover { background: rgba(255,255,255,0.01); }
 .song.selected { background: rgba(255, 126, 185, 0.05); }
 
-/* 복사 아이콘 디자인 */
 .copy-icon {
   width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
   cursor: pointer; color: var(--text-sub); border-radius: 8px; font-size: 14px;
@@ -104,18 +106,30 @@ body {
 .lyrics-btn.active { background: rgba(255, 126, 185, 0.15); color: var(--accent-color); border: 1px solid rgba(255,126,185,0.2); }
 .disabled { opacity: 0.1; pointer-events: none; }
 
-/* 모달 */
+/* 2. 가사 모달 (가독성 최우선 설정) */
 .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); justify-content: center; align-items: center; z-index: 2000; }
 .modal-content {
-  background: var(--card-bg); width: 90%; max-width: 450px; border-radius: 24px;
+  background: var(--card-bg); width: 90%; max-width: 480px; border-radius: 24px;
   border: 1px solid #333; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
   display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 50px rgba(0,0,0,0.6);
 }
 .modal-header { padding: 18px; color: var(--accent-color); font-weight: 800; cursor: move; text-align: center; border-bottom: 1px solid #2d323e; }
-.modal-close { position: absolute; top: 15px; right: 20px; cursor: pointer; color: #4b5563; font-size: 20px; transition: 0.2s; }
+.modal-close { position: absolute; top: 15px; right: 20px; cursor: pointer; color: #4b5563; font-size: 20px; transition: 0.2s; z-index: 10; }
 .modal-close:hover { color: var(--accent-color); }
-.lyrics-body { padding: 30px; max-height: 60vh; overflow-y: auto; text-align: center; }
-#lyricsText { white-space: pre-wrap; color: #e5e7eb; font-size: 15px; line-height: 1.8; margin: 0; }
+
+.lyrics-body { padding: 30px; max-height: 65vh; overflow-y: auto; text-align: center; }
+
+/* 가사 폰트 상세 설정 */
+#lyricsText { 
+  white-space: pre-wrap; 
+  color: #f3f4f6; 
+  font-family: 'Pretendard', sans-serif; /* 가독성 최우선 고딕 */
+  font-size: 17px;           /* 글자 크기 최적화 */
+  line-height: 2.1;          /* 줄 간격을 넓게 하여 가독성 확보 */
+  letter-spacing: -0.3px;    /* 자간 최적화 */
+  font-weight: 400; 
+  margin: 0; 
+}
 
 #guide { flex: 1; overflow-y: auto; font-size: 12px; color: var(--text-sub); line-height: 1.7; }
 #guide::-webkit-scrollbar { width: 4px; }
@@ -168,6 +182,7 @@ body {
 </div>
 
 <script>
+// [기존 코드 로직 100% 유지]
 const SHEET_ID='1bSs04gJ8HyVil5PM0TBAm-4c_BeAqbU7ENMZ2AQcUVI';
 const SHEET_NAMES=['사용설명서','K-POP','POP','J-POP','숙제곡','신곡'];
 let currentSongs=[], currentArtist='전체', lyricsList=[];
@@ -247,7 +262,6 @@ function copyText(txt, btn){
   }); 
 }
 
-// 드래그 로직
 let isDragging = false, xOffset = 0, yOffset = 0, initialX, initialY;
 const dragTarget = document.getElementById("dragTarget");
 const modalHeader = document.querySelector(".modal-header");
