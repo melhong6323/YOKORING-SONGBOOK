@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>요코링 노래책 - Premium Edition</title>
 <style>
-/* 1. 글로벌 테마 및 배경 */
 :root {
   --bg-color: #0d0f14;
   --card-bg: #1a1d26;
@@ -16,112 +15,81 @@
 }
 
 body {
-  margin: 0;
-  font-family: 'Pretendard', -apple-system, sans-serif;
-  background-color: var(--bg-color);
-  color: var(--text-main);
-  overflow-x: hidden;
+  margin: 0; font-family: 'Pretendard', -apple-system, sans-serif;
+  background-color: var(--bg-color); color: var(--text-main); overflow-x: hidden;
 }
 
-/* 2. 헤더 디자인 */
 .title-line {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 30px 0;
+  display: flex; align-items: center; justify-content: center; padding: 25px 0;
   background: linear-gradient(to bottom, rgba(13,15,20,1), rgba(13,15,20,0));
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  gap: 20px;
+  position: sticky; top: 0; z-index: 100; gap: 20px;
 }
 
 .youtube-btn {
-  background: var(--accent-color);
-  color: #fff;
-  padding: 8px 18px;
-  border-radius: 50px;
-  text-decoration: none;
-  font-weight: 700;
-  font-size: 14px;
-  box-shadow: 0 4px 15px rgba(255, 126, 185, 0.4);
-  transition: 0.3s;
+  background: var(--accent-color); color: #fff; padding: 8px 18px; border-radius: 50px;
+  text-decoration: none; font-weight: 700; font-size: 13px; box-shadow: 0 4px 15px rgba(255, 126, 185, 0.4); transition: 0.3s;
 }
 
-.youtube-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 126, 185, 0.6); }
-
-/* 3. 레이아웃 시스템 */
-.container {
-  display: flex;
-  gap: 24px;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 0 20px 40px;
-  height: calc(100vh - 120px);
-}
-
-.left-pane { flex: 0 0 320px; display: flex; flex-direction: column; gap: 20px; }
+.container { display: flex; gap: 20px; max-width: 1400px; margin: 0 auto; padding: 0 20px 40px; height: calc(100vh - 110px); }
+.left-pane { flex: 0 0 310px; display: flex; flex-direction: column; gap: 15px; }
 .right-pane { flex: 1; background: var(--card-bg); border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; overflow: hidden; box-shadow: var(--shadow); }
 
-/* 4. 소분류 카드 스타일 */
-.glass-card {
-  background: rgba(26, 29, 38, 0.8);
-  backdrop-filter: blur(10px);
-  border-radius: 20px;
-  padding: 20px;
-  border: 1px solid rgba(255,255,255,0.05);
-}
+.glass-card { background: rgba(26, 29, 38, 0.8); backdrop-filter: blur(10px); border-radius: 20px; padding: 18px; border: 1px solid rgba(255,255,255,0.05); }
 
-.tab-group { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
+.tab-group { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
 .tab {
-  padding: 8px 16px; border-radius: 12px; background: #2d323e; color: var(--text-sub);
-  cursor: pointer; font-size: 13px; font-weight: 500; transition: 0.3s; border: none;
+  padding: 7px 12px; border-radius: 10px; background: #2d323e; color: var(--text-sub);
+  cursor: pointer; font-size: 12px; font-weight: 500; transition: 0.2s; border: none;
 }
 .tab.active { background: var(--accent-color); color: white; box-shadow: 0 4px 12px rgba(255, 126, 185, 0.3); }
 
-/* 5. 노래 리스트 디자인 (프리미엄 버전) */
-.list-header {
-  padding: 15px 25px; border-bottom: 1px solid rgba(255,255,255,0.05);
-  display: flex; align-items: center;
+/* 가수 소분류 3열 배치 수정 */
+#artistList {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;
+  max-height: 280px; overflow-y: auto; padding-right: 4px;
 }
+#artistList .tab { padding: 6px 2px; text-align: center; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
+#artistList::-webkit-scrollbar { width: 4px; }
+#artistList::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+
+/* 노래 리스트 */
+.list-header { padding: 15px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); }
 #searchInput {
   width: 100%; background: #0d0f14; border: 1px solid #334155; border-radius: 12px;
-  padding: 12px 20px; color: white; font-size: 15px; outline: none; transition: 0.3s;
+  padding: 10px 15px; color: white; font-size: 14px; outline: none; box-sizing: border-box;
 }
-#searchInput:focus { border-color: var(--accent-color); box-shadow: 0 0 0 3px rgba(255, 126, 185, 0.1); }
 
-.song {
-  display: flex; align-items: center; padding: 18px 25px; gap: 15px;
-  border-bottom: 1px solid rgba(255,255,255,0.03); transition: 0.2s;
-}
-.song:hover { background: rgba(255,255,255,0.02); }
-.song.selected { background: rgba(255, 126, 185, 0.05); border-left: 4px solid var(--accent-color); }
+#list { flex: 1; overflow-y: auto; }
+.song { display: flex; align-items: center; padding: 15px 20px; gap: 12px; border-bottom: 1px solid rgba(255,255,255,0.03); }
+.song.selected { background: rgba(255, 126, 185, 0.08); border-left: 4px solid var(--accent-color); }
 
-.artist-name { flex: 1; font-weight: 700; color: white; font-size: 15px; }
-.song-title { flex: 2; color: var(--text-main); font-size: 15px; }
-
-.copy-btn { color: #475569; font-size: 18px; cursor: pointer; border: none; background: none; transition: 0.2s; }
-.copy-btn:hover { color: var(--accent-color); }
+.artist-name { flex: 1; font-weight: 700; color: white; font-size: 14px; }
+.song-title { flex: 2; color: var(--text-main); font-size: 14px; }
 
 .mr-btn, .lyrics-btn {
-  padding: 6px 14px; border-radius: 8px; font-size: 12px; font-weight: 700;
-  text-decoration: none; text-align: center; min-width: 45px; transition: 0.2s;
+  padding: 5px 10px; border-radius: 6px; font-size: 11px; font-weight: 700;
+  text-decoration: none; text-align: center; min-width: 40px;
 }
-.mr-btn { background: rgba(255, 126, 185, 0.1); color: var(--accent-color); }
-.mr-btn:hover { background: var(--accent-color); color: white; }
-.lyrics-btn { background: rgba(148, 163, 184, 0.1); color: var(--text-sub); }
-.lyrics-btn:hover { background: var(--text-sub); color: white; }
-.disabled { opacity: 0.2; pointer-events: none; }
+.mr-btn { background: rgba(255, 126, 185, 0.15); color: var(--accent-color); }
+.lyrics-btn { background: rgba(148, 163, 184, 0.15); color: var(--text-sub); cursor: pointer; }
+.lyrics-btn.active { background: var(--accent-color); color: white; }
+.disabled { opacity: 0.15; pointer-events: none; }
 
-/* 6. 모달 업그레이드 */
+/* 모달 위치 초기화용 스타일 */
+.modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 2000; }
 .modal-content {
-  background: #1a1d26; border-radius: 24px; border: 1px solid rgba(255, 126, 185, 0.3);
-  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  background: #1a1d26; width: 90%; max-width: 450px; border-radius: 20px;
+  border: 1px solid var(--accent-color); position: absolute; /* 중앙 배치를 위해 absolute 사용 */
+  top: 50%; left: 50%; transform: translate(-50%, -50%);
+  display: flex; flex-direction: column; overflow: hidden;
 }
-.modal-header { background: rgba(255, 126, 185, 0.1); padding: 15px; color: var(--accent-color); font-weight: 800; }
+.modal-header { padding: 15px; background: rgba(255, 126, 185, 0.1); color: var(--accent-color); font-weight: 800; cursor: move; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
+.modal-close { position: absolute; top: 12px; right: 18px; cursor: pointer; color: var(--accent-color); font-size: 22px; font-weight: bold; z-index: 10; }
+.lyrics-body { padding: 25px; max-height: 60vh; overflow-y: auto; text-align: center; }
+#lyricsText { white-space: pre-wrap; color: #f1f2ff; font-size: 15px; line-height: 1.8; margin: 0; }
 
-@media (max-width: 768px) { .container { flex-direction: column; } .left-pane { max-width: 100%; } }
+@media (max-width: 768px) { .container { flex-direction: column; height: auto; } .left-pane { flex: none; width: 100%; } }
 </style>
 </head>
 <body>
@@ -135,21 +103,19 @@ body {
   <div class="left-pane">
     <div class="glass-card">
       <div id="tabs" class="tab-group"></div>
-      <div style="margin-top: 20px;">
-        <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
-          <span style="font-size:12px; font-weight:700; color:var(--accent-color); text-transform:uppercase;">Artists</span>
-          <button id="btnGanada" style="background:none; border:none; color:var(--text-sub); font-size:11px; cursor:pointer;">가나다순 ⇅</button>
+      <div style="margin-top: 15px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+          <span style="font-size:11px; font-weight:800; color:var(--accent-color); letter-spacing:1px;">ARTISTS</span>
+          <button id="btnGanada" style="background:none; border:none; color:var(--text-sub); font-size:11px; cursor:pointer; padding:5px;">가나다순 ⇅</button>
         </div>
-        <div id="artistList" style="display:flex; flex-wrap:wrap; gap:6px; max-height:250px; overflow-y:auto;"></div>
+        <div id="artistList"></div>
       </div>
     </div>
-    <div id="guide" class="glass-card" style="font-size:12px; color:var(--text-sub); line-height:1.6; opacity:0.8;"></div>
+    <div id="guide" class="glass-card" style="font-size:12px; color:var(--text-sub); line-height:1.6;"></div>
   </div>
 
   <div class="right-pane">
-    <div class="list-header">
-      <input type="text" id="searchInput" placeholder="Search for artist or title...">
-    </div>
+    <div class="list-header"><input type="text" id="searchInput" placeholder="Search artist or title..."></div>
     <div id="list"></div>
   </div>
 </div>
@@ -157,32 +123,32 @@ body {
 <div id="lyricsModal" class="modal">
   <div class="modal-content" id="dragTarget">
     <div class="modal-header">LYRICS</div>
-    <span id="modalClose" class="modal-close" style="top:12px; right:20px;">✕</span>
+    <span id="modalClose" class="modal-close">✕</span>
     <div class="lyrics-body"><pre id="lyricsText"></pre></div>
   </div>
 </div>
 
 <div id="ganadaModal" class="modal">
-  <div class="modal-content" style="cursor:default;">
+  <div class="modal-content" id="ganadaContent" style="cursor:default; position:relative; top:0; left:0; transform:none; margin:auto;">
+    <div class="modal-header">가수 선택 (가나다순)</div>
     <span id="ganadaClose" class="modal-close">✕</span>
-    <div id="ganadaList" style="display:flex;flex-wrap:wrap;gap:8px;max-height:450px;overflow-y:auto;padding:30px;"></div>
+    <div id="ganadaList" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; max-height:450px; overflow-y:auto; padding:20px;"></div>
   </div>
 </div>
 
 <script>
-/* 기존 로직 (스크립트 부분)은 100% 동일하게 유지합니다. 
-   위의 CSS 클래스명에 맞춰 일부 DOM 선택자만 매칭되었습니다. */
 const SHEET_ID='1bSs04gJ8HyVil5PM0TBAm-4c_BeAqbU7ENMZ2AQcUVI';
 const SHEET_NAMES=['사용설명서','K-POP','POP','J-POP','숙제곡','신곡'];
 let currentSongs=[], currentArtist='전체', lyricsList=[];
 
-// [기존 코드 로직 시작 - 수정 금지 구역]
 async function loadLyricsList(){ try { const res = await fetch('data/lyrics_list.json'); lyricsList = await res.json(); } catch(e) {} }
 function findLyricsFile(artist, title){ const found = lyricsList.find(l => l.artist === artist && l.title === title); return found ? found.file : null; }
+
 async function fetchSheet(sheetName){
   const res=await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}`);
   const text=await res.text(); const json=JSON.parse(text.substring(47,text.length-2)); return json.table.rows.map(r => r.c);
 }
+
 async function selectCategory(name, tabEl){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   tabEl.classList.add('active'); const rows = await fetchSheet(name);
@@ -196,19 +162,23 @@ async function selectCategory(name, tabEl){
   }).filter(s => s !== null);
   currentArtist='전체'; renderArtistFilter(); renderSongList();
 }
+
 function renderArtistFilter(){
   const map={}; currentSongs.forEach(s=>{ map[s.filterArtist]=(map[s.filterArtist]||0)+1; });
   const sorted = Object.keys(map).sort((a,b)=>map[b]-map[a]);
   const listEl = document.getElementById('artistList'); listEl.innerHTML = '';
+  
   const allBtn = document.createElement('div'); allBtn.className = 'tab' + (currentArtist==='전체'?' active':'');
-  allBtn.textContent = `ALL (${currentSongs.length})`; allBtn.onclick = () => { currentArtist='전체'; renderArtistFilter(); renderSongList(); };
+  allBtn.textContent = `ALL`; allBtn.onclick = () => { currentArtist='전체'; renderArtistFilter(); renderSongList(); };
   listEl.appendChild(allBtn);
+  
   sorted.forEach(a => {
     const btn = document.createElement('div'); btn.className = 'tab' + (currentArtist===a?' active':'');
-    btn.textContent = `${a} (${map[a]})`; btn.onclick = () => { currentArtist=a; renderArtistFilter(); renderSongList(); };
+    btn.textContent = a; btn.onclick = () => { currentArtist=a; renderArtistFilter(); renderSongList(); };
     listEl.appendChild(btn);
   });
 }
+
 function renderSongList(){
   const query = document.getElementById('searchInput').value.toLowerCase();
   const listEl = document.getElementById('list'); listEl.innerHTML = '';
@@ -216,39 +186,71 @@ function renderSongList(){
     .forEach(s => {
       const div = document.createElement('div'); div.className = 'song';
       const mrBtn = s.mr ? `<a class="mr-btn" href="${s.mr}" target="_blank">MR</a>` : `<span class="mr-btn disabled">MR</span>`;
-      const lyricsBtn = s.lyricsFile ? `<span class="lyrics-btn" onclick="showLyrics('${s.lyricsFile}')">LYRICS</span>` : `<span class="lyrics-btn disabled">LYRICS</span>`;
+      const lyBtnClass = s.lyricsFile ? 'lyrics-btn active' : 'lyrics-btn disabled';
+      const lyricsBtn = `<span class="${lyBtnClass}" onclick="showLyrics('${s.lyricsFile}')">LYRICS</span>`;
       div.innerHTML = `<button class="copy-btn" onclick="copyText('${s.artist}-${s.title}', this); event.stopPropagation();">📋</button><div class="artist-name">${s.artist}</div><div class="song-title">${s.title}</div>${mrBtn}${lyricsBtn}`;
       div.onclick = () => { document.querySelectorAll('.song').forEach(x=>x.classList.remove('selected')); div.classList.add('selected'); };
       listEl.appendChild(div);
     });
 }
-// [기존 코드 로직 끝]
 
-function showLyrics(file){ fetch(`data/lyrics/${file}`).then(r => r.text()).then(t => { document.getElementById('lyricsText').textContent = t; document.getElementById('lyricsModal').style.display = 'flex'; }); }
+function showLyrics(file){
+  if(!file || file === 'null') return;
+  fetch(`data/lyrics/${file}`).then(r => r.text()).then(t => {
+    document.getElementById('lyricsText').textContent = t;
+    // 위치 초기화: 매번 열 때 중앙으로
+    const modal = document.getElementById('lyricsModal');
+    const content = document.getElementById('dragTarget');
+    content.style.top = "50%"; content.style.left = "50%"; content.style.transform = "translate(-50%, -50%)";
+    xOffset = 0; yOffset = 0; // 드래그 오프셋 초기화
+    modal.style.display = 'flex';
+  });
+}
+
 function copyText(txt, btn){ navigator.clipboard.writeText(txt).then(() => { btn.textContent='✅'; setTimeout(()=>btn.textContent='📋', 1000); }); }
 
-// 드래그 로직 및 기타 초기화
+// 드래그 로직 (중앙 배치 유지하며 작동하도록 수정)
 let isDragging = false, xOffset = 0, yOffset = 0, initialX, initialY;
 const dragTarget = document.getElementById("dragTarget");
 const modalHeader = document.querySelector(".modal-header");
-modalHeader.addEventListener("mousedown", dragStart); modalHeader.addEventListener("touchstart", dragStart);
-function dragStart(e) { initialX = (e.type === "touchstart" ? e.touches[0].clientX : e.clientX) - xOffset; initialY = (e.type === "touchstart" ? e.touches[0].clientY : e.clientY) - yOffset; isDragging = true; }
-function drag(e) { if (isDragging) { e.preventDefault(); const currentX = (e.type === "touchmove" ? e.touches[0].clientX : e.clientX) - initialX; const currentY = (e.type === "touchmove" ? e.touches[0].clientY : e.clientY) - initialY; xOffset = currentX; yOffset = currentY; dragTarget.style.transform = `translate(calc(-50% + ${currentX}px), calc(-50% + ${currentY}px))`; } }
+
+modalHeader.addEventListener("mousedown", dragStart);
+modalHeader.addEventListener("touchstart", dragStart);
+
+function dragStart(e) {
+  initialX = (e.type === "touchstart" ? e.touches[0].clientX : e.clientX) - xOffset;
+  initialY = (e.type === "touchstart" ? e.touches[0].clientY : e.clientY) - yOffset;
+  isDragging = true;
+}
+function drag(e) {
+  if (isDragging) {
+    e.preventDefault();
+    const currentX = (e.type === "touchmove" ? e.touches[0].clientX : e.clientX) - initialX;
+    const currentY = (e.type === "touchmove" ? e.touches[0].clientY : e.clientY) - initialY;
+    xOffset = currentX; yOffset = currentY;
+    dragTarget.style.transform = `translate(calc(-50% + ${currentX}px), calc(-50% + ${currentY}px))`;
+  }
+}
 document.addEventListener("mousemove", drag); document.addEventListener("mouseup", () => isDragging = false);
 document.addEventListener("touchmove", drag, {passive: false}); document.addEventListener("touchend", () => isDragging = false);
+
 document.getElementById('modalClose').onclick=()=>document.getElementById('lyricsModal').style.display='none';
 document.getElementById('ganadaClose').onclick=()=>document.getElementById('ganadaModal').style.display='none';
-window.onclick=(e)=>{ if(e.target.classList.contains('modal')) e.target.style.display='none'; };
+
+// 가나다순 버튼 클릭 로직 수정
 document.getElementById('btnGanada').onclick = () => {
     const list = document.getElementById('ganadaList'); list.innerHTML = '';
     const map={}; currentSongs.forEach(s=>{ map[s.filterArtist]=1; });
     Object.keys(map).sort((a,b)=>a.localeCompare(b,'ko')).forEach(a => {
-        const b = document.createElement('div'); b.className='tab'; b.textContent=a;
+        const b = document.createElement('div'); b.className='tab'; 
+        b.style.textAlign='center'; b.textContent=a;
         b.onclick=()=>{ currentArtist=a; renderArtistFilter(); renderSongList(); document.getElementById('ganadaModal').style.display='none'; };
         list.appendChild(b);
     });
     document.getElementById('ganadaModal').style.display='flex';
 };
+
+window.onclick=(e)=>{ if(e.target.classList.contains('modal')) e.target.style.display='none'; };
 document.getElementById('searchInput').oninput=()=>renderSongList();
 
 (async()=>{
