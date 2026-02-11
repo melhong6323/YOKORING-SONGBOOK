@@ -1062,5 +1062,55 @@
     "artist": "QWER",
     "title": "내 이름 맑음",
     "file": "QWER_내이름맑음.txt"
+  },
+    {
+    "artist": "Miiro(Feat.도비비)",
+    "title": "괴물이 피는 숲",
+    "file": "Miiro_괴물이피는숲.txt"
+  },
+  {
+    "artist": "Paul Blanco(Feat.BE'O(비오))",
+    "title": "Summer",
+    "file": "PaulBlanco_Summer.txt"
+  },
+  {
+    "artist": "K/DA",
+    "title": "POP/STARS",
+    "file": "KDA_POPSTARS.txt"
+  },
+  {
+    "artist": "K.Will (케이윌)",
+    "title": "내 생에 아름다운",
+    "file": "케이윌_내생에아름다운.txt"
+  },
+  {
+    "artist": "iKON",
+    "title": "사랑을 했다 (LOVE SCENARIO)",
+    "file": "iKON_사랑을했다.txt"
+  },
+  {
+    "artist": "HYNN(박혜원)",
+    "title": "차가워진 이 바람엔 우리가 써있어",
+    "file": "HYNN_차가워진이바람엔우리가써있어.txt"
+  },
+  {
+    "artist": "HYNN(박혜원)",
+    "title": "시든 꽃에 물을 주듯",
+    "file": "HYNN_시든꽃에물을주듯.txt"
+  },
+  {
+    "artist": "EXO(엑소)",
+    "title": "12월의 기적",
+    "file": "EXO_12월의기적.txt"
+  },
+  {
+    "artist": "DAY6(데이식스)",
+    "title": "한 페이지가 될 수 있게",
+    "file": "DAY6_한페이지가될수있게.txt"
+  },
+  {
+    "artist": "DAY6(데이식스)",
+    "title": "예뻤어",
+    "file": "DAY6_예뻤어.txt"
   }
 ]
