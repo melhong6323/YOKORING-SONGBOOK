@@ -20,7 +20,7 @@
 
 * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
 body {
-  margin: 0; font-family: 'Pretendard', sans-serif;
+  margin: 0; font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   background-color: var(--bg-main); color: var(--text-main);
   height: 100vh; overflow: hidden;
 }
@@ -69,7 +69,7 @@ body {
 }
 #artistList .tab { text-align: center; font-size: 11px; padding: 6px 2px; }
 
-/* Song List Table-like */
+/* Song List */
 .list-header { padding: 15px 20px; background: rgba(0,0,0,0.1); }
 #searchInput { 
   width: 100%; background: var(--bg-inner); border: 1.5px solid var(--border-color); 
@@ -91,13 +91,23 @@ body {
 .lyrics-btn.active { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
 .disabled { opacity: 0.05; pointer-events: none; }
 
-/* Modal & Lyrics */
-.modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); justify-content: center; align-items: center; z-index: 2000; }
-.modal-content { background: var(--bg-card); width: 92%; max-width: 500px; border-radius: 28px; border: 1px solid var(--border-color); position: absolute; overflow: hidden; box-shadow: 0 30px 60px rgba(0,0,0,0.5); }
-.modal-header { padding: 18px; color: var(--accent); font-weight: 800; cursor: move; text-align: center; border-bottom: 1px solid var(--border-color); }
-.modal-close { position: absolute; top: 15px; right: 20px; cursor: pointer; color: #4b5563; font-size: 20px; }
-.lyrics-body { padding: 30px; max-height: 60vh; overflow-y: auto; text-align: center; }
-#lyricsText { white-space: pre-wrap; color: #fff; font-size: 18px; line-height: 2.2; letter-spacing: -0.5px; margin: 0; }
+/* 🌑 Lyrics Modal - PC/Mobile 가독성 통합 수정 */
+.modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.92); justify-content: center; align-items: center; z-index: 2000; }
+.modal-content { background: var(--bg-card); width: 92%; max-width: 550px; border-radius: 28px; border: 1px solid var(--border-color); position: absolute; overflow: hidden; box-shadow: 0 30px 60px rgba(0,0,0,0.7); }
+.modal-header { padding: 20px; color: var(--accent); font-weight: 800; cursor: move; text-align: center; border-bottom: 1px solid var(--border-color); letter-spacing: 1px; }
+.modal-close { position: absolute; top: 18px; right: 20px; cursor: pointer; color: #4b5563; font-size: 22px; transition: 0.2s; }
+.modal-close:hover { color: #fff; }
+.lyrics-body { padding: 40px 30px; max-height: 65vh; overflow-y: auto; text-align: center; }
+#lyricsText { 
+  white-space: pre-wrap; 
+  color: #f8f9fa; /* 밝은 미색으로 대비 증가 */
+  font-family: 'Pretendard', -apple-system, sans-serif !important; 
+  font-size: 18px; 
+  line-height: 1.8; /* PC에서 가장 깔끔해 보이는 간격 */
+  letter-spacing: -0.5px; 
+  font-weight: 400; 
+  margin: 0; 
+}
 
 #guide { flex: 1; overflow-y: auto; font-size: 12px; color: var(--text-sub); line-height: 1.7; padding: 20px; }
 
@@ -109,6 +119,7 @@ body {
   #guide { max-height: 120px; margin-bottom: 10px; }
   .right-pane { flex: none; width: 100%; height: 70vh; border-radius: 20px; }
   .title-line { height: 100px; flex-direction: column; gap: 8px; padding-top: 15px; }
+  #lyricsText { font-size: 16px; line-height: 1.7; } /* 모바일용 미세 조정 */
 }
 </style>
 </head>
@@ -171,7 +182,7 @@ async function selectCategory(name, tabEl){
   currentArtist='전체'; 
   renderArtistFilter(); 
   renderSongList();
-  document.getElementById('artistList').scrollTop = 0; // 카테고리 변경 시 스크롤 최상단
+  document.getElementById('artistList').scrollTop = 0; 
 }
 
 function renderArtistFilter(){
@@ -185,7 +196,7 @@ function renderArtistFilter(){
     currentArtist='전체'; 
     renderArtistFilter(); 
     renderSongList(); 
-    listEl.scrollTop = 0; // ALL 클릭 시 최상단으로
+    listEl.scrollTop = 0; 
   };
   listEl.appendChild(allBtn);
   sorted.forEach(a => {
@@ -196,7 +207,7 @@ function renderArtistFilter(){
         currentArtist = '전체';
         renderArtistFilter();
         renderSongList();
-        listEl.scrollTop = 0; // 취소 시 최상단 스크롤 (핵심 추가!)
+        listEl.scrollTop = 0; 
       } else {
         selectAndScrollArtist(a);
       }
@@ -239,7 +250,6 @@ function showLyrics(file){
 
 function copyText(txt, btn){ navigator.clipboard.writeText(txt).then(() => { const original = btn.textContent; btn.textContent='✅'; setTimeout(()=>btn.textContent=original, 1000); }); }
 
-// 모달 드래그 로직 보존
 let isDragging = false, xOffset = 0, yOffset = 0, initialX, initialY;
 const dragTarget = document.getElementById("dragTarget"); const modalHeader = document.querySelector(".modal-header");
 modalHeader.addEventListener("mousedown", dragStart); modalHeader.addEventListener("touchstart", dragStart);
