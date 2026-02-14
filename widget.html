@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>YOKORING Song Widget - Slow & Tight</title>
+    <title>YOKORING Song Widget - Final Tuning</title>
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
@@ -16,164 +16,82 @@
         }
 
         body {
-            margin: 0;
-            background: transparent;
-            font-family: 'Pretendard', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            overflow: hidden;
+            margin: 0; background: transparent; font-family: 'Pretendard', sans-serif;
+            display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden;
         }
 
-        /* --- 위젯 메인 카드 (400px 컴팩트 디자인) --- */
         #widget-card {
-            display: flex;
-            align-items: center;
-            width: 400px; 
-            height: 84px;
-            padding: 0 16px;
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-radius: 42px;
-            border: 1px solid var(--border-glass);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-            box-sizing: border-box;
-            
-            /* 화면 전환 애니메이션 */
-            transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex; align-items: center; width: 400px; height: 84px; padding: 0 16px;
+            background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-radius: 42px; border: 1px solid var(--border-glass); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            box-sizing: border-box; transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             opacity: 1;
         }
 
         .app-icon-area {
-            flex-shrink: 0;
-            width: 52px;
-            height: 52px;
+            flex-shrink: 0; width: 52px; height: 52px;
             background: linear-gradient(135deg, #fff5f7 0%, var(--pink-accent) 100%);
-            border-radius: 15px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 4px 12px rgba(255, 182, 193, 0.25);
-            margin-right: 12px;
+            border-radius: 15px; display: flex; justify-content: center; align-items: center;
+            box-shadow: 0 4px 12px rgba(255, 182, 193, 0.25); margin-right: 12px;
         }
 
         .app-icon-area img { width: 82%; height: 82%; object-fit: contain; }
 
-        .info-area {
-            flex-grow: 1;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            margin-right: 10px;
-        }
+        .info-area { flex-grow: 1; overflow: hidden; display: flex; flex-direction: column; justify-content: center; margin-right: 10px; }
 
-        .status-badge {
-            font-size: 9px;
-            font-weight: 800;
-            color: var(--pink-accent);
-            letter-spacing: 0.5px;
-            margin-bottom: 1px;
-        }
+        .status-badge { font-size: 9px; font-weight: 800; color: var(--pink-accent); letter-spacing: 0.5px; margin-bottom: 1px; }
 
-        .title-container {
-            width: 100%;
-            overflow: hidden;
-            white-space: nowrap;
-        }
+        .title-container { width: 100%; overflow: hidden; white-space: nowrap; }
 
-        .song-title {
-            margin: 0;
-            font-size: 18px;
-            font-weight: 800;
-            color: var(--text-main);
-            display: inline-block;
-        }
+        .song-title { margin: 0; font-size: 18px; font-weight: 800; color: var(--text-main); display: inline-block; }
 
-        /* [수정] 이동 속도는 12초로 천천히, 여백을 줄여 주기는 촘촘하게 */
+        /* 🚀 [속도/주기 최종 튜닝] */
         .marquee {
-            animation: marquee 12s linear infinite;
-            padding-left: 80%; /* 100%에서 80%로 줄여 반복 주기를 앞당김 */
+            animation: marquee 15s linear infinite; /* [속도] 12초 -> 15초로 늘려 더 천천히 흐르게 함 */
+            padding-left: 50%;                     /* [주기] 80% -> 50%로 줄여 다음 반복이 훨씬 빨리 시작됨 */
         }
         @keyframes marquee {
             0% { transform: translateX(0); }
-            100% { transform: translateX(-180%); } /* 여백에 맞춰 끝지점 조정 */
+            100% { transform: translateX(-150%); } /* 시작 위치(50%)에 맞춰 끝나는 위치도 조정 */
         }
 
-        .artist-name {
-            margin: 1px 0 0 0;
-            font-size: 12px;
-            font-weight: 500;
-            color: var(--text-sub);
-        }
+        .artist-name { margin: 1px 0 0 0; font-size: 12px; font-weight: 500; color: var(--text-sub); }
 
         .right-controls { flex-shrink: 0; display: flex; align-items: center; gap: 10px; }
-
         .playback-btns { display: flex; align-items: center; gap: 6px; color: var(--text-main); }
-        
         .btn-icon { font-size: 12px; opacity: 0.5; }
-
         .btn-play-circle {
-            width: 30px; height: 30px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.5);
-            border: 1px solid var(--border-glass);
-            display: flex; justify-content: center; align-items: center;
+            width: 30px; height: 30px; border-radius: 50%; background: rgba(255, 255, 255, 0.5);
+            border: 1px solid var(--border-glass); display: flex; justify-content: center; align-items: center;
             font-size: 11px; color: var(--pink-accent);
         }
-
         .visualizer { display: flex; align-items: flex-end; gap: 3px; height: 20px; padding-bottom: 2px; }
-
-        .bar {
-            width: 3.5px;
-            background: var(--pink-accent);
-            border-radius: 2px 2px 0 0;
-            animation: visualize 0.6s ease-in-out infinite alternate;
-        }
+        .bar { width: 3.5px; background: var(--pink-accent); border-radius: 2px 2px 0 0; animation: visualize 0.6s ease-in-out infinite alternate; }
         .bar:nth-child(1) { animation-delay: 0.0s; height: 30%; }
         .bar:nth-child(2) { animation-delay: 0.1s; height: 100%; }
         .bar:nth-child(3) { animation-delay: 0.2s; height: 60%; }
 
-        @keyframes visualize {
-            0% { height: 4px; opacity: 0.5; }
-            100% { height: 20px; opacity: 1; }
-        }
+        @keyframes visualize { 0% { height: 4px; opacity: 0.5; } 100% { height: 20px; opacity: 1; } }
 
         #widget-card.standby { opacity: 0.8; filter: saturate(0.8); }
         #widget-card.standby .bar { animation: none; height: 4px; opacity: 0.3; }
     </style>
 </head>
 <body>
-
     <div id="widget-card" class="standby">
-        <div class="app-icon-area">
-            <img src="KoringSign.png" alt="App Logo">
-        </div>
-
+        <div class="app-icon-area"><img src="KoringSign.png" alt="App Logo"></div>
         <div class="info-area">
             <div class="status-badge" id="status">READY</div>
-            <div class="title-container">
-                <h1 class="song-title" id="title">요코링 노래책</h1>
-            </div>
+            <div class="title-container"><h1 class="song-title" id="title">요코링 노래책</h1></div>
             <p class="artist-name" id="artist">YOKORING Player</p>
         </div>
-
         <div class="right-controls">
             <div class="playback-btns">
                 <i class="fa-solid fa-backward-step btn-icon"></i>
-                <div class="btn-play-circle">
-                    <i class="fa-solid fa-play"></i>
-                </div>
+                <div class="btn-play-circle"><i class="fa-solid fa-play"></i></div>
                 <i class="fa-solid fa-forward-step btn-icon"></i>
             </div>
-            
-            <div class="visualizer">
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
-            </div>
+            <div class="visualizer"><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
         </div>
     </div>
 
@@ -182,7 +100,6 @@
         const titleEl = document.getElementById('title');
         const artistEl = document.getElementById('artist');
         const statusEl = document.getElementById('status');
-
         const bc = new BroadcastChannel('song_data');
 
         bc.onmessage = (event) => {
@@ -197,20 +114,16 @@
         function updateWidget(title, artist) {
             card.style.opacity = "0";
             card.style.transform = "translateY(10px)";
-
             setTimeout(() => {
                 card.classList.remove('standby');
                 statusEl.innerText = "NOW PLAYING 🎵";
                 titleEl.innerText = title;
                 artistEl.innerText = artist;
-
                 titleEl.classList.remove('marquee');
                 void titleEl.offsetWidth; 
-
                 if (titleEl.scrollWidth > titleEl.parentElement.clientWidth) {
                     titleEl.classList.add('marquee');
                 }
-
                 card.style.opacity = "1";
                 card.style.transform = "translateY(0)";
             }, 500); 
