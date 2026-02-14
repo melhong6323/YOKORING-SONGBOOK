@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>YOKORING Song Widget - Final Edition</title>
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        :root {
+            --pink-accent: rgba(255, 182, 193, 0.95);
+            --glass-bg: rgba(255, 255, 255, 0.15);
+            --border-glass: rgba(255, 255, 255, 0.4);
+            --text-main: #333333;
+            --text-sub: #777777;
+        }
+
+        body {
+            margin: 0;
+            background: transparent;
+            font-family: 'Pretendard', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            /* [보완] 방송 화면 크기에 맞춰 부드럽게 크기 조절 */
+            perspective: 1000px;
+        }
+
+        /* --- 위젯 메인 컨테이너 (디자인 유지) --- */
+        #widget-card {
+            display: flex;
+            align-items: center;
+            width: 520px;
+            height: 90px;
+            padding: 0 24px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 45px;
+            border: 1px solid var(--border-glass);
+            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.08);
+            box-sizing: border-box;
+            
+            /* [보완] 화면 전환을 위한 애니메이션 설정 */
+            transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            opacity: 1;
+        }
+
+        /* --- 왼쪽: 앱 아이콘 (디자인 유지) --- */
+        .app-icon-area {
+            flex-shrink: 0;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #fff5f7 0%, var(--pink-accent) 100%);
+            border-radius: 18px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(255, 182, 193, 0.3);
+            overflow: hidden;
+            margin-right: 20px;
+        }
+
+        .app-icon-area img {
+            width: 85%;
+            height: 85%;
+            object-fit: contain;
+        }
+
+        /* --- 중앙: 곡 정보 (디자인 유지) --- */
+        .info-area {
+            flex-grow: 1;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            margin-right: 20px;
+        }
+
+        .status-badge {
+            font-size: 10px;
+            font-weight: 800;
+            color: var(--pink-accent);
+            letter-spacing: 1px;
+            margin-bottom: 3px;
+        }
+
+        .title-container {
+            width: 100%;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .song-title {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text-main);
+            display: inline-block;
+        }
+
+        /* 마키 효과 (기존 유지) */
+        .marquee {
+            animation: marquee 12s linear infinite;
+            padding-left: 100%;
+        }
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-200%); }
+        }
+
+        .artist-name {
+            margin: 3px 0 0 0;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-sub);
+        }
+
+        /* --- 오른쪽: 컨트롤 및 비주얼라이저 (디자인 유지) --- */
+        .right-controls {
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .playback-btns {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: var(--text-main);
+        }
+        
+        .btn-icon { font-size: 14px; opacity: 0.6; }
+
+        .btn-play-circle {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid var(--border-glass);
+            display: flex; justify-content: center; align-items: center;
+            font-size: 14px; color: var(--pink-accent);
+        }
+
+        .visualizer {
+            display: flex; align-items: flex-end;
+            gap: 4px; height: 24px; padding-bottom: 3px;
+        }
+
+        .bar {
+            width: 4px;
+            background: var(--pink-accent);
+            border-radius: 2px 2px 0 0;
+            animation: visualize 0.6s ease-in-out infinite alternate;
+        }
+        .bar:nth-child(1) { animation-delay: 0.0s; height: 30%; }
+        .bar:nth-child(2) { animation-delay: 0.1s; height: 100%; }
+        .bar:nth-child(3) { animation-delay: 0.2s; height: 60%; }
+
+        @keyframes visualize {
+            0% { height: 4px; opacity: 0.5; }
+            100% { height: 24px; opacity: 1; }
+        }
+
+        /* 대기 상태 (기존 유지) */
+        #widget-card.standby { opacity: 0.8; filter: saturate(0.8); }
+        #widget-card.standby .bar { animation: none; height: 4px; opacity: 0.3; }
+        #widget-card.standby .btn-play-circle { color: var(--text-sub); opacity: 0.7; }
+    </style>
+</head>
+<body>
+
+    <div id="widget-card" class="standby">
+        <div class="app-icon-area">
+            <img src="KoringSign.png" alt="App Logo">
+        </div>
+
+        <div class="info-area">
+            <div class="status-badge" id="status">READY</div>
+            <div class="title-container">
+                <h1 class="song-title" id="title">요코링 노래책</h1>
+            </div>
+            <p class="artist-name" id="artist">YOKORING Player</p>
+        </div>
+
+        <div class="right-controls">
+            <div class="playback-btns">
+                <i class="fa-solid fa-backward-step btn-icon"></i>
+                <div class="btn-play-circle">
+                    <i class="fa-solid fa-play"></i>
+                </div>
+                <i class="fa-solid fa-forward-step btn-icon"></i>
+            </div>
+            
+            <div class="visualizer">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const card = document.getElementById('widget-card');
+        const titleEl = document.getElementById('title');
+        const artistEl = document.getElementById('artist');
+        const statusEl = document.getElementById('status');
+
+        // [수신기능] 리모컨(index.html)에서 보내는 신호 받기
+        const bc = new BroadcastChannel('song_data');
+
+        bc.onmessage = (event) => {
+            const data = event.data;
+            if (data.type === 'UPDATE_SONG') {
+                updateWidget(data.title, data.artist);
+            } else if (data.type === 'RELOAD_WIDGET') {
+                location.reload(); // 원격 리셋
+            }
+        };
+
+        // [보완된 업데이트 로직]
+        function updateWidget(title, artist) {
+            // 1. 전환 효과: 스르륵 사라지며 살짝 내려감
+            card.style.opacity = "0";
+            card.style.transform = "translateY(15px)";
+
+            setTimeout(() => {
+                // 2. 내용 변경
+                card.classList.remove('standby');
+                statusEl.innerText = "NOW PLAYING 🎵";
+                titleEl.innerText = title;
+                artistEl.innerText = artist;
+
+                // 3. [중요] 마키 효과 초기화 (애니메이션 재시작)
+                titleEl.classList.remove('marquee');
+                void titleEl.offsetWidth; // 브라우저 리플로우 강제 트리거
+
+                if (titleEl.scrollWidth > titleEl.parentElement.clientWidth) {
+                    titleEl.classList.add('marquee');
+                }
+
+                // 4. 전환 효과: 다시 스르륵 나타남
+                card.style.opacity = "1";
+                card.style.transform = "translateY(0)";
+            }, 500); // 0.5초 뒤에 짠!
+        }
+    </script>
+</body>
+</html>
