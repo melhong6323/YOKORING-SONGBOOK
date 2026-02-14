@@ -2,14 +2,14 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>YOKORING Song Widget - Ultra Compact</title>
+    <title>YOKORING Song Widget - Fast & Compact</title>
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <style>
         :root {
             --pink-accent: rgba(255, 182, 193, 0.95);
-            --glass-bg: rgba(255, 255, 255, 0.15);
+            --glass-bg: rgba(255, 255, 255, 0.15); /* 글래스모피즘 스타일 적용 */
             --border-glass: rgba(255, 255, 255, 0.4);
             --text-main: #333333;
             --text-sub: #777777;
@@ -26,13 +26,13 @@
             overflow: hidden;
         }
 
-        /* --- 위젯 메인 컨테이너 (폭 400px로 최종 축소) --- */
+        /* --- 위젯 메인 컨테이너 (폭 400px 컴팩트 디자인) --- */
         #widget-card {
             display: flex;
             align-items: center;
-            width: 400px; /* 공백 제거를 위해 440px에서 400px로 축소 */
+            width: 400px; 
             height: 84px;
-            padding: 0 16px; /* 내부 좌우 여백을 더 줄임 */
+            padding: 0 16px;
             background: var(--glass-bg);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
@@ -40,12 +40,10 @@
             border: 1px solid var(--border-glass);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
             box-sizing: border-box;
-            
             transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             opacity: 1;
         }
 
-        /* --- 왼쪽: 앱 아이콘 영역 --- */
         .app-icon-area {
             flex-shrink: 0;
             width: 52px;
@@ -57,7 +55,7 @@
             align-items: center;
             box-shadow: 0 4px 12px rgba(255, 182, 193, 0.25);
             overflow: hidden;
-            margin-right: 12px; /* 아이콘과 텍스트 사이 간격 축소 */
+            margin-right: 12px;
         }
 
         .app-icon-area img {
@@ -66,14 +64,13 @@
             object-fit: contain;
         }
 
-        /* --- 중앙: 곡 정보 영역 --- */
         .info-area {
             flex-grow: 1;
             overflow: hidden;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            margin-right: 10px; /* 텍스트와 컨트롤바 사이 공백 최소화 */
+            margin-right: 10px;
         }
 
         .status-badge {
@@ -92,14 +89,15 @@
 
         .song-title {
             margin: 0;
-            font-size: 18px; /* 좁은 폭에 맞춰 1px 더 축소 */
+            font-size: 18px;
             font-weight: 800;
             color: var(--text-main);
             display: inline-block;
         }
 
+        /* [수정] 애니메이션 주기를 10s에서 7s로 변경하여 속도 향상 */
         .marquee {
-            animation: marquee 10s linear infinite;
+            animation: marquee 7s linear infinite;
             padding-left: 100%;
         }
         @keyframes marquee {
@@ -114,12 +112,11 @@
             color: var(--text-sub);
         }
 
-        /* --- 오른쪽: 컨트롤 및 비주얼라이저 --- */
         .right-controls {
             flex-shrink: 0;
             display: flex;
             align-items: center;
-            gap: 10px; /* 컨트롤 요소들 간격 밀착 */
+            gap: 10px;
         }
 
         .playback-btns {
@@ -162,7 +159,6 @@
 
         #widget-card.standby { opacity: 0.8; filter: saturate(0.8); }
         #widget-card.standby .bar { animation: none; height: 4px; opacity: 0.3; }
-        #widget-card.standby .btn-play-circle { color: var(--text-sub); opacity: 0.7; }
     </style>
 </head>
 <body>
@@ -177,7 +173,7 @@
             <div class="title-container">
                 <h1 class="song-title" id="title">요코링 노래책</h1>
             </div>
-            <p class="artist-name" id="artist">YOKORING</p>
+            <p class="artist-name" id="artist">YOKORING Player</p>
         </div>
 
         <div class="right-controls">
@@ -238,4 +234,3 @@
     </script>
 </body>
 </html>
-
