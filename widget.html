@@ -2,14 +2,14 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>YOKORING Song Widget - Fast & Compact</title>
+    <title>YOKORING Song Widget - Ultra Fast & Compact</title>
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <style>
         :root {
             --pink-accent: rgba(255, 182, 193, 0.95);
-            --glass-bg: rgba(255, 255, 255, 0.15); /* 글래스모피즘 스타일 적용 */
+            --glass-bg: rgba(255, 255, 255, 0.15);
             --border-glass: rgba(255, 255, 255, 0.4);
             --text-main: #333333;
             --text-sub: #777777;
@@ -26,7 +26,7 @@
             overflow: hidden;
         }
 
-        /* --- 위젯 메인 컨테이너 (폭 400px 컴팩트 디자인) --- */
+        /* --- 위젯 컨테이너 (폭 400px 최적화) --- */
         #widget-card {
             display: flex;
             align-items: center;
@@ -54,15 +54,10 @@
             justify-content: center;
             align-items: center;
             box-shadow: 0 4px 12px rgba(255, 182, 193, 0.25);
-            overflow: hidden;
             margin-right: 12px;
         }
 
-        .app-icon-area img {
-            width: 82%;
-            height: 82%;
-            object-fit: contain;
-        }
+        .app-icon-area img { width: 82%; height: 82%; object-fit: contain; }
 
         .info-area {
             flex-grow: 1;
@@ -81,11 +76,7 @@
             margin-bottom: 1px;
         }
 
-        .title-container {
-            width: 100%;
-            overflow: hidden;
-            white-space: nowrap;
-        }
+        .title-container { width: 100%; overflow: hidden; white-space: nowrap; }
 
         .song-title {
             margin: 0;
@@ -95,9 +86,9 @@
             display: inline-block;
         }
 
-        /* [수정] 애니메이션 주기를 10s에서 7s로 변경하여 속도 향상 */
+        /* [핵심 수정] 주기를 5초로 단축하여 훨씬 빠르게 반복됨 */
         .marquee {
-            animation: marquee 7s linear infinite;
+            animation: marquee 5s linear infinite;
             padding-left: 100%;
         }
         @keyframes marquee {
@@ -112,19 +103,9 @@
             color: var(--text-sub);
         }
 
-        .right-controls {
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+        .right-controls { flex-shrink: 0; display: flex; align-items: center; gap: 10px; }
 
-        .playback-btns {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            color: var(--text-main);
-        }
+        .playback-btns { display: flex; align-items: center; gap: 6px; color: var(--text-main); }
         
         .btn-icon { font-size: 12px; opacity: 0.5; }
 
@@ -137,10 +118,7 @@
             font-size: 11px; color: var(--pink-accent);
         }
 
-        .visualizer {
-            display: flex; align-items: flex-end;
-            gap: 3px; height: 20px; padding-bottom: 2px;
-        }
+        .visualizer { display: flex; align-items: flex-end; gap: 3px; height: 20px; padding-bottom: 2px; }
 
         .bar {
             width: 3.5px;
