@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>YOKORING Song Widget - Firebase Edition</title>
+    <title>YOKORING Song Widget - Loop Fixed</title>
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
@@ -23,7 +23,6 @@
             display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden;
         }
 
-        /* --- 위젯 메인 컨테이너 (폭 400px 컴팩트 디자인) --- */
         #widget-card {
             display: flex; align-items: center; width: 400px; height: 84px; padding: 0 16px;
             background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
@@ -43,28 +42,11 @@
         .info-area { flex-grow: 1; overflow: hidden; display: flex; flex-direction: column; justify-content: center; margin-right: 10px; }
         .status-badge { font-size: 9px; font-weight: 800; color: var(--pink-accent); letter-spacing: 0.5px; margin-bottom: 1px; }
 
-        .title-container { 
-            width: 100%; 
-            overflow: hidden; 
-            white-space: nowrap; 
-            position: relative;
-        }
+        .title-container { width: 100%; overflow: hidden; white-space: nowrap; position: relative; }
+        .song-title { margin: 0; font-size: 18px; font-weight: 800; color: var(--text-main); display: inline-block; }
 
-        .song-title { 
-            margin: 0; font-size: 18px; font-weight: 800; color: var(--text-main); 
-            display: inline-block;
-        }
-
-        /* [슬라이드 최적화] */
-        .marquee {
-            animation: marquee 10s linear infinite; 
-            padding-left: 40px; 
-        }
-
-        @keyframes marquee {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-100%); } 
-        }
+        .marquee { animation: marquee 10s linear infinite; padding-left: 40px; }
+        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
 
         .artist-name { margin: 1px 0 0 0; font-size: 12px; font-weight: 500; color: var(--text-sub); }
 
@@ -112,55 +94,46 @@
         const artistEl = document.getElementById('artist');
         const statusEl = document.getElementById('status');
 
-        // [파이어베이스 설정 적용]
+        // 위젯이 로드된 시점의 시간을 기록 (과거 신호 무시용)
+        const pageLoadTime = Date.now();
+
         const firebaseConfig = {
             apiKey: "AIzaSyDDSJWWYCzwmM8DSIYI4w3vGPKSshpFhGk",
             authDomain: "yokoring-songbook.firebaseapp.com",
             databaseURL: "https://yokoring-songbook-default-rtdb.firebaseio.com",
             projectId: "yokoring-songbook"
         };
-
-        // 파이어베이스 초기화
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // 1. [곡 정보 수신] 파이어베이스 'currentSong' 경로 감시
+        // 1. 곡 정보 수신
         db.ref('currentSong').on('value', (snapshot) => {
             const data = snapshot.val();
-            if (data) {
-                updateWidget(data.title, data.artist);
-            }
+            if (data) updateWidget(data.title, data.artist);
         });
 
-        // 2. [원격 리셋 수신] 파이어베이스 'command' 경로 감시
+        // 2. [수정됨] 원격 리셋 감시 (무한 루프 방지 로직 추가)
         db.ref('command').on('value', (snapshot) => {
             const data = snapshot.val();
-            if (data && data.type === 'RELOAD') {
+            // 리셋 신호의 시간(timestamp)이 위젯이 켜진 시간(pageLoadTime)보다 클 때만 실행
+            if (data && data.type === 'RELOAD' && data.timestamp > pageLoadTime) {
                 location.reload(); 
             }
         });
 
         function updateWidget(title, artist) {
-            // 전환 효과: Fade-out
             card.style.opacity = "0";
             card.style.transform = "translateY(10px)";
-
             setTimeout(() => {
-                // 내용 교체
                 card.classList.remove('standby');
                 statusEl.innerText = "NOW PLAYING 🎵";
                 titleEl.innerText = title;
                 artistEl.innerText = artist;
-
-                // 마키 효과(Marquee) 초기화
                 titleEl.classList.remove('marquee');
-                void titleEl.offsetWidth; // Reflow 트리거
-
+                void titleEl.offsetWidth; 
                 if (titleEl.scrollWidth > titleEl.parentElement.clientWidth) {
                     titleEl.classList.add('marquee');
                 }
-
-                // 전환 효과: Fade-in
                 card.style.opacity = "1";
                 card.style.transform = "translateY(0)";
             }, 500); 
