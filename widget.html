@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>YOKORING Song Widget - Compact Final</title>
+    <title>YOKORING Song Widget - Ultra Compact</title>
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
@@ -26,22 +26,21 @@
             overflow: hidden;
         }
 
-        /* --- 위젯 메인 컨테이너 (폭 440px로 축소) --- */
+        /* --- 위젯 메인 컨테이너 (폭 400px로 최종 축소) --- */
         #widget-card {
             display: flex;
             align-items: center;
-            width: 440px; 
-            height: 86px;
-            padding: 0 18px; /* 내부 여백 축소 */
+            width: 400px; /* 공백 제거를 위해 440px에서 400px로 축소 */
+            height: 84px;
+            padding: 0 16px; /* 내부 좌우 여백을 더 줄임 */
             background: var(--glass-bg);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            border-radius: 40px;
+            border-radius: 42px;
             border: 1px solid var(--border-glass);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
             box-sizing: border-box;
             
-            /* 전환 애니메이션 */
             transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             opacity: 1;
         }
@@ -49,21 +48,21 @@
         /* --- 왼쪽: 앱 아이콘 영역 --- */
         .app-icon-area {
             flex-shrink: 0;
-            width: 54px; /* 크기 최적화 */
-            height: 54px;
+            width: 52px;
+            height: 52px;
             background: linear-gradient(135deg, #fff5f7 0%, var(--pink-accent) 100%);
-            border-radius: 16px;
+            border-radius: 15px;
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: 0 4px 15px rgba(255, 182, 193, 0.3);
+            box-shadow: 0 4px 12px rgba(255, 182, 193, 0.25);
             overflow: hidden;
-            margin-right: 14px; /* 간격 축소 */
+            margin-right: 12px; /* 아이콘과 텍스트 사이 간격 축소 */
         }
 
         .app-icon-area img {
-            width: 85%;
-            height: 85%;
+            width: 82%;
+            height: 82%;
             object-fit: contain;
         }
 
@@ -74,15 +73,15 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
-            margin-right: 12px; /* 간격 축소 */
+            margin-right: 10px; /* 텍스트와 컨트롤바 사이 공백 최소화 */
         }
 
         .status-badge {
             font-size: 9px;
             font-weight: 800;
             color: var(--pink-accent);
-            letter-spacing: 1px;
-            margin-bottom: 2px;
+            letter-spacing: 0.5px;
+            margin-bottom: 1px;
         }
 
         .title-container {
@@ -93,7 +92,7 @@
 
         .song-title {
             margin: 0;
-            font-size: 19px; /* 폭에 맞춰 폰트 소폭 조정 */
+            font-size: 18px; /* 좁은 폭에 맞춰 1px 더 축소 */
             font-weight: 800;
             color: var(--text-main);
             display: inline-block;
@@ -109,8 +108,8 @@
         }
 
         .artist-name {
-            margin: 2px 0 0 0;
-            font-size: 13px;
+            margin: 1px 0 0 0;
+            font-size: 12px;
             font-weight: 500;
             color: var(--text-sub);
         }
@@ -120,30 +119,30 @@
             flex-shrink: 0;
             display: flex;
             align-items: center;
-            gap: 12px; /* 간격 축소 */
+            gap: 10px; /* 컨트롤 요소들 간격 밀착 */
         }
 
         .playback-btns {
             display: flex;
             align-items: center;
-            gap: 8px; /* 버튼 사이 간격 축소 */
+            gap: 6px;
             color: var(--text-main);
         }
         
-        .btn-icon { font-size: 13px; opacity: 0.5; }
+        .btn-icon { font-size: 12px; opacity: 0.5; }
 
         .btn-play-circle {
-            width: 32px; height: 32px; /* 크기 조정 */
+            width: 30px; height: 30px;
             border-radius: 50%;
             background: rgba(255, 255, 255, 0.5);
             border: 1px solid var(--border-glass);
             display: flex; justify-content: center; align-items: center;
-            font-size: 12px; color: var(--pink-accent);
+            font-size: 11px; color: var(--pink-accent);
         }
 
         .visualizer {
             display: flex; align-items: flex-end;
-            gap: 3px; height: 22px; padding-bottom: 2px;
+            gap: 3px; height: 20px; padding-bottom: 2px;
         }
 
         .bar {
@@ -158,10 +157,9 @@
 
         @keyframes visualize {
             0% { height: 4px; opacity: 0.5; }
-            100% { height: 22px; opacity: 1; }
+            100% { height: 20px; opacity: 1; }
         }
 
-        /* 대기 상태 디자인 */
         #widget-card.standby { opacity: 0.8; filter: saturate(0.8); }
         #widget-card.standby .bar { animation: none; height: 4px; opacity: 0.3; }
         #widget-card.standby .btn-play-circle { color: var(--text-sub); opacity: 0.7; }
@@ -205,7 +203,6 @@
         const artistEl = document.getElementById('artist');
         const statusEl = document.getElementById('status');
 
-        // [수신] 리모컨(index.html)에서 보내는 신호 받기
         const bc = new BroadcastChannel('song_data');
 
         bc.onmessage = (event) => {
@@ -218,31 +215,26 @@
         };
 
         function updateWidget(title, artist) {
-            // 1. 전환 효과 시작 (Fade-out)
             card.style.opacity = "0";
-            card.style.transform = "translateY(12px)";
+            card.style.transform = "translateY(10px)";
 
             setTimeout(() => {
-                // 2. 내용 업데이트
                 card.classList.remove('standby');
                 statusEl.innerText = "NOW PLAYING 🎵";
                 titleEl.innerText = title;
                 artistEl.innerText = artist;
 
-                // 3. 마키 효과 초기화
                 titleEl.classList.remove('marquee');
-                void titleEl.offsetWidth; // Reflow 트리거
+                void titleEl.offsetWidth; 
 
                 if (titleEl.scrollWidth > titleEl.parentElement.clientWidth) {
                     titleEl.classList.add('marquee');
                 }
 
-                // 4. 전환 효과 끝 (Fade-in)
                 card.style.opacity = "1";
                 card.style.transform = "translateY(0)";
             }, 500); 
         }
     </script>
 </body>
-</html>
 </html>
