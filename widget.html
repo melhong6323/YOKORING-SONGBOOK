@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>YOKORING Song Widget - Final Tuning</title>
+    <title>YOKORING Song Widget - No Gap Edition</title>
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
@@ -34,25 +34,35 @@
             border-radius: 15px; display: flex; justify-content: center; align-items: center;
             box-shadow: 0 4px 12px rgba(255, 182, 193, 0.25); margin-right: 12px;
         }
-
         .app-icon-area img { width: 82%; height: 82%; object-fit: contain; }
 
         .info-area { flex-grow: 1; overflow: hidden; display: flex; flex-direction: column; justify-content: center; margin-right: 10px; }
-
         .status-badge { font-size: 9px; font-weight: 800; color: var(--pink-accent); letter-spacing: 0.5px; margin-bottom: 1px; }
 
-        .title-container { width: 100%; overflow: hidden; white-space: nowrap; }
-
-        .song-title { margin: 0; font-size: 18px; font-weight: 800; color: var(--text-main); display: inline-block; }
-
-        /* 🚀 [속도/주기 최종 튜닝] */
-        .marquee {
-            animation: marquee 15s linear infinite; /* [속도] 12초 -> 15초로 늘려 더 천천히 흐르게 함 */
-            padding-left: 50%;                     /* [주기] 80% -> 50%로 줄여 다음 반복이 훨씬 빨리 시작됨 */
+        /* 🚀 [주기 최적화 영역] */
+        .title-container { 
+            width: 100%; 
+            overflow: hidden; 
+            white-space: nowrap; 
+            position: relative;
         }
+
+        .song-title { 
+            margin: 0; font-size: 18px; font-weight: 800; color: var(--text-main); 
+            display: inline-block;
+        }
+
+        .marquee {
+            /* [속도] 10초로 설정 (이동 거리가 짧아졌으므로 15초보다 10초가 체감상 비슷합니다) */
+            animation: marquee 10s linear infinite; 
+            /* [주기] 여백을 %가 아닌 픽셀(px)로 고정하여 아주 좁게 설정 */
+            padding-left: 40px; 
+        }
+
         @keyframes marquee {
             0% { transform: translateX(0); }
-            100% { transform: translateX(-150%); } /* 시작 위치(50%)에 맞춰 끝나는 위치도 조정 */
+            /* [핵심] 자기 자신의 너비만큼만 정확히 이동하여 공백을 최소화 */
+            100% { transform: translateX(-100%); } 
         }
 
         .artist-name { margin: 1px 0 0 0; font-size: 12px; font-weight: 500; color: var(--text-sub); }
