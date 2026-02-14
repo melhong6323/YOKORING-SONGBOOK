@@ -24,16 +24,17 @@
 
 * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
 body {
-  margin: 0; font-family: 'Pretendard', sans-serif;
+  margin: 0; font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
   background-color: var(--bg-main); color: var(--text-main);
   height: 100vh; overflow: hidden;
 }
 
-/* UI Layout */
+/* Header */
 .title-line { display: flex; align-items: center; justify-content: center; height: 80px; gap: 20px; flex-shrink: 0; }
 .title-line h1 { font-size: 22px; font-weight: 800; margin: 0; color: #fff; }
 .youtube-btn { background: transparent; border: 1.5px solid var(--accent); color: var(--accent); padding: 6px 14px; border-radius: 12px; font-weight: 700; font-size: 11px; text-decoration: none; transition: 0.3s; }
 
+/* Main Layout */
 .container { display: flex; gap: 20px; max-width: 1500px; margin: 0 auto; padding: 0 20px 20px; height: calc(100vh - 80px); }
 .left-pane { flex: 0 0 320px; display: flex; flex-direction: column; gap: 16px; height: 100%; }
 .right-pane { flex: 1; background: var(--bg-card); border-radius: 24px; border: 1px solid var(--border-color); display: flex; flex-direction: column; overflow: hidden; }
@@ -43,9 +44,10 @@ body {
 .tab { padding: 7px 12px; border-radius: 10px; background: var(--bg-inner); color: var(--text-sub); cursor: pointer; font-size: 12px; font-weight: 600; transition: 0.2s; border: 1px solid transparent; }
 .tab.active { background: var(--accent-soft); color: var(--accent); border: 1px solid var(--accent); }
 
-#artistList { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; max-height: 250px; overflow-y: auto; padding-right: 4px; }
+#artistList { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; max-height: 250px; overflow-y: auto; padding-right: 4px; scroll-behavior: smooth; }
 #artistList .tab { text-align: center; font-size: 11px; padding: 6px 2px; }
 
+/* Song List & Skeleton */
 .list-header { padding: 15px 20px; background: rgba(0,0,0,0.1); display: flex; gap: 10px; align-items: center; }
 #searchInput { flex: 1; background: var(--bg-inner); border: 1.5px solid var(--border-color); border-radius: 14px; padding: 12px 18px; color: white; font-size: 14px; outline: none; }
 
@@ -55,10 +57,15 @@ body {
 }
 .reset-btn:hover { background: var(--accent); color: white; }
 
-#list { flex: 1; overflow-y: auto; background: var(--bg-inner); }
+#list { flex: 1; overflow-y: auto; background: var(--bg-inner); position: relative; }
 .song { display: flex; align-items: center; padding: 14px 20px; gap: 12px; border-bottom: 1px solid rgba(255,255,255,0.02); transition: 0.2s; }
 .song:hover { background: rgba(255,255,255,0.02); }
 .song.selected { background: rgba(255, 126, 185, 0.05); }
+
+/* Skeleton */
+.skeleton { padding: 14px 20px; display: flex; gap: 12px; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.02); }
+.skeleton-item { height: 14px; background: linear-gradient(90deg, #1a1d23 25%, #252a33 50%, #1a1d23 75%); background-size: 200% 100%; animation: loading 1.5s infinite; border-radius: 4px; }
+@keyframes loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
 .copy-icon { width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-sub); border-radius: 10px; background: var(--bg-card); border: 1px solid var(--border-color); }
 .artist-name { flex: 1; font-weight: 600; color: #717781; font-size: 13px; }
@@ -69,14 +76,30 @@ body {
 .lyrics-btn.active { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
 .disabled { opacity: 0.05; pointer-events: none; }
 
-/* Modal Styles... (중략) */
-.modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); justify-content: center; align-items: center; z-index: 2000; }
-.modal-content { background: var(--bg-card); width: 92%; max-width: 550px; border-radius: 28px; border: 1px solid var(--border-color); position: absolute; overflow: hidden; }
-.modal-header { padding: 20px; color: var(--accent); font-weight: 800; text-align: center; border-bottom: 1px solid var(--border-color); }
-.modal-close { position: absolute; top: 18px; right: 20px; cursor: pointer; color: #4b5563; font-size: 22px; }
+/* Modal & Lyrics Font 복구 */
+.modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); justify-content: center; align-items: center; z-index: 2000; }
+.modal-content { background: var(--bg-card); width: 92%; max-width: 550px; border-radius: 28px; border: 1px solid var(--border-color); position: absolute; overflow: hidden; box-shadow: 0 30px 60px rgba(0,0,0,0.7); }
+.modal-header { padding: 20px; color: var(--accent); font-weight: 800; cursor: move; text-align: center; border-bottom: 1px solid var(--border-color); letter-spacing: 1px; }
+.modal-close { position: absolute; top: 18px; right: 20px; cursor: pointer; color: #4b5563; font-size: 22px; transition: 0.2s; }
 .lyrics-body { padding: 40px 30px; max-height: 65vh; overflow-y: auto; text-align: center; }
-#lyricsText { white-space: pre-wrap; color: #f8f9fa; font-size: 18px; line-height: 1.8; margin: 0; }
+#lyricsText { 
+    white-space: pre-wrap; color: #f8f9fa; 
+    font-family: 'Pretendard', sans-serif !important; /* 폰트 강제 적용 복구 */
+    font-size: 18px; line-height: 1.8; letter-spacing: -0.5px; font-weight: 400; margin: 0; 
+}
+
 #guide { flex: 1; overflow-y: auto; font-size: 12px; color: var(--text-sub); line-height: 1.7; padding: 20px; }
+
+@media (max-width: 768px) {
+  body { overflow: auto; height: auto; }
+  .container { flex-direction: column; height: auto; padding: 0 15px 40px; overflow: visible; }
+  .left-pane { flex: none; width: 100%; height: auto; }
+  #artistList { max-height: 180px; }
+  #guide { max-height: 120px; margin-bottom: 10px; }
+  .right-pane { flex: none; width: 100%; height: 70vh; border-radius: 20px; }
+  .title-line { height: 100px; flex-direction: column; gap: 8px; padding-top: 15px; }
+  #lyricsText { font-size: 16px; line-height: 1.7; }
+}
 </style>
 </head>
 <body>
@@ -111,10 +134,10 @@ body {
 </div>
 
 <div id="lyricsModal" class="modal"><div class="modal-content" id="dragTarget"><div class="modal-header">LYRICS</div><span id="modalClose" class="modal-close">✕</span><div class="lyrics-body"><pre id="lyricsText"></pre></div></div></div>
-<div id="ganadaModal" class="modal"><div class="modal-content" id="ganadaContent" style="margin:auto;"><div class="modal-header">가수 선택</div><span id="ganadaClose" class="modal-close">✕</span><div id="ganadaList" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; max-height:400px; overflow-y:auto; padding:20px;"></div></div></div>
+<div id="ganadaModal" class="modal"><div class="modal-content" id="ganadaContent" style="position:relative; transform:none; margin:auto;"><div class="modal-header">가수 선택</div><span id="ganadaClose" class="modal-close">✕</span><div id="ganadaList" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; max-height:400px; overflow-y:auto; padding:20px;"></div></div></div>
 
 <script>
-// Firebase Config
+// [파이어베이스 설정]
 const firebaseConfig = {
   apiKey: "AIzaSyDDSJWWYCzwmM8DSIYI4w3vGPKSshpFhGk",
   authDomain: "yokoring-songbook.firebaseapp.com",
@@ -137,8 +160,21 @@ async function fetchSheet(sheetName){
   return json.table.rows.map(r => r.c); 
 }
 
+function renderSkeleton() {
+  const listEl = document.getElementById('list');
+  listEl.innerHTML = Array(10).fill(0).map(() => `
+    <div class="skeleton">
+      <div class="skeleton-item" style="width:30px;"></div>
+      <div class="skeleton-item" style="width:100px;"></div>
+      <div class="skeleton-item" style="flex:1;"></div>
+      <div class="skeleton-item" style="width:60px;"></div>
+    </div>
+  `).join('');
+}
+
 async function selectCategory(name, tabEl){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); tabEl.classList.add('active');
+  renderSkeleton();
   const rows = await fetchSheet(name);
   currentSongs = rows.slice(1).map(r => {
     if(!r || !r[0] || !r[1]) return null;
@@ -147,19 +183,27 @@ async function selectCategory(name, tabEl){
     return { artist, title, mr: mrLink, lyricsFile: findLyricsFile(artist, title), filterArtist: artist.split('(')[0].trim() };
   }).filter(s => s !== null);
   currentArtist='전체'; renderArtistFilter(); renderSongList();
+  document.getElementById('artistList').scrollTop = 0; 
 }
 
+// [복구] 가수 소분류 및 토글 로직
 function renderArtistFilter(){
   const map={}; currentSongs.forEach(s=>{ map[s.filterArtist]=(map[s.filterArtist]||0)+1; });
   const sorted = Object.keys(map).sort((a,b)=>map[b]-map[a]);
   const listEl = document.getElementById('artistList'); listEl.innerHTML = '';
   const allBtn = document.createElement('div'); allBtn.className = 'tab' + (currentArtist==='전체'?' active':'');
-  allBtn.textContent = `ALL`; allBtn.onclick = () => { currentArtist='전체'; renderArtistFilter(); renderSongList(); };
+  allBtn.textContent = `ALL`; allBtn.onclick = () => { currentArtist='전체'; renderArtistFilter(); renderSongList(); listEl.scrollTop = 0; };
   listEl.appendChild(allBtn);
   sorted.forEach(a => {
     const btn = document.createElement('div'); btn.className = 'tab' + (currentArtist===a?' active':'');
     btn.textContent = a; btn.id = 'artist-btn-' + a;
-    btn.onclick = () => { selectAndScrollArtist(a); };
+    btn.onclick = () => { 
+        if(currentArtist === a) { 
+            currentArtist = '전체'; renderArtistFilter(); renderSongList(); listEl.scrollTop = 0; 
+        } else { 
+            selectAndScrollArtist(a); 
+        } 
+    };
     listEl.appendChild(btn);
   });
 }
@@ -178,35 +222,67 @@ function renderSongList(){
         : `<span class="mr-btn disabled">MR</span>`;
     const lyBtnClass = s.lyricsFile ? 'lyrics-btn active' : 'lyrics-btn disabled';
     div.innerHTML = `<div class="copy-icon" onclick="copyText('${s.artist}-${s.title}', this); event.stopPropagation();">📋</div><div class="artist-name">${s.artist}</div><div class="song-title">${s.title}</div>${mrBtn}<span class="${lyBtnClass}" onclick="showLyrics('${s.lyricsFile}')">LYRICS</span>`;
+    div.onclick = () => { document.querySelectorAll('.song').forEach(x=>x.classList.remove('selected')); div.classList.add('selected'); };
     listEl.appendChild(div);
   });
 }
 
-// 핵심: 파이어베이스 데이터 송신
 function sendToWidget(title, artist) {
-    db.ref('currentSong').set({ title, artist, timestamp: Date.now() });
+    db.ref('currentSong').set({ title: title, artist: artist, timestamp: Date.now() });
 }
 
-// 핵심: 파이어베이스 리셋 (데이터 삭제 + 리셋 신호)
 function remoteReload() {
-    if(confirm("위젯을 초기화하고 새로고침 하시겠습니까?")) {
-        db.ref('currentSong').remove(); // 노래 정보 삭제
-        db.ref('command').set({ type: 'RELOAD', timestamp: Date.now() }); // 리셋 신호 전송
+    if(confirm("방송 위젯을 새로고침 하시겠습니까?")) {
+        db.ref('currentSong').remove();
+        db.ref('command').set({ type: 'RELOAD', timestamp: Date.now() });
     }
 }
 
-function selectAndScrollArtist(a) { currentArtist = a; renderArtistFilter(); renderSongList(); }
+// [복구] 스크롤 로직
+function selectAndScrollArtist(a) { 
+    currentArtist = a; 
+    renderArtistFilter(); 
+    renderSongList(); 
+    const targetBtn = document.getElementById('artist-btn-' + a); 
+    if(targetBtn) targetBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); 
+}
+
 function showLyrics(file){
   if(!file || file === 'null') return;
   fetch(`data/lyrics/${file}`).then(r => r.text()).then(t => {
     document.getElementById('lyricsText').textContent = t;
-    document.getElementById('lyricsModal').style.display = 'flex';
+    const modal = document.getElementById('lyricsModal'); const content = document.getElementById('dragTarget');
+    content.style.top = "50%"; content.style.left = "50%"; content.style.transform = "translate(-50%, -50%)";
+    xOffset = 0; yOffset = 0; modal.style.display = 'flex';
   });
 }
+
 function copyText(txt, btn){ navigator.clipboard.writeText(txt).then(() => { const original = btn.textContent; btn.textContent='✅'; setTimeout(()=>btn.textContent=original, 1000); }); }
+
+// 드래그 로직 복구
+let isDragging = false, xOffset = 0, yOffset = 0, initialX, initialY;
+const dragTarget = document.getElementById("dragTarget"); const modalHeader = document.querySelector(".modal-header");
+modalHeader.addEventListener("mousedown", dragStart); modalHeader.addEventListener("touchstart", dragStart);
+function dragStart(e) { initialX = (e.type === "touchstart" ? e.touches[0].clientX : e.clientX) - xOffset; initialY = (e.type === "touchstart" ? e.touches[0].clientY : e.clientY) - yOffset; isDragging = true; }
+function drag(e) { if (isDragging) { e.preventDefault(); const currentX = (e.type === "touchmove" ? e.touches[0].clientX : e.clientX) - initialX; const currentY = (e.type === "touchmove" ? e.touches[0].clientY : e.clientY) - initialY; xOffset = currentX; yOffset = currentY; dragTarget.style.transform = `translate(calc(-50% + ${currentX}px), calc(-50% + ${currentY}px))`; } }
+document.addEventListener("mousemove", drag); document.addEventListener("mouseup", () => isDragging = false);
+document.addEventListener("touchmove", drag, {passive: false}); document.addEventListener("touchend", () => isDragging = false);
 
 document.getElementById('modalClose').onclick=()=>document.getElementById('lyricsModal').style.display='none';
 document.getElementById('ganadaClose').onclick=()=>document.getElementById('ganadaModal').style.display='none';
+
+document.getElementById('btnGanada').onclick = () => {
+  const list = document.getElementById('ganadaList'); list.innerHTML = ''; const map={};
+  currentSongs.forEach(s=>{ map[s.filterArtist]=1; });
+  Object.keys(map).sort((a,b)=>a.localeCompare(b,'ko')).forEach(a => {
+    const b = document.createElement('div'); b.className='tab'; b.style.textAlign='center'; b.textContent=a;
+    b.onclick=()=>{ selectAndScrollArtist(a); document.getElementById('ganadaModal').style.display='none'; };
+    list.appendChild(b);
+  });
+  document.getElementById('ganadaModal').style.display='flex';
+};
+
+window.onclick=(e)=>{ if(e.target.classList.contains('modal')) e.target.style.display='none'; };
 document.getElementById('searchInput').oninput=()=>renderSongList();
 
 (async()=>{
@@ -219,4 +295,3 @@ document.getElementById('searchInput').oninput=()=>renderSongList();
 </script>
 </body>
 </html>
-
