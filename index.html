@@ -3,7 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>요코링 노래책</title>
+<title>요코링 노래책 (Firebase 리모컨)</title>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
 <style>
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
 
@@ -43,17 +47,16 @@ body {
 #artistList { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; max-height: 250px; overflow-y: auto; padding-right: 4px; scroll-behavior: smooth; }
 #artistList .tab { text-align: center; font-size: 11px; padding: 6px 2px; }
 
-/* Song List & Skeleton */
+/* Song List */
 .list-header { 
     padding: 15px 20px; 
     background: rgba(0,0,0,0.1); 
-    display: flex; /* Flex로 변경 */
+    display: flex; 
     gap: 10px; 
     align-items: center; 
 }
 #searchInput { flex: 1; background: var(--bg-inner); border: 1.5px solid var(--border-color); border-radius: 14px; padding: 12px 18px; color: white; font-size: 14px; outline: none; }
 
-/* 리셋 버튼 스타일 */
 .reset-btn {
     flex-shrink: 0;
     height: 45px;
@@ -75,7 +78,6 @@ body {
 .song:hover { background: rgba(255,255,255,0.02); }
 .song.selected { background: rgba(255, 126, 185, 0.05); }
 
-/* Skeleton */
 .skeleton { padding: 14px 20px; display: flex; gap: 12px; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.02); }
 .skeleton-item { height: 14px; background: linear-gradient(90deg, #1a1d23 25%, #252a33 50%, #1a1d23 75%); background-size: 200% 100%; animation: loading 1.5s infinite; border-radius: 4px; }
 @keyframes loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
@@ -146,8 +148,17 @@ body {
 <div id="ganadaModal" class="modal"><div class="modal-content" id="ganadaContent" style="position:relative; transform:none; margin:auto;"><div class="modal-header">가수 선택</div><span id="ganadaClose" class="modal-close">✕</span><div id="ganadaList" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; max-height:400px; overflow-y:auto; padding:20px;"></div></div></div>
 
 <script>
-// [추가] 위젯과 통신할 채널 개설
-const bc = new BroadcastChannel('song_data');
+// [파이어베이스 설정]
+const firebaseConfig = {
+  apiKey: "AIzaSyDDSJWWYCzwmM8DSIYI4w3vGPKSshpFhGk",
+  authDomain: "yokoring-songbook.firebaseapp.com",
+  databaseURL: "https://yokoring-songbook-default-rtdb.firebaseio.com",
+  projectId: "yokoring-songbook"
+};
+
+// 파이어베이스 초기화
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
 
 const SHEET_ID='1bSs04gJ8HyVil5PM0TBAm-4c_BeAqbU7ENMZ2AQcUVI'; 
 const SHEET_NAMES=['사용설명서','K-POP','POP','J-POP','숙제곡','신곡'];
@@ -203,7 +214,6 @@ function renderArtistFilter(){
   });
 }
 
-// [핵심 수정] MR 버튼 클릭 시 위젯으로 데이터를 쏘도록 변경
 function renderSongList(){
   const query = document.getElementById('searchInput').value.toLowerCase();
   const listEl = document.getElementById('list'); listEl.innerHTML = '';
@@ -211,10 +221,10 @@ function renderSongList(){
   
   filtered.forEach(s => {
     const div = document.createElement('div'); div.className = 'song';
-    
-    // MR 버튼 수정: 클릭 시 sendToWidget 호출 (작은따옴표 탈출 처리 적용)
     const escapedTitle = s.title.replace(/'/g, "\\'");
     const escapedArtist = s.artist.replace(/'/g, "\\'");
+    
+    // [수정] MR 클릭 시 파이어베이스로 데이터 송신
     const mrBtn = s.mr 
         ? `<a class="mr-btn" href="${s.mr}" target="_blank" onclick="sendToWidget('${escapedTitle}', '${escapedArtist}')">MR</a>` 
         : `<span class="mr-btn disabled">MR</span>`;
@@ -232,19 +242,22 @@ function renderSongList(){
   });
 }
 
-// [추가] 위젯 전송 함수
+// [핵심] 파이어베이스 송신 함수
 function sendToWidget(title, artist) {
-    bc.postMessage({
-        type: 'UPDATE_SONG',
+    db.ref('currentSong').set({
         title: title,
-        artist: artist
+        artist: artist,
+        timestamp: Date.now()
     });
 }
 
-// [추가] 원격 새로고침 함수
+// [핵심] 파이어베이스 원격 새로고침 함수
 function remoteReload() {
     if(confirm("방송 위젯을 새로고침 하시겠습니까?")) {
-        bc.postMessage({ type: 'RELOAD_WIDGET' });
+        db.ref('command').set({
+            type: 'RELOAD',
+            timestamp: Date.now()
+        });
     }
 }
 
@@ -298,4 +311,3 @@ document.getElementById('searchInput').oninput=()=>renderSongList();
 </script>
 </body>
 </html>
-
