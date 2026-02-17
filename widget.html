@@ -2,19 +2,23 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>YOKORING Song Widget</title>
+    <title>YOKORING Song Widget - Platinum Silver</title>
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
     <style>
         :root {
-            --pink-accent: rgba(255, 182, 193, 0.95);
-            --glass-bg: rgba(255, 255, 255, 0.15);
-            --border-glass: rgba(255, 255, 255, 0.4);
-            --text-main: #333333;
-            --text-sub: #777777;
+            /* 1. 핑크가 돋보이도록 채도를 살짝 높인 핑크 */
+            --pink-accent: #ff8ab4; 
+            /* 2. 고급진 은색 느낌을 주는 플래티넘 실버 배경 (농도 최적화) */
+            --silver-bg: rgba(210, 215, 225, 0.4); 
+            --border-light: rgba(255, 255, 255, 0.7); /* 빛 반사 효과 */
+            /* 3. 명도 대비를 극대화한 글자색 */
+            --text-main: #1a1c20; /* 제목: 아주 진한 숯색 */
+            --text-sub: #444952;  /* 가수: 가독성을 높인 진한 회색 */
         }
 
         body {
@@ -24,49 +28,75 @@
 
         #widget-card {
             display: flex; align-items: center; width: 400px; height: 84px; padding: 0 16px;
-            background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border-radius: 42px; border: 1px solid var(--border-glass); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-            box-sizing: border-box; transition: all 0.5s ease;
+            background: var(--silver-bg); 
+            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            border-radius: 42px; 
+            /* 테두리: 위쪽은 밝게, 아래쪽은 어둡게 하여 '떠 있는 금속' 느낌 구현 */
+            border: 1px solid var(--border-light);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+            /* 그림자: 배경에서 툭 튀어나와 보이게 하는 딥 섀도우 */
+            box-shadow: 
+                0 12px 30px rgba(0, 0, 0, 0.2),
+                0 4px 10px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box; transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
             opacity: 1;
         }
 
         .app-icon-area {
             flex-shrink: 0; width: 52px; height: 52px;
-            background: linear-gradient(135deg, #fff5f7 0%, var(--pink-accent) 100%);
+            /* 아이콘 배경을 매끈한 화이트-실버 그라데이션으로 */
+            background: linear-gradient(135deg, #ffffff 0%, #e8ecf3 100%);
             border-radius: 15px; display: flex; justify-content: center; align-items: center;
-            box-shadow: 0 4px 12px rgba(255, 182, 193, 0.25); margin-right: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); margin-right: 12px;
         }
-        .app-icon-area img { width: 82%; height: 82%; object-fit: contain; }
+        .app-icon-area img { width: 85%; height: 85%; object-fit: contain; }
 
         .info-area { flex-grow: 1; overflow: hidden; display: flex; flex-direction: column; justify-content: center; margin-right: 10px; }
-        .status-badge { font-size: 9px; font-weight: 800; color: var(--pink-accent); letter-spacing: 0.5px; margin-bottom: 1px; }
+        
+        /* 상태 배지에도 미세한 후광 추가 */
+        .status-badge { 
+            font-size: 9px; font-weight: 900; color: var(--pink-accent); 
+            letter-spacing: 0.8px; margin-bottom: 1px;
+            text-shadow: 0 0 8px rgba(255, 138, 180, 0.3);
+        }
 
         .title-container { width: 100%; overflow: hidden; white-space: nowrap; position: relative; }
-        .song-title { margin: 0; font-size: 18px; font-weight: 800; color: var(--text-main); display: inline-block; }
+        
+        /* 노래 제목: 불투명하고 날카로운 명도 대비 */
+        .song-title { 
+            margin: 0; font-size: 18px; font-weight: 800; color: var(--text-main); 
+            display: inline-block; letter-spacing: -0.3px;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.8); /* 글자 뒤 화이트 후광 */
+        }
 
         .marquee { animation: marquee 10s linear infinite; padding-left: 40px; }
         @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
 
-        .artist-name { margin: 1px 0 0 0; font-size: 12px; font-weight: 500; color: var(--text-sub); }
+        /* 가수 이름: 가독성 대폭 강화 */
+        .artist-name { 
+            margin: 1px 0 0 0; font-size: 12px; font-weight: 600; color: var(--text-sub);
+            text-shadow: 0 0 3px rgba(255, 255, 255, 0.5); 
+        }
 
         .right-controls { flex-shrink: 0; display: flex; align-items: center; gap: 10px; }
-        .playback-btns { display: flex; align-items: center; gap: 6px; color: var(--text-main); }
+        .playback-btns { display: flex; align-items: center; gap: 7px; color: var(--text-sub); }
         .btn-icon { font-size: 12px; opacity: 0.5; }
         .btn-play-circle {
-            width: 30px; height: 30px; border-radius: 50%; background: rgba(255, 255, 255, 0.5);
-            border: 1px solid var(--border-glass); display: flex; justify-content: center; align-items: center;
-            font-size: 11px; color: var(--pink-accent);
+            width: 32px; height: 32px; border-radius: 50%; background: rgba(255, 255, 255, 0.8);
+            border: 1px solid var(--border-light); display: flex; justify-content: center; align-items: center;
+            font-size: 11px; color: var(--pink-accent); box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
-        .visualizer { display: flex; align-items: flex-end; gap: 3px; height: 20px; padding-bottom: 2px; }
-        .bar { width: 3.5px; background: var(--pink-accent); border-radius: 2px 2px 0 0; animation: visualize 0.6s ease-in-out infinite alternate; }
+
+        /* 핑크색 비주얼라이저 */
+        .visualizer { display: flex; align-items: flex-end; gap: 3px; height: 18px; padding-bottom: 2px; }
+        .bar { width: 3.5px; background: var(--pink-accent); border-radius: 2px; animation: visualize 0.6s ease-in-out infinite alternate; }
         .bar:nth-child(1) { animation-delay: 0.0s; height: 30%; }
         .bar:nth-child(2) { animation-delay: 0.1s; height: 100%; }
         .bar:nth-child(3) { animation-delay: 0.2s; height: 60%; }
 
-        @keyframes visualize { 0% { height: 4px; opacity: 0.5; } 100% { height: 20px; opacity: 1; } }
+        @keyframes visualize { 0% { height: 4px; opacity: 0.6; } 100% { height: 18px; opacity: 1; } }
 
-        /* 초기 상태 스타일 */
-        #widget-card.standby { opacity: 0.8; filter: saturate(0.8); }
+        #widget-card.standby { opacity: 0.8; filter: saturate(0.7); transform: scale(0.98); }
         #widget-card.standby .bar { animation: none; height: 4px; opacity: 0.3; }
     </style>
 </head>
@@ -104,17 +134,12 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // 곡 정보 수신 및 초기화 감지
         db.ref('currentSong').on('value', (snapshot) => {
             const data = snapshot.val();
-            if (data) {
-                updateWidget(data.title, data.artist);
-            } else {
-                resetToDefault(); // 데이터가 없으면 READY로 복구
-            }
+            if (data) updateWidget(data.title, data.artist);
+            else resetToDefault();
         });
 
-        // 원격 리셋 명령 감지
         db.ref('command').on('value', (snapshot) => {
             const data = snapshot.val();
             if (data && data.type === 'RELOAD' && data.timestamp > pageLoadTime) {
@@ -124,6 +149,7 @@
 
         function updateWidget(title, artist) {
             card.style.opacity = "0";
+            card.style.transform = "translateY(10px) scale(0.95)";
             setTimeout(() => {
                 card.classList.remove('standby');
                 statusEl.innerText = "NOW PLAYING 🎵";
@@ -135,6 +161,7 @@
                     titleEl.classList.add('marquee');
                 }
                 card.style.opacity = "1";
+                card.style.transform = "translateY(0) scale(1)";
             }, 500); 
         }
 
@@ -147,9 +174,9 @@
                 artistEl.innerText = "YOKORING Player";
                 titleEl.classList.remove('marquee');
                 card.style.opacity = "1";
+                card.style.transform = "translateY(0) scale(1)";
             }, 500);
         }
     </script>
 </body>
 </html>
-
