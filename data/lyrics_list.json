@@ -1962,5 +1962,50 @@
     "artist": "Christopher",
     "title": "Bad",
     "file": "Christopher_Bad.txt"
+  },
+    {
+    "artist": "Erykah Badu",
+    "title": "Tyrone",
+    "file": "ErykahBadu_Tyrone.txt"
+  },
+  {
+    "artist": "Imagine Dragons",
+    "title": "Radioactive",
+    "file": "ImagineDragons_Radioactive.txt"
+  },
+  {
+    "artist": "JVKE",
+    "title": "golden hour",
+    "file": "JVKE_goldenhour.txt"
+  },
+  {
+    "artist": "Lady Gaga",
+    "title": "Always Remember Us This Way",
+    "file": "LadyGaga_AlwaysRememberUsThisWay.txt"
+  },
+  {
+    "artist": "Livingston",
+    "title": "Architect",
+    "file": "Livingston_Architect.txt"
+  },
+  {
+    "artist": "Michael Jackson",
+    "title": "Love Never Felt So Good",
+    "file": "MichaelJackson_LoveNeverFeltSoGood.txt"
+  },
+  {
+    "artist": "Miley Cyrus",
+    "title": "Flowers",
+    "file": "MileyCyrus_Flowers.txt"
+  },
+  {
+    "artist": "Sigrid",
+    "title": "High Five",
+    "file": "Sigrid_HighFive.txt"
+  },
+  {
+    "artist": "The Beatles",
+    "title": "Come Together",
+    "file": "TheBeatles_ComeTogether.txt"
   }
 ]
