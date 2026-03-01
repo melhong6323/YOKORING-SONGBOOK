@@ -1902,5 +1902,65 @@
     "artist": "지민(AOA)(Feat.시우민)",
     "title": "야 하고 싶어",
     "file": "지민_야하고싶어.txt"
+  },
+    {
+    "artist": "Kristen Bell, Santino Fontana",
+    "title": "Love Is An Open Door",
+    "file": "KristenBell_LoveIsAnOpenDoor.txt"
+  },
+  {
+    "artist": "Maroon 5",
+    "title": "sunday morning",
+    "file": "Maroon5_sundaymorning.txt"
+  },
+  {
+    "artist": "Rihanna",
+    "title": "Take A Bow",
+    "file": "Rihanna_TakeABow.txt"
+  },
+  {
+    "artist": "Sia",
+    "title": "Snowman",
+    "file": "Sia_Snowman.txt"
+  },
+  {
+    "artist": "Tones And I",
+    "title": "Dance Monkey",
+    "file": "TonesAndI_DanceMonkey.txt"
+  },
+  {
+    "artist": "wave to earth",
+    "title": "annie.",
+    "file": "wavetoearth_annie..txt"
+  },
+  {
+    "artist": "Shawn Mendes",
+    "title": "There's Nothing Holding Me Back",
+    "file": "ShawnMendes_TheresNothingHoldingMeBack.txt"
+  },
+  {
+    "artist": "Rachael Yamagata",
+    "title": "Be Be Your Love",
+    "file": "RachaelYamagata_BeBeYourLove.txt"
+  },
+  {
+    "artist": "Naomi Scott",
+    "title": "Speechless",
+    "file": "NaomiScott_Speechless.txt"
+  },
+  {
+    "artist": "Idina Menzel",
+    "title": "Let It Go",
+    "file": "IdinaMenzel_LetItGo.txt"
+  },
+  {
+    "artist": "Corinne Bailey Rae",
+    "title": "Put Your Records On",
+    "file": "CorinneBaileyRae_PutYourRecordsOn.txt"
+  },
+  {
+    "artist": "Christopher",
+    "title": "Bad",
+    "file": "Christopher_Bad.txt"
   }
 ]
