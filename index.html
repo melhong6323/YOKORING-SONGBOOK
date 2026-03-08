@@ -149,7 +149,8 @@ let currentSongs=[], currentArtist='전체', lyricsList=[];
 async function loadLyricsList(){ try { const res = await fetch('data/lyrics_list.json'); lyricsList = await res.json(); } catch(e) {} }
 function findLyricsFile(artist, title){ const found = lyricsList.find(l => l.artist === artist && l.title === title); return found ? found.file : null; }
 async function fetchSheet(sheetName){ 
-  const res=await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}`); 
+  // 수정된 부분: URL에 &headers=0 추가
+  const res=await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&headers=0&sheet=${encodeURIComponent(sheetName)}`); 
   const text=await res.text(); 
   const json=JSON.parse(text.substring(47,text.length-2)); 
   return json.table.rows.map(r => r.c); 
