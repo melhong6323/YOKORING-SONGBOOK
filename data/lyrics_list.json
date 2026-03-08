@@ -2007,5 +2007,40 @@
     "artist": "The Beatles",
     "title": "Come Together",
     "file": "TheBeatles_ComeTogether.txt"
+  },
+    {
+    "artist": "Adele",
+    "title": "Easy On Me",
+    "file": "Adele_EasyOnMe.txt"
+  },
+  {
+    "artist": "Adele",
+    "title": "Make You Feel My Love",
+    "file": "Adele_MakeYouFeelMyLove.txt"
+  },
+  {
+    "artist": "Adele",
+    "title": "Rolling in The Deep",
+    "file": "Adele_RollingInTheDeep.txt"
+  },
+  {
+    "artist": "Adele",
+    "title": "Someone Like You",
+    "file": "Adele_SomeoneLikeYou.txt"
+  },
+  {
+    "artist": "Alan Walker",
+    "title": "On My Way",
+    "file": "AlanWalker_OnMyWay.txt"
+  },
+  {
+    "artist": "Alan Walker",
+    "title": "The Drum",
+    "file": "AlanWalker_TheDrum.txt"
+  },
+  {
+    "artist": "Anne-Marie",
+    "title": "2002",
+    "file": "AnneMarie_2002.txt"
   }
 ]
