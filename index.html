@@ -12,7 +12,7 @@
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
 
 :root {
-    /*  */
+    /* 기존 테마 색상 */
     --bg-yogurt-cream: #FFFAFA;      
     --bg-yogurt-strawberry: #FFE6EA; 
     --bg-card: #ffffff;      
@@ -61,6 +61,7 @@ main { margin-top: var(--nav-height); height: calc(100vh - var(--nav-height)); o
 
 /* --- [1] Home Page Styles --- */
 .home-container { max-width: 1000px; margin: 0 auto; display: flex; flex-direction: column; gap: 30px; padding-bottom: 40px; }
+
 /* --- 세련된 메인 화면 (Glassmorphism + Mesh Gradient) --- */
 .hero-section {
     position: relative; 
@@ -68,7 +69,6 @@ main { margin-top: var(--nav-height); height: calc(100vh - var(--nav-height)); o
     text-align: center; 
     border-radius: 30px; 
     overflow: hidden;
-    /* 이미지 대신 고급스러운 파스텔 오로라(빛번짐) 배경 적용 */
     background: 
         radial-gradient(circle at 15% 50%, rgba(255, 179, 186, 0.4) 0%, transparent 50%),
         radial-gradient(circle at 85% 30%, rgba(255, 223, 186, 0.4) 0%, transparent 50%),
@@ -80,7 +80,6 @@ main { margin-top: var(--nav-height); height: calc(100vh - var(--nav-height)); o
 .hero-content { 
     position: relative; 
     z-index: 1; 
-    /* 투명한 유리 패널 느낌 (글래스모피즘) */
     display: inline-block;
     background: rgba(255, 255, 255, 0.4);
     backdrop-filter: blur(12px);
@@ -100,12 +99,22 @@ main { margin-top: var(--nav-height); height: calc(100vh - var(--nav-height)); o
 .hero-title { font-size: 32px; font-weight: 800; margin-bottom: 10px; color: var(--text-main); }
 
 .quick-links { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+
+/* 아이콘과 텍스트가 나란히 오도록 flex 적용 */
 .link-card {
-    background: #fff; padding: 15px; border-radius: 18px; text-align: center;
+    background: #fff; padding: 15px; border-radius: 18px; 
     text-decoration: none; color: var(--text-main); font-weight: 700; font-size: 14px;
-    border: 1px solid var(--border-color); transition: 0.3s; display: block;
+    border: 1px solid var(--border-color); transition: 0.3s; 
+    display: flex; align-items: center; justify-content: center; gap: 8px; /* 중앙 정렬 및 간격 */
 }
 .link-card:hover { transform: translateY(-5px); border-color: var(--accent); color: var(--accent); box-shadow: 0 5px 15px rgba(93, 60, 67, 0.05); }
+
+/* 아이콘 크기 고정 */
+.link-icon {
+    width: 22px; 
+    height: 22px; 
+    object-fit: contain;
+}
 
 .cta-box { text-align: center; padding: 40px 0; }
 .btn-go-songbook {
@@ -115,14 +124,13 @@ main { margin-top: var(--nav-height); height: calc(100vh - var(--nav-height)); o
 .btn-go-songbook:hover { transform: scale(1.05); }
 
 .latest-video { background: var(--bg-card); padding: 30px; border-radius: 24px; border: 1px solid var(--border-color); }
-.video-wrap { position: relative; padding-bottom: 56.25%; height: 0; border-radius: 15px; overflow: hidden; margin-top: 20px; }
-.video-wrap iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
 .video-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 20px;
 }
 .video-wrap { position: relative; padding-bottom: 56.25%; height: 0; border-radius: 15px; overflow: hidden; }
+.video-wrap iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
 
 /* --- [2] Songbook Page Styles (기존 기능 CSS 그대로 복원) --- */
 .songbook-container { display: flex; gap: 20px; max-width: 1500px; margin: 0 auto; height: 100%; padding-bottom: 20px; }
@@ -194,15 +202,25 @@ main { margin-top: var(--nav-height); height: calc(100vh - var(--nav-height)); o
             </div>
 
             <div class="quick-links">
-                <a href="https://www.sooplive.co.kr/station/yokoring03" target="_blank" class="link-card" style="border-color: #a5dff9;">📺 SOOP 방송국</a>
+                <a href="https://www.sooplive.co.kr/station/yokoring03" target="_blank" class="link-card" style="border-color: #a5dff9;">
+                    <img src="icon-soop.png" alt="SOOP" class="link-icon"> SOOP 방송국
+                </a>
                 
-                <a href="https://www.youtube.com/@%EC%9A%94%EC%BD%94%EB%A7%81" target="_blank" class="link-card" style="border-color: #ffcccc;">🔴 노래 유튜브</a>
+                <a href="https://www.youtube.com/@%EC%9A%94%EC%BD%94%EB%A7%81" target="_blank" class="link-card" style="border-color: #ffcccc;">
+                    <img src="icon-youtube.png" alt="YouTube" class="link-icon"> 노래 유튜브
+                </a>
                 
-                <a href="https://www.youtube.com/channel/UCbcDFqBnyJxdPFXeuUHiF1g" target="_blank" class="link-card" style="border-color: #eee;">📼 다시보기 채널</a>
+                <a href="https://www.youtube.com/channel/UCbcDFqBnyJxdPFXeuUHiF1g" target="_blank" class="link-card" style="border-color: #eee;">
+                    <img src="icon-youtube.png" alt="Replay" class="link-icon"> 다시보기 채널
+                </a>
                 
-                <a href="https://cafe.naver.com/yokoring03" target="_blank" class="link-card" style="border-color: #c3eec3;">🍵 코링 베이커리</a>
+                <a href="https://cafe.naver.com/yokoring03" target="_blank" class="link-card" style="border-color: #c3eec3;">
+                    <img src="icon-cafe.png" alt="Cafe" class="link-icon"> 코링 베이커리
+                </a>
                 
-                <a href="https://discord.com/invite/Mn8zBq7nAb" target="_blank" class="link-card" style="border-color: #d1d9ff;">💬 디스코드</a>
+                <a href="https://discord.com/invite/Mn8zBq7nAb" target="_blank" class="link-card" style="border-color: #d1d9ff;">
+                    <img src="icon-discord.png" alt="Discord" class="link-icon"> 디스코드
+                </a>
             </div>
 
             <div class="latest-video">
