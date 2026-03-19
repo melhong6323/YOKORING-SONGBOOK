@@ -61,16 +61,40 @@ main { margin-top: var(--nav-height); height: calc(100vh - var(--nav-height)); o
 
 /* --- [1] Home Page Styles --- */
 .home-container { max-width: 1000px; margin: 0 auto; display: flex; flex-direction: column; gap: 30px; padding-bottom: 40px; }
+/* --- 세련된 메인 화면 (Glassmorphism + Mesh Gradient) --- */
 .hero-section {
-    position: relative; padding: 60px 20px; text-align: center; border-radius: 30px; overflow: hidden;
-    background: url('yoko-home-bg.png') center/cover;
-    box-shadow: 0 10px 30px rgba(93, 60, 67, 0.05);
+    position: relative; 
+    padding: 80px 20px; 
+    text-align: center; 
+    border-radius: 30px; 
+    overflow: hidden;
+    /* 이미지 대신 고급스러운 파스텔 오로라(빛번짐) 배경 적용 */
+    background: 
+        radial-gradient(circle at 15% 50%, rgba(255, 179, 186, 0.4) 0%, transparent 50%),
+        radial-gradient(circle at 85% 30%, rgba(255, 223, 186, 0.4) 0%, transparent 50%),
+        radial-gradient(circle at 50% 80%, rgba(255, 241, 243, 0.8) 0%, transparent 50%),
+        linear-gradient(135deg, #ffffff 0%, #FFF1F3 100%);
+    box-shadow: 0 15px 35px rgba(93, 60, 67, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.8);
 }
-.hero-section::before { content: ""; position: absolute; inset: 0; background: rgba(255, 255, 255, 0.5); }
-.hero-content { position: relative; z-index: 1; }
+.hero-content { 
+    position: relative; 
+    z-index: 1; 
+    /* 투명한 유리 패널 느낌 (글래스모피즘) */
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    padding: 40px 60px;
+    border-radius: 28px;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 0 10px 30px rgba(93, 60, 67, 0.08);
+}
 .profile-img { 
-    width: 160px; height: 160px; border-radius: 50%; border: 6px solid #fff; 
-    box-shadow: 0 10px 25px rgba(93, 60, 67, 0.1); margin-bottom: 20px;
+    width: 150px; height: 150px; border-radius: 50%; 
+    border: 4px solid #fff; 
+    box-shadow: 0 8px 20px rgba(255, 142, 173, 0.2); 
+    margin-bottom: 20px;
     background: #fff url('yoko-profile.png') center/cover;
 }
 .hero-title { font-size: 32px; font-weight: 800; margin-bottom: 10px; color: var(--text-main); }
