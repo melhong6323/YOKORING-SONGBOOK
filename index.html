@@ -105,7 +105,16 @@ main { margin-top: var(--nav-height); height: calc(100vh - var(--nav-height)); o
 .tab { padding: 7px 12px; border-radius: 10px; background: var(--bg-inner); color: var(--text-sub); cursor: pointer; font-size: 12px; font-weight: 600; }
 .tab.active { background: var(--accent-soft); color: var(--accent); border: 1px solid var(--accent); }
 
-#guide { flex: 1; overflow-y: auto; font-size: 13px; color: var(--text-main); line-height: 1.8; padding: 20px; text-align: left; font-weight: 400 !important; }
+#guide { 
+    flex: 1; 
+    overflow-y: auto; 
+    font-size: 13px; 
+    color: var(--text-sub); 
+    line-height: 1.8; 
+    padding: 20px; 
+    text-align: left; 
+    font-weight: 400 !important; 
+}
 #artistList { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; max-height: 250px; overflow-y: auto; scroll-behavior: smooth; }
 #artistList .tab { text-align: center; font-size: 11px; padding: 6px 2px; }
 
