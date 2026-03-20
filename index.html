@@ -112,13 +112,13 @@ main { margin-top: var(--nav-height); height: calc(100vh - var(--nav-height)); o
     display: flex; 
     gap: 8px; 
     align-items: center; 
-    width: 220px;          /* 참고란이 길어질 수 있으니 너비를 살짝 더 늘렸어요 */
+    width: 220px; 
     flex-shrink: 0; 
     justify-content: flex-end; 
     margin-right: 15px;
 }
 
-/* 4. [Key, KeyUp, 참고] 공통 및 개별 스타일 */
+/* 2. 공통 설정 (글자 크기 13px 및 볼드) */
 .note-text, .key-badge, .keyup-badge { 
     font-size: 13px; 
     font-weight: 700; 
@@ -126,36 +126,30 @@ main { margin-top: var(--nav-height); height: calc(100vh - var(--nav-height)); o
     opacity: 1;
 }
 
+/* 3. [참고란 (Note)] - 배경 없이 '짙은 회색 글씨'만 */
 .note-text { 
-    font-size: 13px; 
-    font-weight: 700; 
-    color: #666666 !important; /* 짙은 회색 글씨 */
-    background: none !important; /* 배경색 제거 */
-    border: none !important;     /* 테두리 제거 */
-    padding: 0 !important;       /* 여백 제거 */
-    white-space: nowrap;
+    color: #777777 !important; 
+    background: none !important; 
+    border: none !important; 
+    padding: 0 !important; 
 }
 
+/* 4. [Key] - '베이지색 배경'이 있는 볼드 배지 */
 .key-badge { 
-    font-size: 13px; 
-    font-weight: 700; 
-    color: var(--text-main); 
-    background: #f0ede5 !important; /* 기존 베이지 배경 복구 */
+    color: var(--text-main) !important; 
+    background: #f0ede5 !important; 
     padding: 2px 8px; 
     border-radius: 5px;
     border: 1px solid var(--border-color);
-    white-space: nowrap;
 }
 
+/* 5. [KeyUp] - 기존 '분홍색' 디자인 유지 */
 .keyup-badge { 
-    font-size: 13px; 
-    font-weight: 700; 
     color: var(--accent) !important; 
     background: var(--accent-soft) !important; 
     padding: 2px 8px; 
     border-radius: 5px; 
     border: 1px solid var(--accent);
-    white-space: nowrap;
 }
 
 .mr-btn, .lyrics-btn { padding: 6px 12px; border-radius: 8px; font-size: 10px; font-weight: 700; text-align: center; min-width: 60px; cursor: pointer; border: 1px solid var(--border-color); text-decoration: none; display: inline-block; }
