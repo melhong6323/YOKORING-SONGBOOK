@@ -33,14 +33,14 @@ body {
     height: 100vh; 
     overflow: hidden;
     
-    /* [수정] body 괄호가 닫히기 전에 커서 설정을 넣어주세요! */
-    cursor: url('cursor-basic.png'), auto; 
+    /* [수정] 반짝이 위치인 10px 10px 지점을 클릭 포인트로 설정 */
+    cursor: url('cursor-basic.png') 10 10, auto; 
 }
 
 /* 클릭이 가능한 모든 요소들 (손가락 모양 나오는 구역) */
 a, button, .tab, .song, .copy-icon, .video-wrap, .menu-toggle {
-    /* ⚠️ !important를 붙여서 브라우저 기본 손가락 모양을 무시하고 강제 적용 */
-    cursor: url('cursor-pointer.png'), pointer !important;
+    /* [수정] url 뒤에 10 10 좌표를 추가하여 반짝이 부분이 클릭되게 설정 */
+    cursor: url('cursor-pointer.png') 10 10, pointer !important;
 }
 
 /* 1. Navbar */
@@ -92,7 +92,6 @@ main { margin-top: var(--nav-height); height: calc(100vh - var(--nav-height)); o
     background:rgba(0,0,0,0.6); color:#fff; border-radius:50%; display:flex; justify-content:center; 
     align-items:center; font-size:24px; z-index: 2; transition: 0.3s;
 }
-/* 4. 수정: 유튜브 썸네일 호버 효과 */
 .video-wrap:hover .yt-play-btn { background: var(--accent); transform: translate(-50%, -50%) scale(1.1); }
 
 /* 5. Songbook Page */
@@ -115,10 +114,19 @@ main { margin-top: var(--nav-height); height: calc(100vh - var(--nav-height)); o
 .reset-btn { flex-shrink: 0; height: 45px; padding: 0 15px; background: var(--accent-soft); color: var(--accent); border: 1px solid var(--accent); border-radius: 14px; font-size: 11px; font-weight: 800; cursor: pointer; }
 
 #list { flex: 1; overflow-y: auto; }
-.song { display: flex; align-items: center; padding: 14px 20px; border-bottom: 1px solid rgba(0,0,0,0.03); }
+
+/* [수정] 곡 목록 Hover 및 Click 표시 추가 */
+.song { 
+    display: flex; align-items: center; padding: 14px 20px; 
+    border-bottom: 1px solid rgba(0,0,0,0.03); 
+    transition: background 0.2s ease;
+}
+.song:hover { background: var(--accent-soft); }
+.song:active { background: rgba(255, 142, 173, 0.2); }
+
 .artist-name { 
-    width: 190px;          /* 칸 너비를 120px에서 130px로 살짝 넓힘 */
-    margin-right: 25px;    /* 노래 제목과의 간격을 25px로 넉넉히 벌림 */
+    width: 190px;           
+    margin-right: 25px;    
     flex-shrink: 0; 
     font-weight: 600; 
     color: var(--text-sub); 
@@ -128,7 +136,6 @@ main { margin-top: var(--nav-height); height: calc(100vh - var(--nav-height)); o
     text-overflow: ellipsis; 
 }
 
-/* (참고) 노래 제목 영역은 그대로 유지 (자동으로 밀려나 정렬됨) */
 .song-title { 
     flex: 1; 
     min-width: 0; 
@@ -151,12 +158,11 @@ main { margin-top: var(--nav-height); height: calc(100vh - var(--nav-height)); o
     margin-right: 15px;
 }
 
-/* 2. [참고란 (Note)] - '베이지색 배경'이 있는 볼드 배지 (수정 완료) */
 .note-text { 
     font-size: 13px; 
     font-weight: 700; 
-    color: #5D3C43 !important;   /* 메인 텍스트 색상 */
-    background: #f0ede5 !important; /* 베이지색 배경 */
+    color: #5D3C43 !important;   
+    background: #f0ede5 !important; 
     padding: 2px 8px; 
     border-radius: 5px;
     border: 1px solid rgba(93, 60, 67, 0.1) !important;
@@ -165,18 +171,16 @@ main { margin-top: var(--nav-height); height: calc(100vh - var(--nav-height)); o
     opacity: 1;
 }
 
-/* 3. [Key] - 배경 없이 '진한 회색 글씨'만 출력 (수정 완료) */
 .key-badge { 
     font-size: 13px; 
     font-weight: 700; 
-    color: #777777 !important;   /* 진한 회색 글자 */
-    background: none !important;  /* 배경 삭제 */
-    border: none !important;      /* 테두리 삭제 */
-    padding: 0 !important;        /* 여백 삭제 */
+    color: #777777 !important;   
+    background: none !important;  
+    border: none !important;      
+    padding: 0 !important;        
     white-space: nowrap;
 }
 
-/* 4. [KeyUp] - 기존 '분홍색' 디자인 그대로 유지 */
 .keyup-badge { 
     font-size: 13px; 
     font-weight: 700; 
@@ -192,9 +196,9 @@ main { margin-top: var(--nav-height); height: calc(100vh - var(--nav-height)); o
 .mr-btn, .lyrics-btn { padding: 6px 12px; border-radius: 8px; font-size: 10px; font-weight: 700; text-align: center; min-width: 60px; cursor: pointer; border: 1px solid var(--border-color); text-decoration: none; display: inline-block; }
 .mr-btn { background: #ede3d5; color: var(--text-main); }
 .mr-btn.find { 
-    background: #f0f7f7 !important; /* 연한 민트/블루 배경 */
-    border: 1px solid #8eb9ff !important; /* 차분한 블루 테두리 */
-    color: #4a7dff !important;      /* 신뢰감 있는 블루 글씨 */
+    background: #f0f7f7 !important; 
+    border: 1px solid #8eb9ff !important; 
+    color: #4a7dff !important;      
 }
 .mr-btn.find:hover { 
     background: #e1efff !important; 
@@ -204,7 +208,6 @@ main { margin-top: var(--nav-height); height: calc(100vh - var(--nav-height)); o
 .lyrics-btn.active { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
 .copy-icon { width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-sub); border-radius: 10px; background: var(--bg-inner); margin-right: 10px; }
 
-/* 📱 Mobile Optimized */
 @media (max-width: 768px) {
     .navbar { padding: 0 20px; justify-content: center; }
     .nav-logo { font-size: 17px; }
@@ -221,16 +224,18 @@ main { margin-top: var(--nav-height); height: calc(100vh - var(--nav-height)); o
     .song-title { flex: 1.5; font-size: 13px; }
 }
 
-/* Modal Styling */
 .modal { 
     display: none; position: fixed; inset: 0; 
     background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); 
     justify-content: center; align-items: center; z-index: 2000; 
 }
-/* 가사 모달: 전체 드래그 가능하도록 cursor 적용 */
+
+/* [수정] 가사 모달: 생성 위치 중앙 고정 */
 .modal-content { 
     background: #fff; width: 92%; max-width: 550px; border-radius: 28px; 
-    position: absolute; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.2); 
+    position: absolute; 
+    top: 50%; left: 50%; transform: translate(-50%, -50%); /* 중앙 정렬 기본값 */
+    overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.2); 
     cursor: grab; 
 }
 .modal-content:active { cursor: grabbing; }
@@ -244,7 +249,6 @@ main { margin-top: var(--nav-height); height: calc(100vh - var(--nav-height)); o
 .lyrics-body { padding: 40px 30px; max-height: 60vh; overflow-y: auto; text-align: center; }
 #lyricsText { white-space: pre-wrap; font-size: 18px; line-height: 1.8; color: var(--text-main); margin: 0; font-weight: 400 !important; }
 
-/* 1. 수정: 가나다 모달 정상화 */
 #ganadaContent { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 92%; max-width: 450px; cursor: default; }
 </style>
 </head>
@@ -404,28 +408,32 @@ function renderSongList() {
 }
 
 function sendToWidget(t, a) { db.ref('currentSong').set({ title: t, artist: a, timestamp: Date.now() }); }
+
+/* [수정] 가사 모달 생성 시 위치 초기화 보장 */
 function showLyrics(f) { 
     if(!f || f==='null') return; 
     fetch(`data/lyrics/${f}`).then(r=>r.text()).then(t=>{ 
         document.getElementById('lyricsText').textContent=t; 
         document.getElementById('lyricsModal').style.display='flex'; 
-        resetDrag(); // 2 수정: 생성 시 위치 초기화
+        resetDrag(); // 생성 즉시 중앙 위치로 리셋
     }); 
 }
 function copyText(t, b) { navigator.clipboard.writeText(t).then(() => { const o = b.textContent; b.textContent = '✅'; setTimeout(() => b.textContent = o, 1000); }); }
 function loadYoutube(el, id) { el.innerHTML = `<iframe src="https://www.youtube.com/embed/${id}?autoplay=1" allow="autoplay; encrypted-media; fullscreen" allowfullscreen style="width:100%; height:100%; border:none; border-radius:15px; position:absolute; top:0; left:0;"></iframe>`; }
 function remoteReload() { db.ref('command').set({ type: 'RELOAD', timestamp: Date.now() }); }
 
-/* --- 2 & 3 수정: 드래그 로직 (몸통 포함) --- */
+/* --- 드래그 로직 --- */
 let isDragging = false, xOff = 0, yOff = 0, startX, startY;
 const dragT = document.getElementById("dragTarget");
 
-function resetDrag() { xOff = 0; yOff = 0; dragT.style.transform = `translate(-50%, -50%)`; }
+/* [수정] 드래그 초기화 시 translate 중앙 정렬값 유지 */
+function resetDrag() { 
+    xOff = 0; yOff = 0; 
+    dragT.style.transform = `translate(-50%, -50%)`; 
+}
 
-// 몸통 전체에서 드래그 가능하도록 dragT에 이벤트 리스너 추가
 dragT.addEventListener("mousedown", dStart); dragT.addEventListener("touchstart", dStart);
 function dStart(e) {
-    // 닫기 버튼 클릭 시 드래그 방지
     if (e.target.classList.contains('modal-close')) return;
     const cx = e.type === "touchstart" ? e.touches[0].clientX : e.clientX;
     const cy = e.type === "touchstart" ? e.touches[0].clientY : e.clientY;
@@ -438,13 +446,13 @@ function dMove(e) {
         const cx = e.type === "touchmove" ? e.touches[0].clientX : e.clientX;
         const cy = e.type === "touchmove" ? e.touches[0].clientY : e.clientY;
         xOff = cx - startX; yOff = cy - startY;
+        /* [수정] translate 기본 중앙 정렬값(-50%)을 기준으로 이동값 합산 */
         dragT.style.transform = `translate(calc(-50% + ${xOff}px), calc(-50% + ${yOff}px))`;
     }
 }
 document.addEventListener("mousemove", dMove); document.addEventListener("mouseup", () => isDragging = false);
 document.addEventListener("touchmove", dMove, {passive: false}); document.addEventListener("touchend", () => isDragging = false);
 
-// 1 수정: 가나다 모달 로직
 document.getElementById('btnGanada').onclick = () => {
     const list = document.getElementById('ganadaList'); list.innerHTML = ''; const map = {}; currentSongs.forEach(s => { map[s.filterArtist] = 1; });
     Object.keys(map).sort((a,b) => a.localeCompare(b,'ko')).forEach(a => { 
