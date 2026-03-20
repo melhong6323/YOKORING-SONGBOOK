@@ -37,9 +37,10 @@ body {
     cursor: url('cursor-basic.png'), auto; 
 }
 
-/* 클릭 요소들은 body 바깥에 독립적으로 두는 게 맞습니다! 잘하셨어요. */
+/* 클릭이 가능한 모든 요소들 (손가락 모양 나오는 구역) */
 a, button, .tab, .song, .copy-icon, .video-wrap, .menu-toggle {
-    cursor: url('cursor-pointer.png'), pointer;
+    /* ⚠️ !important를 붙여서 브라우저 기본 손가락 모양을 무시하고 강제 적용 */
+    cursor: url('cursor-pointer.png'), pointer !important;
 }
 
 /* 1. Navbar */
