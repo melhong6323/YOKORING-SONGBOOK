@@ -24,23 +24,22 @@
     --nav-height: 70px;
 }
 
-* { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+* { box-sizing: border-box; -webkit-font-smoothing: antialiased; font-family: 'Pretendard', sans-serif !important; }
 
 body {
-    margin: 0; font-family: 'Pretendard', sans-serif;
-    background: linear-gradient(135deg, var(--bg-yogurt-cream) 0%, var(--bg-yogurt-strawberry) 100%);
-    color: var(--text-main); height: 100vh; overflow: hidden; transition: background-color 0.5s ease;
+    margin: 0; background: linear-gradient(135deg, var(--bg-yogurt-cream) 0%, var(--bg-yogurt-strawberry) 100%);
+    color: var(--text-main); height: 100vh; overflow: hidden;
 }
 
-/* 1. 네비게이션 바 (로고 좌측 / 메뉴 중앙) */
+/* 1. Navbar (PC: 로고 좌측 / 메뉴 중앙) */
 .navbar {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 0 40px; height: var(--nav-height);
+    display: flex; align-items: center; padding: 0 40px; height: var(--nav-height);
     background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(10px);
     position: fixed; top: 0; width: 100%; z-index: 1000; border-bottom: 1px solid var(--border-color);
 }
-.nav-logo { font-size: 20px; font-weight: 800; color: var(--text-main); }
+.nav-logo { font-size: 20px; font-weight: 800; color: var(--text-main); flex-shrink: 0; }
 .nav-logo span { color: var(--accent); }
+
 .nav-menu { 
     display: flex; gap: 20px; position: absolute; left: 50%; transform: translateX(-50%); 
 }
@@ -50,96 +49,125 @@ body {
 }
 .nav-item.active { color: var(--accent); background: var(--accent-soft); }
 
-/* 2. 메인 레이아웃 */
+/* 모바일 햄버거 버튼 */
+.menu-toggle { display: none; font-size: 26px; cursor: pointer; color: var(--text-main); position: absolute; left: 20px; z-index: 1001; }
+
+/* 2. Main Layout */
 main { margin-top: var(--nav-height); height: calc(100vh - var(--nav-height)); overflow: hidden; }
 .page { display: none; padding: 20px; height: 100%; overflow-y: auto; animation: fadeIn 0.4s ease-out; }
 .page.active { display: block; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-/* 3. 홈 화면 */
-.home-container { max-width: 1000px; margin: 0 auto; display: flex; flex-direction: column; gap: 30px; padding-bottom: 40px; }
+/* 3. Home Page (Hero) */
+.home-container { max-width: 10000px; margin: 0 auto; display: flex; flex-direction: column; gap: 30px; padding-bottom: 40px; }
 .hero-section {
     position: relative; padding: 80px 20px; text-align: center; border-radius: 30px; overflow: hidden;
     background: radial-gradient(circle at 15% 50%, rgba(255, 179, 186, 0.4) 0%, transparent 50%), #fff;
     box-shadow: 0 15px 35px rgba(93, 60, 67, 0.05); border: 1px solid rgba(255, 255, 255, 0.8);
 }
-.hero-content { position: relative; z-index: 1; display: inline-block; background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(12px); padding: 40px 60px; border-radius: 28px; box-shadow: 0 10px 30px rgba(93, 60, 67, 0.08); }
-.profile-img { width: 150px; height: 150px; border-radius: 50%; border: 4px solid #fff; margin: 0 auto 20px; background: #fff url('yoko-profile.png') center/cover; box-shadow: 0 8px 20px rgba(255, 142, 173, 0.2); }
-.hero-title { font-size: 32px; font-weight: 800; margin-bottom: 10px; color: var(--text-main); }
+.profile-img { width: 150px; height: 150px; border-radius: 50%; border: 4px solid #fff; margin: 0 auto 20px; background: #fff url('yoko-profile.png') center/cover; box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+.hero-title { font-size: 32px; font-weight: 800; margin-bottom: 10px; }
+.hero-desc { font-weight: 600; opacity: 0.8; margin-bottom: 20px; }
+
+/* 모바일 바로가기 버튼 */
+.mobile-btn-area { display: none; margin-top: 15px; }
+.btn-go-songbook {
+    padding: 14px 34px; background: var(--accent); color: white; border: none;
+    border-radius: 50px; font-weight: 800; font-size: 16px; cursor: pointer;
+    box-shadow: 0 8px 15px rgba(255, 142, 173, 0.3); transition: 0.3s;
+}
 
 .quick-links { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
 .link-card { background: #fff; padding: 15px; border-radius: 18px; text-decoration: none; color: var(--text-main); font-weight: 700; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.3s; }
-.link-card:hover { transform: translateY(-5px); border-color: var(--accent); color: var(--accent); }
-.link-icon { width: 22px; height: 22px; object-fit: contain; }
 
 .latest-video { background: var(--bg-card); padding: 30px; border-radius: 24px; border: 1px solid var(--border-color); }
 .video-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
-.video-wrap { position: relative; padding-bottom: 56.25%; border-radius: 15px; overflow: hidden; cursor: pointer; }
-.yt-thumb { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 15px; }
-.yt-play-btn { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60px; height: 60px; background: rgba(0, 0, 0, 0.6); color: #fff; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 22px; transition: 0.3s; z-index: 2; pointer-events: none; }
-.video-wrap:hover .yt-play-btn { background: var(--accent); transform: translate(-50%, -50%) scale(1.1); }
+.video-wrap { position: relative; padding-bottom: 56.25%; border-radius: 15px; overflow: hidden; cursor: pointer; background: #000; }
+.yt-thumb { position: absolute; top:0; left:0; width:100%; height:100%; object-fit: cover; }
+.yt-play-btn { position: absolute; top:50%; left:50%; transform:translate(-50%, -50%); width:60px; height:60px; background:rgba(0,0,0,0.6); color:#fff; border-radius:50%; display:flex; justify-content:center; align-items:center; font-size:24px; z-index: 2; }
 
-/* 4. 노래책 화면 */
+/* 4. Songbook Page (Sidebar) */
 .songbook-container { display: flex; gap: 20px; max-width: 1500px; margin: 0 auto; height: 100%; }
-.left-pane { flex: 0 0 320px; display: flex; flex-direction: column; gap: 16px; height: 100%; }
+.left-pane { flex: 0 0 320px; display: flex; flex-direction: column; gap: 16px; height: 100%; transition: 0.3s ease; position: relative; }
 .right-pane { flex: 1; background: var(--bg-card); border-radius: 24px; border: 1px solid var(--border-color); display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 30px rgba(93, 60, 67, 0.05); }
-.glass-card { background: var(--bg-card); border-radius: 20px; padding: 20px; border: 1px solid var(--border-color); }
 
+.sidebar-close { display: none; position: absolute; top: 15px; right: 15px; font-size: 26px; cursor: pointer; color: var(--text-sub); z-index: 10; padding: 5px; }
+
+.glass-card { background: var(--bg-card); border-radius: 20px; padding: 20px; border: 1px solid var(--border-color); }
 .tab-group { display: flex; flex-wrap: wrap; gap: 6px; }
-.tab { padding: 7px 12px; border-radius: 10px; background: var(--bg-inner); color: var(--text-sub); cursor: pointer; font-size: 12px; font-weight: 600; transition: 0.2s; border: 1px solid transparent; }
+.tab { padding: 7px 12px; border-radius: 10px; background: var(--bg-inner); color: var(--text-sub); cursor: pointer; font-size: 12px; font-weight: 600; }
 .tab.active { background: var(--accent-soft); color: var(--accent); border: 1px solid var(--accent); }
+
+#guide { flex: 1; overflow-y: auto; font-size: 13px; color: var(--text-main); line-height: 1.8; padding: 20px; text-align: left; font-weight: 400 !important; }
 
 #artistList { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; max-height: 250px; overflow-y: auto; scroll-behavior: smooth; }
 #artistList .tab { text-align: center; font-size: 11px; padding: 6px 2px; }
 
 .list-header { padding: 15px 20px; background: rgba(255, 255, 255, 0.5); display: flex; gap: 10px; align-items: center; border-bottom: 1px solid var(--border-color); }
-#searchInput { flex: 1; background: var(--bg-inner); border: 1.5px solid var(--border-color); border-radius: 14px; padding: 12px 18px; color: var(--text-main); font-size: 14px; outline: none; }
-#searchInput::placeholder { color: var(--text-sub); opacity: 0.6; }
-.reset-btn { flex-shrink: 0; height: 45px; padding: 0 15px; background: var(--accent-soft); color: var(--accent); border: 1px solid var(--accent); border-radius: 14px; font-size: 11px; font-weight: 800; cursor: pointer; transition: 0.2s; }
-.reset-btn:hover { background: var(--accent); color: white; }
+#searchInput { flex: 1; background: var(--bg-inner); border: 1.5px solid var(--border-color); border-radius: 14px; padding: 12px 18px; outline: none; }
+.reset-btn { flex-shrink: 0; height: 45px; padding: 0 15px; background: var(--accent-soft); color: var(--accent); border: 1px solid var(--accent); border-radius: 14px; font-size: 11px; font-weight: 800; cursor: pointer; }
 
-#list { flex: 1; overflow-y: auto; background: var(--bg-card); position: relative; }
-.song { display: flex; align-items: center; padding: 14px 20px; gap: 12px; border-bottom: 1px solid rgba(93, 60, 67, 0.04); }
-.song:hover { background: var(--bg-inner); }
-.song.selected { background: var(--accent-soft); }
+#list { flex: 1; overflow-y: auto; }
+.song { display: flex; align-items: center; padding: 14px 20px; border-bottom: 1px solid rgba(0,0,0,0.03); }
 
-.song-info-tags { display: flex; gap: 6px; align-items: center; width: 130px; margin-right: 12px; flex-shrink: 0; justify-content: flex-end; }
+/* 리스트 정렬 */
+.song-info-tags { display: flex; gap: 6px; width: 130px; flex-shrink: 0; justify-content: flex-end; margin-right: 12px; }
 .key-badge { font-size: 10px; background: #f0ede5; color: var(--text-sub); padding: 2px 6px; border-radius: 4px; }
 .keyup-badge { font-size: 10px; background: var(--accent-soft); color: var(--accent); padding: 2px 6px; border-radius: 4px; border: 1px solid var(--accent); }
-.note-text { font-size: 11px; color: var(--accent); font-weight: 600; opacity: 0.9; max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.note-text { font-size: 11px; color: var(--accent); font-weight: 600; max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-.copy-icon { width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-sub); border-radius: 10px; background: var(--bg-inner); border: 1px solid var(--border-color); }
 .artist-name { flex: 1; font-weight: 600; color: var(--text-sub); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .song-title { flex: 2; color: var(--text-main); font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 10px; }
 
-.mr-btn, .lyrics-btn { padding: 6px 12px; border-radius: 8px; font-size: 10px; font-weight: 700; text-decoration: none; text-align: center; min-width: 60px; display: inline-block; cursor: pointer; }
-.mr-btn { background: #ede3d5; color: var(--text-main); border: 1px solid var(--border-color); }
+.mr-btn, .lyrics-btn { padding: 6px 12px; border-radius: 8px; font-size: 10px; font-weight: 700; text-align: center; min-width: 60px; cursor: pointer; border: 1px solid var(--border-color); text-decoration: none; display: inline-block; }
+.mr-btn { background: #ede3d5; color: var(--text-main); }
 .mr-btn.find { background: #fff; border: 1px dashed var(--accent); color: var(--accent); }
-.lyrics-btn { background: transparent; color: var(--text-sub); border: 1px solid var(--border-color); }
+.lyrics-btn { background: transparent; color: var(--text-sub); }
 .lyrics-btn.active { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
 
-/* 수정된 사용설명서 디자인 (#guide) */
-#guide { 
-    flex: 1; overflow-y: auto; font-size: 13px; color: var(--text-main); 
-    line-height: 1.8; padding: 20px; text-align: left; font-weight: 400; 
+.copy-icon { width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-sub); border-radius: 10px; background: var(--bg-inner); margin-right: 10px; }
+
+/* =========================================
+   📱 모바일 환경 긴급 수정
+========================================= */
+@media (max-width: 768px) {
+    .navbar { padding: 0 20px; justify-content: center; }
+    .nav-logo { font-size: 17px; }
+    .nav-menu { display: none; } /* 상단 메뉴 숨김 (겹침 방지) */
+    .menu-toggle { display: block; } /* 햄버거 노출 */
+    
+    /* 홈 설명 한 줄 처리 및 버튼 */
+    .hero-desc { white-space: nowrap; font-size: 14px; }
+    .mobile-btn-area { display: block; } 
+
+    /* 사이드바 설정 (곡 목록이 바로 보이게 숨김 처리) */
+    .left-pane {
+        position: fixed; top: 0; left: -340px; width: 300px; z-index: 1100;
+        background: #fff; padding: 70px 20px 20px; box-shadow: 10px 0 30px rgba(0,0,0,0.1); height: 100vh;
+    }
+    .left-pane.open { left: 0; }
+    .sidebar-close { display: block; } /* 닫기 버튼 노출 */
+
+    /* 모바일 리스트 가수-제목만 */
+    .song-info-tags, .mr-btn, .lyrics-btn { display: none !important; }
+    .song { padding: 12px 15px; }
+    .artist-name { flex: 1; font-size: 12px; }
+    .song-title { flex: 1.5; font-size: 13px; }
 }
 
-/* 모달 및 가사 폰트 수정 */
-.modal { display: none; position: fixed; inset: 0; background: rgba(93, 60, 67, 0.4); backdrop-filter: blur(4px); justify-content: center; align-items: center; z-index: 2000; }
-.modal-content { background: var(--bg-card); width: 92%; max-width: 550px; border-radius: 28px; position: absolute; overflow: hidden; box-shadow: 0 30px 60px rgba(93, 60, 67, 0.2); }
-.modal-header { padding: 20px; color: var(--accent); font-weight: 800; cursor: move; text-align: center; border-bottom: 1px solid var(--border-color); }
-.modal-close { position: absolute; top: 18px; right: 20px; cursor: pointer; color: var(--text-sub); font-size: 22px; }
-.lyrics-body { padding: 40px 30px; max-height: 65vh; overflow-y: auto; text-align: center; }
-#lyricsText { 
-    white-space: pre-wrap; color: var(--text-main); 
-    font-family: 'Pretendard', sans-serif !important; /* 글꼴 고정 */
-    font-size: 18px; line-height: 1.8; font-weight: 400; margin: 0; 
-}
+/* 모달 & 가사 폰트 */
+.modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); justify-content: center; align-items: center; z-index: 2000; }
+.modal-content { background: #fff; width: 92%; max-width: 550px; border-radius: 28px; position: absolute; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.2); }
+.modal-header { padding: 20px; color: var(--accent); font-weight: 800; text-align: center; border-bottom: 1px solid var(--border-color); cursor: move; }
+.modal-close { position: absolute; top: 18px; right: 20px; cursor: pointer; font-size: 22px; }
+.lyrics-body { padding: 40px 30px; max-height: 60vh; overflow-y: auto; text-align: center; }
+#lyricsText { white-space: pre-wrap; font-size: 18px; line-height: 1.8; color: var(--text-main); margin: 0; font-weight: 400 !important; }
 </style>
 </head>
 <body>
 
 <nav class="navbar">
+    <div class="menu-toggle" onclick="toggleSidebar()">☰</div>
     <div class="nav-logo">요코링 <span>Yokoring</span></div>
     <div class="nav-menu">
         <div class="nav-item active" id="btn-nav-home" onclick="showPage('home')">홈</div>
@@ -151,37 +179,38 @@ main { margin-top: var(--nav-height); height: calc(100vh - var(--nav-height)); o
     <section id="home-page" class="page active">
         <div class="home-container">
             <div class="hero-section">
-                <div class="hero-content">
-                    <div class="profile-img"></div>
-                    <h1 class="hero-title">요코링 Yokoring</h1>
-                    <p style="font-weight: 600; opacity: 0.8; color: var(--text-main);">코링이와 넙치의 놀이터입니다.</p>
+                <div class="profile-img"></div>
+                <h1 class="hero-title">요코링 Yokoring</h1>
+                <p class="hero-desc">코링이와 넙치의 놀이터입니다.</p>
+                <div class="mobile-btn-area">
+                    <button class="btn-go-songbook" onclick="showPage('songbook')">노래책 바로가기 🎵</button>
                 </div>
             </div>
             <div class="quick-links">
-                <a href="https://www.sooplive.co.kr/station/yokoring03" target="_blank" class="link-card" style="border-color: #a5dff9;"><img src="icon-soop.png" class="link-icon"> SOOP 방송국</a>
-                <a href="https://www.youtube.com/@%EC%9A%94%EC%BD%94%EB%A7%81" target="_blank" class="link-card" style="border-color: #ffcccc;"><img src="icon-youtube.png" class="link-icon"> 노래 유튜브</a>
-                <a href="https://www.youtube.com/channel/UCbcDFqBnyJxdPFXeuUHiF1g" target="_blank" class="link-card" style="border-color: #eee;"><img src="icon-youtube.png" class="link-icon"> 다시보기 채널</a>
-                <a href="https://cafe.naver.com/yokoring03" target="_blank" class="link-card" style="border-color: #c3eec3;"><img src="icon-cafe.png" class="link-icon"> 코링 베이커리</a>
-                <a href="https://discord.com/invite/Mn8zBq7nAb" target="_blank" class="link-card" style="border-color: #d1d9ff;"><img src="icon-discord.png" class="link-icon"> 디스코드</a>
+                <a href="https://www.sooplive.co.kr/station/yokoring03" target="_blank" class="link-card"><img src="icon-soop.png" alt="SOOP" style="width:20px;"> SOOP 방송국</a>
+                <a href="https://www.youtube.com/@%EC%9A%94%EC%BD%94%EB%A7%81" target="_blank" class="link-card"><img src="icon-youtube.png" alt="YT" style="width:20px;"> 노래 유튜브</a>
+                <a href="https://cafe.naver.com/yokoring03" target="_blank" class="link-card"><img src="icon-cafe.png" alt="Cafe" style="width:20px;"> 코링 베이커리</a>
+                <a href="https://discord.com/invite/Mn8zBq7nAb" target="_blank" class="link-card"><img src="icon-discord.png" alt="Disc" style="width:20px;"> 디스코드</a>
             </div>
-            <div class="latest-video">
-                <h3 style="font-size: 18px; font-weight: 800; margin-bottom: 10px;">최신 업로드 영상</h3>
-                <div class="video-grid">
-                    <div class="video-wrap" onclick="loadYoutube(this, 'sueWEqdFt8w')"><img src="https://img.youtube.com/vi/sueWEqdFt8w/maxresdefault.jpg" class="yt-thumb"><div class="yt-play-btn">▶</div></div>
-                    <div class="video-wrap" onclick="loadYoutube(this, 'lAbisQ9vZq0')"><img src="https://img.youtube.com/vi/lAbisQ9vZq0/maxresdefault.jpg" class="yt-thumb"><div class="yt-play-btn">▶</div></div>
-                    <div class="video-wrap" onclick="loadYoutube(this, 'OlBL88RrnYU')"><img src="https://img.youtube.com/vi/OlBL88RrnYU/maxresdefault.jpg" class="yt-thumb"><div class="yt-play-btn">▶</div></div>
-                </div>
+            <div class="video-grid">
+                <div class="video-wrap" onclick="loadYoutube(this, 'sueWEqdFt8w')"><img src="https://img.youtube.com/vi/sueWEqdFt8w/maxresdefault.jpg" class="yt-thumb"><div class="yt-play-btn">▶</div></div>
+                <div class="video-wrap" onclick="loadYoutube(this, 'lAbisQ9vZq0')"><img src="https://img.youtube.com/vi/lAbisQ9vZq0/maxresdefault.jpg" class="yt-thumb"><div class="yt-play-btn">▶</div></div>
+                <div class="video-wrap" onclick="loadYoutube(this, 'OlBL88RrnYU')"><img src="https://img.youtube.com/vi/OlBL88RrnYU/maxresdefault.jpg" class="yt-thumb"><div class="yt-play-btn">▶</div></div>
             </div>
         </div>
     </section>
 
     <section id="songbook-page" class="page">
         <div class="songbook-container">
-            <div class="left-pane">
+            <div class="left-pane" id="sidebar">
+                <span class="sidebar-close" onclick="toggleSidebar()">✕</span>
+                <div class="tab-group" style="margin-bottom: 20px; display: none;" id="mobile-nav-box">
+                    <div class="tab" onclick="showPage('home')">홈으로</div>
+                </div>
                 <div class="glass-card">
                     <div id="tabs" class="tab-group"></div>
-                    <div style="margin-top: 15px;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; padding: 0 4px;">
+                    <div style="margin-top:15px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                             <span style="font-size:10px; font-weight:800; color:var(--accent);">ARTISTS</span>
                             <button id="btnGanada" style="background:none; border:none; color:var(--text-sub); font-size:10px; cursor:pointer;">가나다 ⇅</button>
                         </div>
@@ -201,117 +230,114 @@ main { margin-top: var(--nav-height); height: calc(100vh - var(--nav-height)); o
     </section>
 </main>
 
-<div id="lyricsModal" class="modal"><div class="modal-content" id="dragTarget"><div class="modal-header">LYRICS</div><span id="modalClose" class="modal-close">✕</span><div class="lyrics-body"><pre id="lyricsText"></pre></div></div></div>
-<div id="ganadaModal" class="modal"><div class="modal-content" id="ganadaContent" style="position:relative; transform:none; margin:auto;"><div class="modal-header">가수 선택</div><span id="ganadaClose" class="modal-close">✕</span><div id="ganadaList" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; max-height:400px; overflow-y:auto; padding:20px;"></div></div></div>
+<div id="lyricsModal" class="modal"><div class="modal-content" id="dragTarget"><div class="modal-header">LYRICS</div><span class="modal-close" onclick="closeM('lyricsModal')">✕</span><div class="lyrics-body"><pre id="lyricsText"></pre></div></div></div>
+<div id="ganadaModal" class="modal"><div class="modal-content" style="margin:auto;"><div class="modal-header">가수 선택</div><span class="modal-close" onclick="closeM('ganadaModal')">✕</span><div id="ganadaList" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; padding:20px;"></div></div></div>
 
 <script>
-// --- [Page Control] ---
-function showPage(pageName) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    document.getElementById(pageName + '-page').classList.add('active');
-    document.getElementById('btn-nav-' + pageName).classList.add('active');
+// --- [UI Logic] ---
+function showPage(p) {
+    document.querySelectorAll('.page').forEach(pg => pg.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(ni => ni.classList.remove('active'));
+    document.getElementById(p + '-page').classList.add('active');
+    document.getElementById('btn-nav-' + p).classList.add('active');
+    
+    // 모바일 햄버거 노출 여부
+    const mBtn = document.querySelector('.menu-toggle');
+    if(mBtn) mBtn.style.display = (p === 'songbook' && window.innerWidth <= 768) ? 'block' : 'none';
+    
+    document.getElementById('sidebar').classList.remove('open');
 }
+function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+function closeM(id) { document.getElementById(id).style.display = 'none'; }
 
-// --- [Firebase Logic] ---
+// --- [Firebase & Data] ---
 const firebaseConfig = { apiKey: "AIzaSyDDSJWWYCzwmM8DSIYI4w3vGPKSshpFhGk", authDomain: "yokoring-songbook.firebaseapp.com", databaseURL: "https://yokoring-songbook-default-rtdb.firebaseio.com", projectId: "yokoring-songbook" };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 const SHEET_ID = '1bSs04gJ8HyVil5PM0TBAm-4c_BeAqbU7ENMZ2AQcUVI', SHEET_NAMES = ['사용설명서','K-POP','POP','J-POP','숙제곡','신곡'];
 let currentSongs = [], currentArtist = '전체', lyricsList = [];
 
-async function loadLyricsList() { try { const res = await fetch('data/lyrics_list.json'); lyricsList = await res.json(); } catch(e) {} }
-function findLyricsFile(artist, title) { const found = lyricsList.find(l => l.artist === artist && l.title === title); return found ? found.file : null; }
-async function fetchSheet(sheetName) { const res = await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&headers=0&sheet=${encodeURIComponent(sheetName)}`); const text = await res.text(); const json = JSON.parse(text.substring(47, text.length-2)); return json.table.rows.map(r => r.c); }
+async function loadLyricsList() { try { const r = await fetch('data/lyrics_list.json'); lyricsList = await r.json(); } catch(e) {} }
+function findLyricsFile(a, t) { const f = lyricsList.find(l => l.artist === a && l.title === t); return f ? f.file : null; }
+async function fetchSheet(s) { const r = await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&headers=0&sheet=${encodeURIComponent(s)}`); const t = await r.text(); const j = JSON.parse(t.substring(47, t.length-2)); return j.table.rows.map(row => row.c); }
 
-async function selectCategory(name, tabEl) {
-    document.querySelectorAll('.tab-group .tab').forEach(t => t.classList.remove('active')); tabEl.classList.add('active');
-    const rows = await fetchSheet(name);
+async function selectCategory(n, el) {
+    document.querySelectorAll('.tab-group .tab').forEach(t => t.classList.remove('active')); el.classList.add('active');
+    const rows = await fetchSheet(n);
     currentSongs = rows.slice(1).map(r => {
         if (!r || !r[0] || !r[1]) return null;
-        let mrLink = ''; 
-        if (r[5] && String(r[5].v||'').startsWith('http')) mrLink = String(r[5].v); else if (r[6] && String(r[6].v||'').startsWith('http')) mrLink = String(r[6].v);
-        return { artist: String(r[0].v||''), title: String(r[1].v||''), key: r[2]?String(r[2].v||''):'', keyUp: r[3]?String(r[3].v||''):'', note: r[4]?String(r[4].v||''):'', mr: mrLink, lyricsFile: findLyricsFile(String(r[0].v||''), String(r[1].v||'')), filterArtist: String(r[0].v||'').split('(')[0].trim() };
+        let ml = ''; if (r[5] && String(r[5].v||'').startsWith('http')) ml = String(r[5].v); else if (r[6] && String(r[6].v||'').startsWith('http')) ml = String(r[6].v);
+        return { artist: String(r[0].v||''), title: String(r[1].v||''), key: r[2]?String(r[2].v||''):'', keyUp: r[3]?String(r[3].v||''):'', note: r[4]?String(r[4].v||''):'', mr: ml, lyricsFile: findLyricsFile(String(r[0].v||''), String(r[1].v||'')), filterArtist: String(r[0].v||'').split('(')[0].trim() };
     }).filter(s => s !== null);
     currentArtist = '전체'; renderArtistFilter(); renderSongList();
 }
 
+function selectAndScrollArtist(a) {
+    if (currentArtist === a) { currentArtist = '전체'; } else { currentArtist = a; }
+    renderArtistFilter(); renderSongList();
+    const target = document.getElementById('art-btn-' + a);
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
 function renderArtistFilter() {
-    const map = {}; currentSongs.forEach(s => { map[s.filterArtist] = (map[s.filterArtist] || 0) + 1; });
-    const sorted = Object.keys(map).sort((a,b) => map[b] - map[a]);
-    const listEl = document.getElementById('artistList'); listEl.innerHTML = '';
-    const allBtn = document.createElement('div'); allBtn.className = 'tab' + (currentArtist === '전체' ? ' active' : ''); allBtn.textContent = 'ALL';
-    allBtn.onclick = () => { currentArtist = '전체'; renderArtistFilter(); renderSongList(); listEl.scrollTop = 0; };
-    listEl.appendChild(allBtn);
+    const m = {}; currentSongs.forEach(s => { m[s.filterArtist] = (m[s.filterArtist] || 0) + 1; });
+    const sorted = Object.keys(m).sort((a,b) => m[b] - m[a]);
+    const el = document.getElementById('artistList'); el.innerHTML = '';
+    const all = document.createElement('div'); all.className = 'tab' + (currentArtist === '전체' ? ' active' : ''); all.textContent = 'ALL';
+    all.onclick = () => { currentArtist = '전체'; renderArtistFilter(); renderSongList(); if(window.innerWidth <= 768) toggleSidebar(); };
+    el.appendChild(all);
     sorted.forEach(a => {
-        const btn = document.createElement('div'); btn.className = 'tab' + (currentArtist === a ? ' active' : ''); btn.textContent = a; btn.id = 'artist-btn-' + a;
-        btn.onclick = () => { if(currentArtist === a) { currentArtist = '전체'; } else { currentArtist = a; } renderArtistFilter(); renderSongList(); document.getElementById('artist-btn-'+currentArtist)?.scrollIntoView({behavior:'smooth', block:'nearest'}); };
-        listEl.appendChild(btn);
+        const b = document.createElement('div'); b.className = 'tab' + (currentArtist === a ? ' active' : ''); b.textContent = a; b.id = 'art-btn-' + a;
+        b.onclick = () => { selectAndScrollArtist(a); if(window.innerWidth <= 768) toggleSidebar(); };
+        el.appendChild(b);
     });
 }
 
 function renderSongList() {
-    const query = document.getElementById('searchInput').value.toLowerCase();
-    const listEl = document.getElementById('list'); listEl.innerHTML = '';
-    const filtered = currentSongs.filter(s => (currentArtist === '전체' || s.filterArtist === currentArtist) && (s.title.toLowerCase().includes(query) || s.artist.toLowerCase().includes(query)));
-    filtered.forEach(s => {
-        const div = document.createElement('div'); div.className = 'song';
-        const infoTags = `<div class="song-info-tags">${s.note ? `<span class="note-text">${s.note}</span>` : ''}${s.key ? `<span class="key-badge">${s.key}</span>` : ''}${s.keyUp ? `<span class="keyup-badge">${s.keyUp}</span>` : ''}</div>`;
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    const el = document.getElementById('list'); el.innerHTML = '';
+    const f = currentSongs.filter(s => (currentArtist === '전체' || s.filterArtist === currentArtist) && (s.title.toLowerCase().includes(q) || s.artist.toLowerCase().includes(q)));
+    f.forEach(s => {
+        const d = document.createElement('div'); d.className = 'song';
+        const tags = `<div class="song-info-tags">${s.note ? `<span class="note-text">${s.note}</span>` : ''}${s.key ? `<span class="key-badge">${s.key}</span>` : ''}${s.keyUp ? `<span class="keyup-badge">${s.keyUp}</span>` : ''}</div>`;
         let mb = s.mr ? `<a class="mr-btn" href="${s.mr}" target="_blank" onclick="sendToWidget('${s.title.replace(/'/g,"\\'")}', '${s.artist.replace(/'/g,"\\'")}')">MR</a>` : `<a class="mr-btn find" href="https://www.youtube.com/results?search_query=${encodeURIComponent(s.title+' '+s.artist+' MR')}" target="_blank">MR 찾기</a>`;
-        div.innerHTML = `<div class="copy-icon" onclick="copyText('${s.artist} - ${s.title}', this)">📋</div><div class="artist-name">${s.artist}</div><div class="song-title">${s.title}</div>${infoTags}${mb}<span class="lyrics-btn ${s.lyricsFile?'active':''}" onclick="showLyrics('${s.lyricsFile}')">LYRICS</span>`;
-        listEl.appendChild(div);
+        d.innerHTML = `<div class="copy-icon" onclick="copyText('${s.artist} - ${s.title}', this)">📋</div><div class="artist-name">${s.artist}</div><div class="song-title">${s.title}</div>${tags}${mb}<span class="lyrics-btn ${s.lyricsFile?'active':''}" onclick="showLyrics('${s.lyricsFile}')">LYRICS</span>`;
+        el.appendChild(d);
     });
-}
-
-// 수정됨: Widget ReStart (팝업 제거)
-function remoteReload() { 
-    db.ref('currentSong').remove(); 
-    db.ref('command').set({ type: 'RELOAD', timestamp: Date.now() }); 
 }
 
 function sendToWidget(t, a) { db.ref('currentSong').set({ title: t, artist: a, timestamp: Date.now() }); }
 function showLyrics(f) { if(!f || f==='null') return; fetch(`data/lyrics/${f}`).then(r=>r.text()).then(t=>{ document.getElementById('lyricsText').textContent=t; document.getElementById('lyricsModal').style.display='flex'; }); }
 function copyText(t, b) { navigator.clipboard.writeText(t).then(() => { const o = b.textContent; b.textContent = '✅'; setTimeout(() => b.textContent = o, 1000); }); }
-function loadYoutube(el, id) { el.innerHTML = `<iframe src="https://www.youtube.com/embed/${id}?autoplay=1" allow="autoplay; encrypted-media; fullscreen" allowfullscreen style="width:100%; height:100%; border:none; position:absolute; top:0; left:0;"></iframe>`; }
+function loadYoutube(el, id) { el.innerHTML = `<iframe src="https://www.youtube.com/embed/${id}?autoplay=1" allow="autoplay; encrypted-media; fullscreen" allowfullscreen style="width:100%; height:100%; border:none; border-radius:15px; position:absolute; top:0; left:0;"></iframe>`; }
+function remoteReload() { db.ref('command').set({ type: 'RELOAD', timestamp: Date.now() }); }
 
-// 수정됨: 가나다 정렬 팝업 (모달 내 선택 시 정상 작동)
-document.getElementById('btnGanada').onclick = () => {
-    const list = document.getElementById('ganadaList'); list.innerHTML = '';
-    const map = {}; currentSongs.forEach(s => { map[s.filterArtist] = 1; });
-    Object.keys(map).sort((a,b) => a.localeCompare(b,'ko')).forEach(a => {
-        const b = document.createElement('div'); b.className = 'tab'; b.style.textAlign = 'center'; b.textContent = a;
-        b.onclick = () => { 
-            currentArtist = a; renderArtistFilter(); renderSongList(); 
-            document.getElementById('ganadaModal').style.display = 'none';
-            document.getElementById('artist-btn-'+a)?.scrollIntoView({behavior:'smooth', block:'nearest'});
-        };
-        list.appendChild(b);
-    });
-    document.getElementById('ganadaModal').style.display = 'flex';
-};
-
-// 모달 닫기
-document.getElementById('modalClose').onclick = () => document.getElementById('lyricsModal').style.display = 'none';
-document.getElementById('ganadaClose').onclick = () => document.getElementById('ganadaModal').style.display = 'none';
-window.onclick = (e) => { if(e.target.classList.contains('modal')) e.target.style.display = 'none'; };
-
-// 모달 드래그
+// Drag logic
 let isDragging = false, xOff = 0, yOff = 0, startX, startY;
-const dragT = document.getElementById("dragTarget"), header = document.querySelector(".modal-header");
-header.addEventListener("mousedown", dStart); header.addEventListener("touchstart", dStart);
+const dragT = document.getElementById("dragTarget"), modalHeader = document.querySelector(".modal-header");
+modalHeader.addEventListener("mousedown", dStart); modalHeader.addEventListener("touchstart", dStart);
 function dStart(e) { startX = (e.type === "touchstart" ? e.touches[0].clientX : e.clientX) - xOff; startY = (e.type === "touchstart" ? e.touches[0].clientY : e.clientY) - yOff; isDragging = true; }
 function dMove(e) { if (isDragging) { e.preventDefault(); const cx = (e.type === "touchmove" ? e.touches[0].clientX : e.clientX) - startX, cy = (e.type === "touchmove" ? e.touches[0].clientY : e.clientY) - startY; xOff = cx; yOff = cy; dragT.style.transform = `translate(calc(-50% + ${cx}px), calc(-50% + ${cy}px))`; } }
 document.addEventListener("mousemove", dMove); document.addEventListener("mouseup", () => isDragging = false);
 document.addEventListener("touchmove", dMove, {passive: false}); document.addEventListener("touchend", () => isDragging = false);
 
-document.getElementById('searchInput').oninput = () => renderSongList();
+// Ganada modal
+document.getElementById('btnGanada').onclick = () => {
+    const list = document.getElementById('ganadaList'); list.innerHTML = ''; const map = {}; currentSongs.forEach(s => { map[s.filterArtist] = 1; });
+    Object.keys(map).sort((a,b) => a.localeCompare(b,'ko')).forEach(a => { 
+        const b = document.createElement('div'); b.className = 'tab'; b.style.textAlign = 'center'; b.textContent = a; 
+        b.onclick = () => { selectAndScrollArtist(a); closeM('ganadaModal'); if(window.innerWidth <= 768) toggleSidebar(); }; 
+        list.appendChild(b); 
+    });
+    document.getElementById('ganadaModal').style.display = 'flex';
+};
 
+document.getElementById('searchInput').oninput = () => renderSongList();
 (async () => {
     await loadLyricsList(); const tbs = document.getElementById('tabs');
     SHEET_NAMES.slice(1).forEach(n => { const tb = document.createElement('div'); tb.className='tab'; tb.textContent=n; tb.onclick=()=>selectCategory(n, tb); tbs.appendChild(tb); });
-    const gR = await fetchSheet('사용설명서'); 
-    document.getElementById('guide').innerHTML = gR.map(r=>r?r[0]?.v||'':'').join('<br>');
-    tbs.firstChild.click();
+    const gR = await fetchSheet('사용설명서'); document.getElementById('guide').innerHTML = gR.map(r=>r?r[0]?.v||'':'').join('<br>');
+    tbs.firstChild.click(); showPage('home');
 })();
 </script>
 </body>
