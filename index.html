@@ -166,6 +166,14 @@ main { margin-top: var(--nav-height); height: calc(100vh - var(--nav-height)); o
 .song-title { flex: 2; color: var(--text-main); font-size: 14px; font-weight: 500; }
 .mr-btn, .lyrics-btn { padding: 6px 12px; border-radius: 8px; font-size: 10px; font-weight: 700; text-decoration: none; text-align: center; min-width: 60px; }
 .mr-btn { background: #ede3d5; color: var(--text-main); border: 1px solid var(--border-color); }
+.mr-btn.find { 
+    background: #fff; 
+    border: 1px dashed var(--accent); 
+    color: var(--accent); 
+}
+.mr-btn.find:hover { 
+    background: var(--accent-soft); 
+}
 .lyrics-btn { background: transparent; color: var(--text-sub); border: 1px solid var(--border-color); cursor: pointer; }
 .lyrics-btn.active { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
 .disabled { opacity: 0.2; pointer-events: none; }
@@ -351,7 +359,17 @@ function renderSongList(){
             ${s.keyUp ? `<span class="keyup-badge">${s.keyUp}</span>` : ''}
         </div>`;
 
-        const mrBtn = s.mr ? `<a class="mr-btn" href="${s.mr}" target="_blank" onclick="sendToWidget('${escapedTitle}', '${escapedArtist}')">MR</a>` : `<span class="mr-btn disabled">MR</span>`;
+        let mrBtn = '';
+        if (s.mr) {
+            // 시트에 링크가 있을 때 (기존과 동일하게 위젯으로 전송)
+            mrBtn = `<a class="mr-btn" href="${s.mr}" target="_blank" onclick="sendToWidget('${escapedTitle}', '${escapedArtist}')">MR</a>`;
+        } else {
+            // 시트에 링크가 없을 때 (유튜브 검색창으로 이동)
+            const searchQuery = encodeURIComponent(s.title + ' ' + s.artist + ' MR');
+            const ytSearchUrl = `https://www.youtube.com/results?search_query=${searchQuery}`;
+            mrBtn = `<a class="mr-btn find" href="${ytSearchUrl}" target="_blank">MR 찾기</a>`;
+        }
+
         const lyBtnClass = s.lyricsFile ? 'lyrics-btn active' : 'lyrics-btn disabled';
         
         div.innerHTML = `<div class="copy-icon" onclick="copyText('${s.artist}-${s.title}', this); event.stopPropagation();">📋</div><div class="artist-name">${s.artist}</div><div class="song-title">${s.title}</div>${infoTags}${mrBtn}<span class="${lyBtnClass}" onclick="showLyrics('${s.lyricsFile}')">LYRICS</span>`;
