@@ -108,31 +108,41 @@ main { margin-top: var(--nav-height); height: calc(100vh - var(--nav-height)); o
     display: flex; 
     gap: 6px; 
     align-items: center; 
-    width: 160px; /* 130px에서 160px로 확장하여 칼정렬 유지 */
-    flex-shrink: 0; 
+    flex-shrink: 0;        /* 제목이 길어져도 이 영역은 절대 줄어들지 않음 */
     justify-content: flex-end; 
     margin-right: 12px;
+    /* 고정 너비를 삭제하거나 넉넉하게 두어 참고 내용이 다 나오게 함 */
+    min-width: 140px;      
 }
 .key-badge, .keyup-badge { 
-    font-size: 10px; 
-    padding: 2px 6px; 
-    border-radius: 4px; 
+    font-size: 12px; 
+    padding: 3px 8px; 
+    border-radius: 5px; 
     white-space: nowrap; /* 줄바꿈 방지 */
-    flex-shrink: 0; /* 공간이 부족해도 절대 줄어들지 않음 */
+    flex-shrink: 700; /* 공간이 부족해도 절대 줄어들지 않음 */
 }
 .keyup-badge { font-size: 10px; background: var(--accent-soft); color: var(--accent); padding: 2px 6px; border-radius: 4px; border: 1px solid var(--accent); }
-.note-text { 
-    font-size: 11px; 
-    color: var(--accent); 
-    font-weight: 600; 
-    opacity: 0.9; 
-    max-width: 90px; /* 메모는 정렬을 위해 최대 길이를 제한하되 이전보다 늘림 */
-    overflow: hidden; 
-    text-overflow: ellipsis; 
-    white-space: nowrap; 
+.note-text, .key-badge, .keyup-badge { 
+    white-space: nowrap;   /* 줄바꿈 방지 */
+    overflow: visible;     /* 숨김 없음 */
+    text-overflow: clip;   /* ... 표시 안 함 */
+    max-width: none;       /* 길이 제한 해제 */
+    font-size: 12px;
+    font-weight: 700;
+    opacity: 1;            /* 더 선명하게 보이도록 투명도 제거 */
 }
 .artist-name { flex: 1; font-weight: 600; color: var(--text-sub); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.song-title { flex: 2; color: var(--text-main); font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 10px; }
+.song-title { 
+    flex: 2; 
+    color: var(--text-main); 
+    font-size: 14px; 
+    font-weight: 500; 
+    white-space: nowrap; 
+    overflow: hidden;      /* 넘치는 부분 숨김 */
+    text-overflow: ellipsis; /* ... 표시 */
+    min-width: 0;          /* flex 박스 내에서 ellipsis 작동을 위한 필수 설정 */
+    padding-right: 10px;
+}
 
 .mr-btn, .lyrics-btn { padding: 6px 12px; border-radius: 8px; font-size: 10px; font-weight: 700; text-align: center; min-width: 60px; cursor: pointer; border: 1px solid var(--border-color); text-decoration: none; display: inline-block; }
 .mr-btn { background: #ede3d5; color: var(--text-main); }
