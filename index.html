@@ -4,91 +4,167 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>요코링 홈 & 노래책</title>
+
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
 <style>
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
+
 :root {
-    --bg-yogurt-cream: #FFFAFA; --bg-yogurt-strawberry: #FFE6EA; --bg-card: #ffffff;      
-    --bg-inner: #FFF1F3; --accent: #ff8ead; --accent-soft: rgba(255, 142, 173, 0.1);
-    --border-color: rgba(93, 60, 67, 0.05); --text-main: #5D3C43; --text-sub: #9A8A8C; --nav-height: 70px;
+    --bg-yogurt-cream: #FFFAFA;      
+    --bg-yogurt-strawberry: #FFE6EA; 
+    --bg-card: #ffffff;      
+    --bg-inner: #FFF1F3;      
+    --accent: #ff8ead;       
+    --accent-soft: rgba(255, 142, 173, 0.1);
+    --border-color: rgba(93, 60, 67, 0.05);
+    --text-main: #5D3C43;    
+    --text-sub: #9A8A8C;     
+    --nav-height: 70px;
 }
-* { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
-body { margin: 0; font-family: 'Pretendard', sans-serif; background: linear-gradient(135deg, var(--bg-yogurt-cream) 0%, var(--bg-yogurt-strawberry) 100%); color: var(--text-main); height: 100vh; overflow: hidden; }
 
-/* 1. Navbar */
-.navbar { display: flex; justify-content: space-between; align-items: center; padding: 0 40px; height: var(--nav-height); background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(10px); position: fixed; top: 0; width: 100%; z-index: 1000; border-bottom: 1px solid var(--border-color); }
-.nav-logo { font-size: 20px; font-weight: 800; position: absolute; left: 50%; transform: translateX(-50%); pointer-events: none; }
+/* 글꼴 강제 적용 */
+* { box-sizing: border-box; -webkit-font-smoothing: antialiased; font-family: 'Pretendard', sans-serif !important; }
+
+body {
+    margin: 0; background: linear-gradient(135deg, var(--bg-yogurt-cream) 0%, var(--bg-yogurt-strawberry) 100%);
+    color: var(--text-main); height: 100vh; overflow: hidden; transition: background-color 0.5s ease;
+}
+
+/* =========================================
+   1. 네비게이션 바 (로고 좌측 / 메뉴 중앙)
+========================================= */
+.navbar {
+    display: flex; align-items: center; padding: 0 40px; height: var(--nav-height);
+    background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(10px);
+    position: fixed; top: 0; width: 100%; z-index: 1000; border-bottom: 1px solid var(--border-color);
+}
+.nav-logo { font-size: 20px; font-weight: 800; color: var(--text-main); flex-shrink: 0; z-index: 1002; }
 .nav-logo span { color: var(--accent); }
-.nav-menu { display: flex; gap: 10px; }
-.nav-item { font-weight: 700; font-size: 15px; cursor: pointer; color: var(--text-sub); padding: 8px 16px; border-radius: 10px; transition: 0.3s; }
-.nav-item.active { color: var(--accent); background: var(--accent-soft); }
-.menu-toggle { display: none; font-size: 24px; cursor: pointer; color: var(--text-main); }
 
-/* 2. Content Layout */
+.nav-menu { 
+    display: flex; gap: 20px; position: absolute; left: 50%; transform: translateX(-50%); 
+}
+.nav-item { 
+    font-weight: 700; font-size: 15px; cursor: pointer; color: var(--text-sub); 
+    padding: 8px 16px; border-radius: 10px; transition: 0.3s;
+}
+.nav-item.active { color: var(--accent); background: var(--accent-soft); }
+
+/* 모바일 햄버거 버튼 (노래책 전용) */
+.menu-toggle {
+    display: none; font-size: 26px; cursor: pointer; color: var(--text-main);
+    position: absolute; left: 20px; z-index: 1001;
+}
+
+/* =========================================
+   2. 메인 레이아웃
+========================================= */
 main { margin-top: var(--nav-height); height: calc(100vh - var(--nav-height)); overflow: hidden; }
 .page { display: none; padding: 20px; height: 100%; overflow-y: auto; animation: fadeIn 0.4s ease-out; }
 .page.active { display: block; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-/* 3. Home Styles */
-.home-container { max-width: 1000px; margin: 0 auto; display: flex; flex-direction: column; gap: 30px; }
-.hero-section { position: relative; padding: 80px 20px; text-align: center; border-radius: 30px; background: radial-gradient(circle at 15% 50%, rgba(255,179,186,0.4), transparent 50%), #fff; box-shadow: 0 15px 35px rgba(0,0,0,0.05); }
+/* =========================================
+   3. 홈 화면 (Home Page)
+========================================= */
+.home-container { max-width: 1000px; margin: 0 auto; display: flex; flex-direction: column; gap: 30px; padding-bottom: 40px; }
+.hero-section {
+    position: relative; padding: 80px 20px; text-align: center; border-radius: 30px; overflow: hidden;
+    background: radial-gradient(circle at 15% 50%, rgba(255, 179, 186, 0.4) 0%, transparent 50%), #fff;
+    box-shadow: 0 15px 35px rgba(93, 60, 67, 0.05); border: 1px solid rgba(255, 255, 255, 0.8);
+}
 .profile-img { width: 150px; height: 150px; border-radius: 50%; border: 4px solid #fff; margin: 0 auto 20px; background: #fff url('yoko-profile.png') center/cover; box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+.hero-title { font-size: 32px; font-weight: 800; margin-bottom: 10px; color: var(--text-main); }
+
+/* 모바일 전용 버튼 스타일 */
+.mobile-only-btn { display: none; margin-top: 20px; }
+.btn-go-songbook {
+    padding: 14px 30px; background: var(--accent); color: white; border: none;
+    border-radius: 50px; font-weight: 800; font-size: 16px; cursor: pointer;
+    box-shadow: 0 8px 15px rgba(255, 142, 173, 0.3); transition: 0.3s;
+}
+
 .quick-links { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
 .link-card { background: #fff; padding: 15px; border-radius: 18px; text-decoration: none; color: var(--text-main); font-weight: 700; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.3s; }
 .link-icon { width: 22px; height: 22px; object-fit: contain; }
+
+.latest-video { background: var(--bg-card); padding: 30px; border-radius: 24px; border: 1px solid var(--border-color); }
 .video-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
 .video-wrap { position: relative; padding-bottom: 56.25%; border-radius: 15px; overflow: hidden; cursor: pointer; background: #000; }
 .yt-thumb { position: absolute; top:0; left:0; width:100%; height:100%; object-fit: cover; }
-.yt-play-btn { position: absolute; top:50%; left:50%; transform:translate(-50%, -50%); width:60px; height:60px; background:rgba(0,0,0,0.6); color:#fff; border-radius:50%; display:flex; justify-content:center; align-items:center; font-size:24px; transition:0.3s; }
+.yt-play-btn { position: absolute; top:50%; left:50%; transform:translate(-50%, -50%); width:60px; height:60px; background:rgba(0,0,0,0.6); color:#fff; border-radius:50%; display:flex; justify-content:center; align-items:center; font-size:24px; z-index: 2; }
 
-/* 4. Songbook Styles */
+/* =========================================
+   4. 노래책 화면 (Songbook Page)
+========================================= */
 .songbook-container { display: flex; gap: 20px; max-width: 1500px; margin: 0 auto; height: 100%; }
-.left-pane { flex: 0 0 320px; display: flex; flex-direction: column; gap: 16px; height: 100%; transition: transform 0.3s ease; }
-.right-pane { flex: 1; background: var(--bg-card); border-radius: 24px; border: 1px solid var(--border-color); display: flex; flex-direction: column; overflow: hidden; }
+.left-pane { flex: 0 0 320px; display: flex; flex-direction: column; gap: 16px; height: 100%; transition: 0.3s ease; }
+.right-pane { flex: 1; background: var(--bg-card); border-radius: 24px; border: 1px solid var(--border-color); display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 30px rgba(93, 60, 67, 0.05); }
+
 .glass-card { background: var(--bg-card); border-radius: 20px; padding: 20px; border: 1px solid var(--border-color); }
 .tab-group { display: flex; flex-wrap: wrap; gap: 6px; }
 .tab { padding: 7px 12px; border-radius: 10px; background: var(--bg-inner); color: var(--text-sub); cursor: pointer; font-size: 12px; font-weight: 600; }
 .tab.active { background: var(--accent-soft); color: var(--accent); border: 1px solid var(--accent); }
+
 #artistList { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; max-height: 250px; overflow-y: auto; }
-.list-header { padding: 15px 20px; background: rgba(255,255,255,0.5); display: flex; gap: 10px; border-bottom: 1px solid var(--border-color); }
+.list-header { padding: 15px 20px; background: rgba(255, 255, 255, 0.5); display: flex; gap: 10px; align-items: center; border-bottom: 1px solid var(--border-color); }
 #searchInput { flex: 1; background: var(--bg-inner); border: 1.5px solid var(--border-color); border-radius: 14px; padding: 12px 18px; outline: none; }
 #list { flex: 1; overflow-y: auto; }
 .song { display: flex; align-items: center; padding: 14px 20px; border-bottom: 1px solid rgba(0,0,0,0.03); }
+
+/* 칼각 정렬 유지 */
 .song-info-tags { display: flex; gap: 6px; width: 130px; flex-shrink: 0; justify-content: flex-end; margin-right: 12px; }
 .key-badge { font-size: 10px; background: #f0ede5; color: var(--text-sub); padding: 2px 6px; border-radius: 4px; }
 .keyup-badge { font-size: 10px; background: var(--accent-soft); color: var(--accent); padding: 2px 6px; border-radius: 4px; border: 1px solid var(--accent); }
+.note-text { font-size: 11px; color: var(--accent); font-weight: 600; max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
 .artist-name { flex: 1; font-weight: 600; color: var(--text-sub); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .song-title { flex: 2; color: var(--text-main); font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 10px; }
+
 .mr-btn, .lyrics-btn { padding: 6px 12px; border-radius: 8px; font-size: 10px; font-weight: 700; text-align: center; min-width: 60px; cursor: pointer; text-decoration: none; }
-.mr-btn { background: #ede3d5; color: var(--text-main); border: 1px solid var(--border-color); }
+.mr-btn { background: #ede3d5; color: var(--text-main); }
 .mr-btn.find { background: #fff; border: 1px dashed var(--accent); color: var(--accent); }
 .lyrics-btn { background: transparent; color: var(--text-sub); border: 1px solid var(--border-color); }
 .lyrics-btn.active { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
 
-/* 5. Mobile */
+/* =========================================
+   📱 모바일 최적화 (햄버거 & 버튼 추가)
+========================================= */
 @media (max-width: 768px) {
-    .navbar { padding: 0 20px; } .nav-menu { display: none; } .menu-toggle { display: block; }
-    .left-pane { position: fixed; top: 0; left: -340px; width: 300px; z-index: 1100; background: #fff; padding: 80px 20px 20px; box-shadow: 10px 0 30px rgba(0,0,0,0.1); height: 100vh; }
-    .left-pane.open { transform: translateX(340px); }
-    .song-info-tags { width: 80px; } .artist-name { flex: 1.2; }
+    .navbar { padding: 0 20px; justify-content: center; }
+    .nav-logo { font-size: 17px; }
+    .nav-menu { display: none; } /* 상단 메뉴 숨김 */
+    .menu-toggle { display: block; } /* 햄버거 버튼 노출 */
+    
+    .mobile-only-btn { display: block; } /* 모바일용 노래책 버튼 노출 */
+
+    .left-pane {
+        position: fixed; top: 0; left: -340px; width: 300px; z-index: 1100;
+        background: #fff; padding: 80px 20px 20px; box-shadow: 10px 0 30px rgba(0,0,0,0.1);
+        height: 100vh;
+    }
+    .left-pane.open { left: 0; }
+    
+    .song-info-tags { width: 85px; }
+    .artist-name { flex: 1.2; }
 }
 
-/* Modal */
+/* 모달 */
 .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); justify-content: center; align-items: center; z-index: 2000; }
 .modal-content { background: #fff; width: 92%; max-width: 550px; border-radius: 28px; position: absolute; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.2); }
 .modal-header { padding: 20px; color: var(--accent); font-weight: 800; text-align: center; border-bottom: 1px solid var(--border-color); cursor: move; }
-.modal-close { position: absolute; top: 18px; right: 20px; cursor: pointer; font-size: 22px; }
-.lyrics-body { padding: 30px; max-height: 60vh; overflow-y: auto; text-align: center; }
-#lyricsText { white-space: pre-wrap; font-size: 17px; line-height: 1.8; color: var(--text-main); margin: 0; }
+.modal-close { position: absolute; top: 18px; right: 20px; cursor: pointer; font-size: 22px; color: var(--text-sub); }
+.lyrics-body { padding: 40px 30px; max-height: 60vh; overflow-y: auto; text-align: center; }
+#lyricsText { white-space: pre-wrap; font-size: 18px; line-height: 1.8; color: var(--text-main); margin: 0; }
 </style>
 </head>
 <body>
 
 <nav class="navbar">
-    <div class="menu-toggle" onclick="toggleSidebar()">☰</div>
-    <div class="nav-logo">요코링 <span>노래책</span></div>
+    <div class="menu-toggle" id="m-toggle" onclick="toggleSidebar()">☰</div>
+    <div class="nav-logo">요코링 <span>Yokoring</span></div>
     <div class="nav-menu">
         <div class="nav-item active" id="btn-nav-home" onclick="showPage('home')">홈</div>
         <div class="nav-item" id="btn-nav-songbook" onclick="showPage('songbook')">노래책</div>
@@ -98,17 +174,27 @@ main { margin-top: var(--nav-height); height: calc(100vh - var(--nav-height)); o
 <main>
     <section id="home-page" class="page active">
         <div class="home-container">
-            <div class="hero-section"><div class="profile-img"></div><h1 style="font-size: 28px; font-weight: 800; margin-bottom: 10px;">요코링 Yokoring</h1><p>코링이와 넙치의 놀이터입니다.</p></div>
+            <div class="hero-section">
+                <div class="profile-img"></div>
+                <h1 class="hero-title">요코링 Yokoring</h1>
+                <p style="font-weight: 600; opacity: 0.8;">코링이와 넙치의 놀이터입니다.</p>
+                <div class="mobile-only-btn">
+                    <button class="btn-go-songbook" onclick="showPage('songbook')">노래책 바로가기 🎵</button>
+                </div>
+            </div>
             <div class="quick-links">
                 <a href="https://www.sooplive.co.kr/station/yokoring03" target="_blank" class="link-card"><img src="icon-soop.png" class="link-icon"> SOOP 방송국</a>
                 <a href="https://www.youtube.com/@%EC%9A%94%EC%BD%94%EB%A7%81" target="_blank" class="link-card"><img src="icon-youtube.png" class="link-icon"> 노래 유튜브</a>
                 <a href="https://cafe.naver.com/yokoring03" target="_blank" class="link-card"><img src="icon-cafe.png" class="link-icon"> 코링 베이커리</a>
                 <a href="https://discord.com/invite/Mn8zBq7nAb" target="_blank" class="link-card"><img src="icon-discord.png" class="link-icon"> 디스코드</a>
             </div>
-            <div class="video-grid">
-                <div class="video-wrap" onclick="loadYoutube(this, 'sueWEqdFt8w')"><img src="https://img.youtube.com/vi/sueWEqdFt8w/maxresdefault.jpg" class="yt-thumb"><div class="yt-play-btn">▶</div></div>
-                <div class="video-wrap" onclick="loadYoutube(this, 'lAbisQ9vZq0')"><img src="https://img.youtube.com/vi/lAbisQ9vZq0/maxresdefault.jpg" class="yt-thumb"><div class="yt-play-btn">▶</div></div>
-                <div class="video-wrap" onclick="loadYoutube(this, 'OlBL88RrnYU')"><img src="https://img.youtube.com/vi/OlBL88RrnYU/maxresdefault.jpg" class="yt-thumb"><div class="yt-play-btn">▶</div></div>
+            <div class="latest-video">
+                <h3 style="font-size: 18px; font-weight: 800; margin-bottom: 10px;">최신 업로드 영상</h3>
+                <div class="video-grid">
+                    <div class="video-wrap" onclick="loadYoutube(this, 'sueWEqdFt8w')"><img src="https://img.youtube.com/vi/sueWEqdFt8w/maxresdefault.jpg" class="yt-thumb"><div class="yt-play-btn">▶</div></div>
+                    <div class="video-wrap" onclick="loadYoutube(this, 'lAbisQ9vZq0')"><img src="https://img.youtube.com/vi/lAbisQ9vZq0/maxresdefault.jpg" class="yt-thumb"><div class="yt-play-btn">▶</div></div>
+                    <div class="video-wrap" onclick="loadYoutube(this, 'OlBL88RrnYU')"><img src="https://img.youtube.com/vi/OlBL88RrnYU/maxresdefault.jpg" class="yt-thumb"><div class="yt-play-btn">▶</div></div>
+                </div>
             </div>
         </div>
     </section>
@@ -116,31 +202,51 @@ main { margin-top: var(--nav-height); height: calc(100vh - var(--nav-height)); o
     <section id="songbook-page" class="page">
         <div class="songbook-container">
             <div class="left-pane" id="sidebar">
-                <div class="glass-card"><div id="tabs" class="tab-group"></div><div style="margin-top:15px;"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;"><span style="font-size:10px; font-weight:800; color:var(--accent);">ARTISTS</span><button id="btnGanada" style="background:none; border:none; color:var(--text-sub); font-size:10px; cursor:pointer;">가나다 ⇅</button></div><div id="artistList"></div></div></div>
+                <div class="glass-card">
+                    <div id="tabs" class="tab-group"></div>
+                    <div style="margin-top:15px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                            <span style="font-size:10px; font-weight:800; color:var(--accent);">ARTISTS</span>
+                            <button id="btnGanada" style="background:none; border:none; color:var(--text-sub); font-size:10px; cursor:pointer;">가나다 ⇅</button>
+                        </div>
+                        <div id="artistList"></div>
+                    </div>
+                </div>
                 <div id="guide" class="glass-card"></div>
             </div>
-            <div class="right-pane"><div class="list-header"><input type="text" id="searchInput" placeholder="가수 또는 노래 제목 검색..."><button onclick="remoteReload()" style="padding:10px; background:var(--accent-soft); border:1px solid var(--accent); border-radius:12px; color:var(--accent); cursor:pointer; font-size:11px; font-weight:800;">Reset</button></div><div id="list"></div></div>
+            <div class="right-pane">
+                <div class="list-header">
+                    <input type="text" id="searchInput" placeholder="가수 또는 노래 제목 검색...">
+                    <button onclick="remoteReload()" class="reset-btn" style="padding:10px 15px; background:var(--accent-soft); border:1px solid var(--accent); border-radius:12px; color:var(--accent); cursor:pointer; font-size:11px; font-weight:800;">Reset</button>
+                </div>
+                <div id="list"></div>
+            </div>
         </div>
     </section>
 </main>
 
-<div id="lyricsModal" class="modal"><div class="modal-content" id="dragTarget"><div class="modal-header">LYRICS</div><span class="modal-close" onclick="closeModal('lyricsModal')">✕</span><div class="lyrics-body"><pre id="lyricsText"></pre></div></div></div>
-<div id="ganadaModal" class="modal"><div class="modal-content" style="margin:auto;"><div class="modal-header">가수 선택</div><span class="modal-close" onclick="closeModal('ganadaModal')">✕</span><div id="ganadaList" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; padding:20px;"></div></div></div>
+<div id="lyricsModal" class="modal"><div class="modal-content" id="dragTarget"><div class="modal-header">LYRICS</div><span class="modal-close" onclick="closeM('lyricsModal')">✕</span><div class="lyrics-body"><pre id="lyricsText"></pre></div></div></div>
+<div id="ganadaModal" class="modal"><div class="modal-content" style="margin:auto;"><div class="modal-header">가수 선택</div><span class="modal-close" onclick="closeM('ganadaModal')">✕</span><div id="ganadaList" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; padding:20px;"></div></div></div>
 
 <script>
-// UI & Sidebar
+// --- [UI Control] ---
 function showPage(p) {
     document.querySelectorAll('.page').forEach(pg => pg.classList.remove('active'));
     document.querySelectorAll('.nav-item').forEach(ni => ni.classList.remove('active'));
     document.getElementById(p + '-page').classList.add('active');
     document.getElementById('btn-nav-' + p).classList.add('active');
-    document.getElementById('menu-toggle').style.display = (p === 'songbook') ? 'block' : 'none';
-    if(window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('open');
+    
+    // 모바일 햄버거 버튼 노출 제어
+    document.getElementById('m-toggle').style.display = (p === 'songbook' && window.innerWidth <= 768) ? 'block' : 'none';
+    
+    // 페이지 이동 시 사이드바 닫기
+    document.getElementById('sidebar').classList.remove('open');
 }
-function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
-function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-// Firebase & Sheet
+function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+function closeM(id) { document.getElementById(id).style.display = 'none'; }
+
+// --- [Firebase & Data Logic] ---
 const firebaseConfig = { apiKey: "AIzaSyDDSJWWYCzwmM8DSIYI4w3vGPKSshpFhGk", authDomain: "yokoring-songbook.firebaseapp.com", databaseURL: "https://yokoring-songbook-default-rtdb.firebaseio.com", projectId: "yokoring-songbook" };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
@@ -160,7 +266,7 @@ async function selectCategory(n, el) {
         return { artist: String(r[0].v||''), title: String(r[1].v||''), key: r[2]?String(r[2].v||''):'', keyUp: r[3]?String(r[3].v||''):'', note: r[4]?String(r[4].v||''):'', mr: ml, lyricsFile: findLyricsFile(String(r[0].v||''), String(r[1].v||'')), filterArtist: String(r[0].v||'').split('(')[0].trim() };
     }).filter(s => s !== null);
     currentArtist = '전체'; renderArtistFilter(); renderSongList();
-    if(window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('open');
+    if(window.innerWidth <= 768) toggleSidebar();
 }
 
 function renderArtistFilter() {
@@ -190,27 +296,27 @@ function renderSongList() {
     });
 }
 
-// Logic functions
+// 공통 로직
 function sendToWidget(t, a) { db.ref('currentSong').set({ title: t, artist: a, timestamp: Date.now() }); }
 function showLyrics(f) { if(!f || f==='null') return; fetch(`data/lyrics/${f}`).then(r=>r.text()).then(t=>{ document.getElementById('lyricsText').textContent=t; document.getElementById('lyricsModal').style.display='flex'; }); }
 function copyText(t, b) { navigator.clipboard.writeText(t).then(() => { const o = b.textContent; b.textContent = '✅'; setTimeout(() => b.textContent = o, 1000); }); }
-function loadYoutube(el, id) { el.innerHTML = `<iframe src="https://www.youtube.com/embed/${id}?autoplay=1" allow="autoplay; encrypted-media; fullscreen" allowfullscreen style="position:absolute; top:0; left:0; width:100%; height:100%; border:none;"></iframe>`; }
+function loadYoutube(el, id) { el.innerHTML = `<iframe src="https://www.youtube.com/embed/${id}?autoplay=1" allow="autoplay; encrypted-media; fullscreen" allowfullscreen style="position:absolute; top:0; left:0; width:100%; height:100%; border:none; border-radius:15px;"></iframe>`; }
 function remoteReload() { if(confirm("Restart?")) { db.ref('command').set({ type: 'RELOAD', timestamp: Date.now() }); } }
 
-// Modal Drag
+// 모달 드래그
 let isDragging = false, xOff = 0, yOff = 0, startX, startY;
-const dragT = document.getElementById("dragTarget"), header = document.querySelector(".modal-header");
-header.addEventListener("mousedown", dragS); header.addEventListener("touchstart", dragS);
-function dragS(e) { startX = (e.type === "touchstart" ? e.touches[0].clientX : e.clientX) - xOff; startY = (e.type === "touchstart" ? e.touches[0].clientY : e.clientY) - yOff; isDragging = true; }
-function dragM(e) { if (isDragging) { e.preventDefault(); const cx = (e.type === "touchmove" ? e.touches[0].clientX : e.clientX) - startX, cy = (e.type === "touchmove" ? e.touches[0].clientY : e.clientY) - startY; xOff = cx; yOff = cy; dragT.style.transform = `translate(calc(-50% + ${cx}px), calc(-50% + ${cy}px))`; } }
-document.addEventListener("mousemove", dragM); document.addEventListener("mouseup", () => isDragging = false);
-document.addEventListener("touchmove", dragM, {passive: false}); document.addEventListener("touchend", () => isDragging = false);
+const dragT = document.getElementById("dragTarget"), modalHeader = document.querySelector(".modal-header");
+modalHeader.addEventListener("mousedown", dStart); modalHeader.addEventListener("touchstart", dStart);
+function dStart(e) { startX = (e.type === "touchstart" ? e.touches[0].clientX : e.clientX) - xOff; startY = (e.type === "touchstart" ? e.touches[0].clientY : e.clientY) - yOff; isDragging = true; }
+function dMove(e) { if (isDragging) { e.preventDefault(); const cx = (e.type === "touchmove" ? e.touches[0].clientX : e.clientX) - startX, cy = (e.type === "touchmove" ? e.touches[0].clientY : e.clientY) - startY; xOff = cx; yOff = cy; dragT.style.transform = `translate(calc(-50% + ${cx}px), calc(-50% + ${cy}px))`; } }
+document.addEventListener("mousemove", dMove); document.addEventListener("mouseup", () => isDragging = false);
+document.addEventListener("touchmove", dMove, {passive: false}); document.addEventListener("touchend", () => isDragging = false);
 
-// Init
+// 초기화
 document.getElementById('searchInput').oninput = () => renderSongList();
 document.getElementById('btnGanada').onclick = () => {
     const list = document.getElementById('ganadaList'); list.innerHTML = ''; const map = {}; currentSongs.forEach(s => { map[s.filterArtist] = 1; });
-    Object.keys(map).sort((a,b) => a.localeCompare(b,'ko')).forEach(a => { const b = document.createElement('div'); b.className = 'tab'; b.style.textAlign = 'center'; b.textContent = a; b.onclick = () => { currentArtist = a; renderArtistFilter(); renderSongList(); closeModal('ganadaModal'); }; list.appendChild(b); });
+    Object.keys(map).sort((a,b) => a.localeCompare(b,'ko')).forEach(a => { const b = document.createElement('div'); b.className = 'tab'; b.style.textAlign = 'center'; b.textContent = a; b.onclick = () => { currentArtist = a; renderArtistFilter(); renderSongList(); closeM('ganadaModal'); }; list.appendChild(b); });
     document.getElementById('ganadaModal').style.display = 'flex';
 };
 (async () => {
