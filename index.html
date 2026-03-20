@@ -39,17 +39,9 @@ body {
 }
 .nav-logo { font-size: 20px; font-weight: 800; color: var(--text-main); flex-shrink: 0; }
 .nav-logo span { color: var(--accent); }
-
-.nav-menu { 
-    display: flex; gap: 20px; position: absolute; left: 50%; transform: translateX(-50%); 
-}
-.nav-item { 
-    font-weight: 700; font-size: 15px; cursor: pointer; color: var(--text-sub); 
-    padding: 8px 16px; border-radius: 10px; transition: 0.3s;
-}
+.nav-menu { display: flex; gap: 20px; position: absolute; left: 50%; transform: translateX(-50%); }
+.nav-item { font-weight: 700; font-size: 15px; cursor: pointer; color: var(--text-sub); padding: 8px 16px; border-radius: 10px; transition: 0.3s; }
 .nav-item.active { color: var(--accent); background: var(--accent-soft); }
-
-/* 모바일 햄버거 버튼 */
 .menu-toggle { display: none; font-size: 26px; cursor: pointer; color: var(--text-main); position: absolute; left: 20px; z-index: 1001; }
 
 /* 2. Main Layout */
@@ -58,27 +50,29 @@ main { margin-top: var(--nav-height); height: calc(100vh - var(--nav-height)); o
 .page.active { display: block; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-/* 3. Home Page (Hero) */
-.home-container { max-width: 10000px; margin: 0 auto; display: flex; flex-direction: column; gap: 30px; padding-bottom: 40px; }
+/* 3. Home Page (UI 복구) */
+.home-container { max-width: 1000px; margin: 0 auto; display: flex; flex-direction: column; gap: 30px; padding-bottom: 40px; }
 .hero-section {
     position: relative; padding: 80px 20px; text-align: center; border-radius: 30px; overflow: hidden;
     background: radial-gradient(circle at 15% 50%, rgba(255, 179, 186, 0.4) 0%, transparent 50%), #fff;
     box-shadow: 0 15px 35px rgba(93, 60, 67, 0.05); border: 1px solid rgba(255, 255, 255, 0.8);
 }
-.profile-img { width: 150px; height: 150px; border-radius: 50%; border: 4px solid #fff; margin: 0 auto 20px; background: #fff url('yoko-profile.png') center/cover; box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+.hero-content { 
+    position: relative; z-index: 1; display: inline-block;
+    background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(12px);
+    padding: 40px 60px; border-radius: 28px; border: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 0 10px 30px rgba(93, 60, 67, 0.08);
+}
+.profile-img { width: 150px; height: 150px; border-radius: 50%; border: 4px solid #fff; margin: 0 auto 20px; background: #fff url('yoko-profile.png') center/cover; box-shadow: 0 8px 20px rgba(255, 142, 173, 0.2); }
 .hero-title { font-size: 32px; font-weight: 800; margin-bottom: 10px; }
 .hero-desc { font-weight: 600; opacity: 0.8; margin-bottom: 20px; }
 
-/* 모바일 바로가기 버튼 */
 .mobile-btn-area { display: none; margin-top: 15px; }
-.btn-go-songbook {
-    padding: 14px 34px; background: var(--accent); color: white; border: none;
-    border-radius: 50px; font-weight: 800; font-size: 16px; cursor: pointer;
-    box-shadow: 0 8px 15px rgba(255, 142, 173, 0.3); transition: 0.3s;
-}
+.btn-go-songbook { padding: 14px 34px; background: var(--accent); color: white; border: none; border-radius: 50px; font-weight: 800; font-size: 16px; cursor: pointer; box-shadow: 0 8px 15px rgba(255, 142, 173, 0.3); }
 
 .quick-links { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
 .link-card { background: #fff; padding: 15px; border-radius: 18px; text-decoration: none; color: var(--text-main); font-weight: 700; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.3s; }
+.link-card:hover { transform: translateY(-5px); border-color: var(--accent); color: var(--accent); }
 
 .latest-video { background: var(--bg-card); padding: 30px; border-radius: 24px; border: 1px solid var(--border-color); }
 .video-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
@@ -86,11 +80,10 @@ main { margin-top: var(--nav-height); height: calc(100vh - var(--nav-height)); o
 .yt-thumb { position: absolute; top:0; left:0; width:100%; height:100%; object-fit: cover; }
 .yt-play-btn { position: absolute; top:50%; left:50%; transform:translate(-50%, -50%); width:60px; height:60px; background:rgba(0,0,0,0.6); color:#fff; border-radius:50%; display:flex; justify-content:center; align-items:center; font-size:24px; z-index: 2; }
 
-/* 4. Songbook Page (Sidebar) */
+/* 4. Songbook Page */
 .songbook-container { display: flex; gap: 20px; max-width: 1500px; margin: 0 auto; height: 100%; }
 .left-pane { flex: 0 0 320px; display: flex; flex-direction: column; gap: 16px; height: 100%; transition: 0.3s ease; position: relative; }
 .right-pane { flex: 1; background: var(--bg-card); border-radius: 24px; border: 1px solid var(--border-color); display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 30px rgba(93, 60, 67, 0.05); }
-
 .sidebar-close { display: none; position: absolute; top: 15px; right: 15px; font-size: 26px; cursor: pointer; color: var(--text-sub); z-index: 10; padding: 5px; }
 
 .glass-card { background: var(--bg-card); border-radius: 20px; padding: 20px; border: 1px solid var(--border-color); }
@@ -99,7 +92,6 @@ main { margin-top: var(--nav-height); height: calc(100vh - var(--nav-height)); o
 .tab.active { background: var(--accent-soft); color: var(--accent); border: 1px solid var(--accent); }
 
 #guide { flex: 1; overflow-y: auto; font-size: 13px; color: var(--text-main); line-height: 1.8; padding: 20px; text-align: left; font-weight: 400 !important; }
-
 #artistList { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; max-height: 250px; overflow-y: auto; scroll-behavior: smooth; }
 #artistList .tab { text-align: center; font-size: 11px; padding: 6px 2px; }
 
@@ -109,53 +101,37 @@ main { margin-top: var(--nav-height); height: calc(100vh - var(--nav-height)); o
 
 #list { flex: 1; overflow-y: auto; }
 .song { display: flex; align-items: center; padding: 14px 20px; border-bottom: 1px solid rgba(0,0,0,0.03); }
-
-/* 리스트 정렬 */
 .song-info-tags { display: flex; gap: 6px; width: 130px; flex-shrink: 0; justify-content: flex-end; margin-right: 12px; }
 .key-badge { font-size: 10px; background: #f0ede5; color: var(--text-sub); padding: 2px 6px; border-radius: 4px; }
 .keyup-badge { font-size: 10px; background: var(--accent-soft); color: var(--accent); padding: 2px 6px; border-radius: 4px; border: 1px solid var(--accent); }
 .note-text { font-size: 11px; color: var(--accent); font-weight: 600; max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-
 .artist-name { flex: 1; font-weight: 600; color: var(--text-sub); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .song-title { flex: 2; color: var(--text-main); font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 10px; }
-
 .mr-btn, .lyrics-btn { padding: 6px 12px; border-radius: 8px; font-size: 10px; font-weight: 700; text-align: center; min-width: 60px; cursor: pointer; border: 1px solid var(--border-color); text-decoration: none; display: inline-block; }
 .mr-btn { background: #ede3d5; color: var(--text-main); }
 .mr-btn.find { background: #fff; border: 1px dashed var(--accent); color: var(--accent); }
 .lyrics-btn { background: transparent; color: var(--text-sub); }
 .lyrics-btn.active { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
-
 .copy-icon { width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-sub); border-radius: 10px; background: var(--bg-inner); margin-right: 10px; }
 
-/* =========================================
-   📱 모바일 환경 긴급 수정
-========================================= */
+/* 📱 Mobile Optimized */
 @media (max-width: 768px) {
     .navbar { padding: 0 20px; justify-content: center; }
     .nav-logo { font-size: 17px; }
-    .nav-menu { display: none; } /* 상단 메뉴 숨김 (겹침 방지) */
-    .menu-toggle { display: block; } /* 햄버거 노출 */
-    
-    /* 홈 설명 한 줄 처리 및 버튼 */
+    .nav-menu { display: none; } 
+    .menu-toggle { display: block; } 
     .hero-desc { white-space: nowrap; font-size: 14px; }
     .mobile-btn-area { display: block; } 
-
-    /* 사이드바 설정 (곡 목록이 바로 보이게 숨김 처리) */
-    .left-pane {
-        position: fixed; top: 0; left: -340px; width: 300px; z-index: 1100;
-        background: #fff; padding: 70px 20px 20px; box-shadow: 10px 0 30px rgba(0,0,0,0.1); height: 100vh;
-    }
+    .left-pane { position: fixed; top: 0; left: -340px; width: 300px; z-index: 1100; background: #fff; padding: 70px 20px 20px; box-shadow: 10px 0 30px rgba(0,0,0,0.1); height: 100vh; }
     .left-pane.open { left: 0; }
-    .sidebar-close { display: block; } /* 닫기 버튼 노출 */
-
-    /* 모바일 리스트 가수-제목만 */
+    .sidebar-close { display: block; } 
     .song-info-tags, .mr-btn, .lyrics-btn { display: none !important; }
     .song { padding: 12px 15px; }
     .artist-name { flex: 1; font-size: 12px; }
     .song-title { flex: 1.5; font-size: 13px; }
 }
 
-/* 모달 & 가사 폰트 */
+/* Modal & Lyrics Font */
 .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); justify-content: center; align-items: center; z-index: 2000; }
 .modal-content { background: #fff; width: 92%; max-width: 550px; border-radius: 28px; position: absolute; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.2); }
 .modal-header { padding: 20px; color: var(--accent); font-weight: 800; text-align: center; border-bottom: 1px solid var(--border-color); cursor: move; }
@@ -179,23 +155,29 @@ main { margin-top: var(--nav-height); height: calc(100vh - var(--nav-height)); o
     <section id="home-page" class="page active">
         <div class="home-container">
             <div class="hero-section">
-                <div class="profile-img"></div>
-                <h1 class="hero-title">요코링 Yokoring</h1>
-                <p class="hero-desc">코링이와 넙치의 놀이터입니다.</p>
-                <div class="mobile-btn-area">
-                    <button class="btn-go-songbook" onclick="showPage('songbook')">노래책 바로가기 🎵</button>
+                <div class="hero-content">
+                    <div class="profile-img"></div>
+                    <h1 class="hero-title">요코링 Yokoring</h1>
+                    <p class="hero-desc">코링이와 넙치의 놀이터입니다.</p>
+                    <div class="mobile-btn-area">
+                        <button class="btn-go-songbook" onclick="showPage('songbook')">노래책 바로가기 🎵</button>
+                    </div>
                 </div>
             </div>
             <div class="quick-links">
-                <a href="https://www.sooplive.co.kr/station/yokoring03" target="_blank" class="link-card"><img src="icon-soop.png" alt="SOOP" style="width:20px;"> SOOP 방송국</a>
-                <a href="https://www.youtube.com/@%EC%9A%94%EC%BD%94%EB%A7%81" target="_blank" class="link-card"><img src="icon-youtube.png" alt="YT" style="width:20px;"> 노래 유튜브</a>
-                <a href="https://cafe.naver.com/yokoring03" target="_blank" class="link-card"><img src="icon-cafe.png" alt="Cafe" style="width:20px;"> 코링 베이커리</a>
-                <a href="https://discord.com/invite/Mn8zBq7nAb" target="_blank" class="link-card"><img src="icon-discord.png" alt="Disc" style="width:20px;"> 디스코드</a>
+                <a href="https://www.sooplive.co.kr/station/yokoring03" target="_blank" class="link-card" style="border-color: #a5dff9;"><img src="icon-soop.png" alt="SOOP" style="width:20px;"> SOOP 방송국</a>
+                <a href="https://www.youtube.com/@%EC%9A%94%EC%BD%94%EB%A7%81" target="_blank" class="link-card" style="border-color: #ffcccc;"><img src="icon-youtube.png" alt="YT" style="width:20px;"> 노래 유튜브</a>
+                <a href="https://www.youtube.com/channel/UCbcDFqBnyJxdPFXeuUHiF1g" target="_blank" class="link-card" style="border-color: #eee;"><img src="icon-youtube.png" alt="Re" style="width:20px;"> 다시보기 채널</a>
+                <a href="https://cafe.naver.com/yokoring03" target="_blank" class="link-card" style="border-color: #c3eec3;"><img src="icon-cafe.png" alt="Cafe" style="width:20px;"> 코링 베이커리</a>
+                <a href="https://discord.com/invite/Mn8zBq7nAb" target="_blank" class="link-card" style="border-color: #d1d9ff;"><img src="icon-discord.png" alt="Disc" style="width:20px;"> 디스코드</a>
             </div>
-            <div class="video-grid">
-                <div class="video-wrap" onclick="loadYoutube(this, 'sueWEqdFt8w')"><img src="https://img.youtube.com/vi/sueWEqdFt8w/maxresdefault.jpg" class="yt-thumb"><div class="yt-play-btn">▶</div></div>
-                <div class="video-wrap" onclick="loadYoutube(this, 'lAbisQ9vZq0')"><img src="https://img.youtube.com/vi/lAbisQ9vZq0/maxresdefault.jpg" class="yt-thumb"><div class="yt-play-btn">▶</div></div>
-                <div class="video-wrap" onclick="loadYoutube(this, 'OlBL88RrnYU')"><img src="https://img.youtube.com/vi/OlBL88RrnYU/maxresdefault.jpg" class="yt-thumb"><div class="yt-play-btn">▶</div></div>
+            <div class="latest-video">
+                <h3 style="font-size: 18px; font-weight: 800; margin-bottom: 15px;">최신 업로드 영상</h3>
+                <div class="video-grid">
+                    <div class="video-wrap" onclick="loadYoutube(this, 'sueWEqdFt8w')"><img src="https://img.youtube.com/vi/sueWEqdFt8w/maxresdefault.jpg" class="yt-thumb"><div class="yt-play-btn">▶</div></div>
+                    <div class="video-wrap" onclick="loadYoutube(this, 'lAbisQ9vZq0')"><img src="https://img.youtube.com/vi/lAbisQ9vZq0/maxresdefault.jpg" class="yt-thumb"><div class="yt-play-btn">▶</div></div>
+                    <div class="video-wrap" onclick="loadYoutube(this, 'OlBL88RrnYU')"><img src="https://img.youtube.com/vi/OlBL88RrnYU/maxresdefault.jpg" class="yt-thumb"><div class="yt-play-btn">▶</div></div>
+                </div>
             </div>
         </div>
     </section>
@@ -204,9 +186,6 @@ main { margin-top: var(--nav-height); height: calc(100vh - var(--nav-height)); o
         <div class="songbook-container">
             <div class="left-pane" id="sidebar">
                 <span class="sidebar-close" onclick="toggleSidebar()">✕</span>
-                <div class="tab-group" style="margin-bottom: 20px; display: none;" id="mobile-nav-box">
-                    <div class="tab" onclick="showPage('home')">홈으로</div>
-                </div>
                 <div class="glass-card">
                     <div id="tabs" class="tab-group"></div>
                     <div style="margin-top:15px;">
@@ -240,11 +219,8 @@ function showPage(p) {
     document.querySelectorAll('.nav-item').forEach(ni => ni.classList.remove('active'));
     document.getElementById(p + '-page').classList.add('active');
     document.getElementById('btn-nav-' + p).classList.add('active');
-    
-    // 모바일 햄버거 노출 여부
     const mBtn = document.querySelector('.menu-toggle');
     if(mBtn) mBtn.style.display = (p === 'songbook' && window.innerWidth <= 768) ? 'block' : 'none';
-    
     document.getElementById('sidebar').classList.remove('open');
 }
 function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
@@ -307,21 +283,36 @@ function renderSongList() {
 }
 
 function sendToWidget(t, a) { db.ref('currentSong').set({ title: t, artist: a, timestamp: Date.now() }); }
-function showLyrics(f) { if(!f || f==='null') return; fetch(`data/lyrics/${f}`).then(r=>r.text()).then(t=>{ document.getElementById('lyricsText').textContent=t; document.getElementById('lyricsModal').style.display='flex'; }); }
+function showLyrics(f) { if(!f || f==='null') return; fetch(`data/lyrics/${f}`).then(r=>r.text()).then(t=>{ document.getElementById('lyricsText').textContent=t; document.getElementById('lyricsModal').style.display='flex'; resetDrag(); }); }
 function copyText(t, b) { navigator.clipboard.writeText(t).then(() => { const o = b.textContent; b.textContent = '✅'; setTimeout(() => b.textContent = o, 1000); }); }
 function loadYoutube(el, id) { el.innerHTML = `<iframe src="https://www.youtube.com/embed/${id}?autoplay=1" allow="autoplay; encrypted-media; fullscreen" allowfullscreen style="width:100%; height:100%; border:none; border-radius:15px; position:absolute; top:0; left:0;"></iframe>`; }
 function remoteReload() { db.ref('command').set({ type: 'RELOAD', timestamp: Date.now() }); }
 
-// Drag logic
+/* --- 드래그 위치 오류 수정 로직 --- */
 let isDragging = false, xOff = 0, yOff = 0, startX, startY;
 const dragT = document.getElementById("dragTarget"), modalHeader = document.querySelector(".modal-header");
+
+function resetDrag() { xOff = 0; yOff = 0; dragT.style.transform = `translate(-50%, -50%)`; }
+
 modalHeader.addEventListener("mousedown", dStart); modalHeader.addEventListener("touchstart", dStart);
-function dStart(e) { startX = (e.type === "touchstart" ? e.touches[0].clientX : e.clientX) - xOff; startY = (e.type === "touchstart" ? e.touches[0].clientY : e.clientY) - yOff; isDragging = true; }
-function dMove(e) { if (isDragging) { e.preventDefault(); const cx = (e.type === "touchmove" ? e.touches[0].clientX : e.clientX) - startX, cy = (e.type === "touchmove" ? e.touches[0].clientY : e.clientY) - startY; xOff = cx; yOff = cy; dragT.style.transform = `translate(calc(-50% + ${cx}px), calc(-50% + ${cy}px))`; } }
+function dStart(e) {
+    const cx = e.type === "touchstart" ? e.touches[0].clientX : e.clientX;
+    const cy = e.type === "touchstart" ? e.touches[0].clientY : e.clientY;
+    startX = cx - xOff; startY = cy - yOff;
+    isDragging = true;
+}
+function dMove(e) {
+    if (isDragging) {
+        e.preventDefault();
+        const cx = e.type === "touchmove" ? e.touches[0].clientX : e.clientX;
+        const cy = e.type === "touchmove" ? e.touches[0].clientY : e.clientY;
+        xOff = cx - startX; yOff = cy - startY;
+        dragT.style.transform = `translate(calc(-50% + ${xOff}px), calc(-50% + ${yOff}px))`;
+    }
+}
 document.addEventListener("mousemove", dMove); document.addEventListener("mouseup", () => isDragging = false);
 document.addEventListener("touchmove", dMove, {passive: false}); document.addEventListener("touchend", () => isDragging = false);
 
-// Ganada modal
 document.getElementById('btnGanada').onclick = () => {
     const list = document.getElementById('ganadaList'); list.innerHTML = ''; const map = {}; currentSongs.forEach(s => { map[s.filterArtist] = 1; });
     Object.keys(map).sort((a,b) => a.localeCompare(b,'ko')).forEach(a => { 
@@ -331,7 +322,6 @@ document.getElementById('btnGanada').onclick = () => {
     });
     document.getElementById('ganadaModal').style.display = 'flex';
 };
-
 document.getElementById('searchInput').oninput = () => renderSongList();
 (async () => {
     await loadLyricsList(); const tbs = document.getElementById('tabs');
