@@ -129,6 +129,22 @@ main {
 .video-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
 .video-wrap { position: relative; padding-bottom: 56.25%; height: 0; border-radius: 15px; overflow: hidden; }
 .video-wrap iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+.yt-thumb { 
+    position: absolute; top: 0; left: 0; 
+    width: 100%; height: 100%; object-fit: cover; 
+    border-radius: 15px; cursor: pointer;
+}
+.yt-play-btn {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 60px; height: 60px; background: rgba(0, 0, 0, 0.6); color: #fff;
+    border-radius: 50%; display: flex; justify-content: center; align-items: center;
+    font-size: 22px; cursor: pointer; transition: 0.3s; z-index: 2;
+    pointer-events: none; 
+}
+.video-wrap:hover .yt-play-btn { 
+    background: var(--accent); 
+    transform: translate(-50%, -50%) scale(1.1); 
+}
 
 /* =========================================
    4. 노래책 화면 (Songbook Page)
@@ -242,14 +258,19 @@ main {
             <div class="latest-video">
                 <h3 style="font-size: 18px; font-weight: 800; margin-bottom: 10px;">최신 업로드 영상</h3>
                 <div class="video-grid">
-                    <div class="video-wrap">
-                        <iframe src="https://www.youtube.com/embed/sueWEqdFt8w" allowfullscreen></iframe>
+                    <div class="video-wrap" onclick="loadYoutube(this, 'sueWEqdFt8w')">
+                        <img src="https://img.youtube.com/vi/sueWEqdFt8w/maxresdefault.jpg" class="yt-thumb" alt="영상 썸네일">
+                        <div class="yt-play-btn">▶</div>
                     </div>
-                    <div class="video-wrap">
-                        <iframe src="https://www.youtube.com/embed/lAbisQ9vZq0" allowfullscreen></iframe>
+
+                    <div class="video-wrap" onclick="loadYoutube(this, 'lAbisQ9vZq0')">
+                        <img src="https://img.youtube.com/vi/lAbisQ9vZq0/maxresdefault.jpg" class="yt-thumb" alt="영상 썸네일">
+                        <div class="yt-play-btn">▶</div>
                     </div>
-                    <div class="video-wrap">
-                        <iframe src="https://www.youtube.com/embed/OlBL88RrnYU" allowfullscreen></iframe>
+
+                    <div class="video-wrap" onclick="loadYoutube(this, 'OlBL88RrnYU')">
+                        <img src="https://img.youtube.com/vi/OlBL88RrnYU/maxresdefault.jpg" class="yt-thumb" alt="영상 썸네일">
+                        <div class="yt-play-btn">▶</div>
                     </div>
                 </div>
             </div>
@@ -584,6 +605,10 @@ document.getElementById('searchInput').oninput = () => renderSongList();
     
     // 첫 번째 탭 자동 클릭
     tabs.firstChild.click();
+    // 유튜브 썸네일 클릭 시 영상으로 교체하고 자동재생
+    function loadYoutube(element, videoId) {
+        element.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1" allow="autoplay; encrypted-media; fullscreen" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; border-radius: 15px;"></iframe>`;
+}
 })();
 </script>
 </body>
