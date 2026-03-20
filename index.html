@@ -156,14 +156,30 @@ main {
 .song:hover { background: var(--bg-inner); }
 .song.selected { background: var(--accent-soft); }
 
-.song-info-tags { display: flex; gap: 6px; align-items: center; margin-right: 12px; flex-shrink: 0; }
+.song-info-tags { 
+    display: flex; gap: 6px; align-items: center; 
+    width: 130px; /* 태그 영역 고정 넓이 */
+    margin-right: 12px; flex-shrink: 0; justify-content: flex-end; 
+}
 .key-badge { font-size: 10px; background: #f0ede5; color: var(--text-sub); padding: 2px 6px; border-radius: 4px; border: 1px solid var(--border-color); }
 .keyup-badge { font-size: 10px; background: var(--accent-soft); color: var(--accent); padding: 2px 6px; border-radius: 4px; border: 1px solid var(--accent); }
-.note-text { font-size: 11px; color: var(--accent); font-weight: 600; opacity: 0.9; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.note-text { 
+    font-size: 11px; color: var(--accent); font-weight: 600; opacity: 0.9; 
+    max-width: 80px; 
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; 
+}
 
 .copy-icon { width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-sub); border-radius: 10px; background: var(--bg-inner); border: 1px solid var(--border-color); }
-.artist-name { flex: 1; font-weight: 600; color: var(--text-sub); font-size: 13px; }
-.song-title { flex: 2; color: var(--text-main); font-size: 14px; font-weight: 500; }
+.artist-name { 
+    flex: 1; font-weight: 600; color: var(--text-sub); font-size: 13px; 
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; 
+    padding-right: 10px; 
+}
+.song-title { 
+    flex: 2; color: var(--text-main); font-size: 14px; font-weight: 500; 
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; 
+    padding-right: 10px;
+}
 
 /* 버튼 스타일 (MR, 가사) */
 .mr-btn, .lyrics-btn { padding: 6px 12px; border-radius: 8px; font-size: 10px; font-weight: 700; text-decoration: none; text-align: center; min-width: 60px; }
