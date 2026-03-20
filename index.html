@@ -108,18 +108,25 @@ main { margin-top: var(--nav-height); height: calc(100vh - var(--nav-height)); o
     display: flex; 
     gap: 6px; 
     align-items: center; 
+    width: 160px; /* 130px에서 160px로 확장하여 칼정렬 유지 */
     flex-shrink: 0; 
     justify-content: flex-end; 
     margin-right: 12px;
-    white-space: nowrap; 
 }
-.key-badge { font-size: 10px; background: #f0ede5; color: var(--text-sub); padding: 2px 6px; border-radius: 4px; }
+.key-badge, .keyup-badge { 
+    font-size: 10px; 
+    padding: 2px 6px; 
+    border-radius: 4px; 
+    white-space: nowrap; /* 줄바꿈 방지 */
+    flex-shrink: 0; /* 공간이 부족해도 절대 줄어들지 않음 */
+}
 .keyup-badge { font-size: 10px; background: var(--accent-soft); color: var(--accent); padding: 2px 6px; border-radius: 4px; border: 1px solid var(--accent); }
 .note-text { 
     font-size: 11px; 
     color: var(--accent); 
     font-weight: 600; 
-    max-width: 120px; 
+    opacity: 0.9; 
+    max-width: 90px; /* 메모는 정렬을 위해 최대 길이를 제한하되 이전보다 늘림 */
     overflow: hidden; 
     text-overflow: ellipsis; 
     white-space: nowrap; 
