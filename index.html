@@ -27,8 +27,19 @@
 * { box-sizing: border-box; -webkit-font-smoothing: antialiased; font-family: 'Pretendard', sans-serif !important; }
 
 body {
-    margin: 0; background: linear-gradient(135deg, var(--bg-yogurt-cream) 0%, var(--bg-yogurt-strawberry) 100%);
-    color: var(--text-main); height: 100vh; overflow: hidden;
+    margin: 0; 
+    background: linear-gradient(135deg, var(--bg-yogurt-cream) 0%, var(--bg-yogurt-strawberry) 100%);
+    color: var(--text-main); 
+    height: 100vh; 
+    overflow: hidden;
+    
+    /* [수정] body 괄호가 닫히기 전에 커서 설정을 넣어주세요! */
+    cursor: url('cursor-basic.png'), auto; 
+}
+
+/* 클릭 요소들은 body 바깥에 독립적으로 두는 게 맞습니다! 잘하셨어요. */
+a, button, .tab, .song, .copy-icon, .video-wrap, .menu-toggle {
+    cursor: url('cursor-pointer.png'), pointer;
 }
 
 /* 1. Navbar */
