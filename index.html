@@ -104,44 +104,66 @@ main { margin-top: var(--nav-height); height: calc(100vh - var(--nav-height)); o
 
 #list { flex: 1; overflow-y: auto; }
 .song { display: flex; align-items: center; padding: 14px 20px; border-bottom: 1px solid rgba(0,0,0,0.03); }
-.song-info-tags { 
-    display: flex; 
-    gap: 8px; 
-    align-items: center; 
-    flex-shrink: 0;        /* 제목이 길어져도 이 영역은 절대 줄어들지 않음 */
-    justify-content: flex-end; 
-    margin-right: 15px;
-    /* 고정 너비를 삭제하거나 넉넉하게 두어 참고 내용이 다 나오게 함 */
-    min-width: 160px;      
+/* 1. [가수 이름] 구역: 너비를 고정하여 제목의 시작 위치를 일치시킴 */
+.artist-name { 
+    width: 120px;          /* 가수 이름 칸 너비 고정 */
+    flex-shrink: 0;        /* 절대 줄어들지 않음 */
+    font-weight: 600; 
+    color: var(--text-sub); 
+    font-size: 13px; 
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
 }
-.key-badge, .keyup-badge { 
-    font-size: 12px; 
-    padding: 3px 8px; 
-    border-radius: 5px; 
-    white-space: nowrap; /* 줄바꿈 방지 */
-    flex-shrink: 700; /* 공간이 부족해도 절대 줄어들지 않음 */
-}
-.keyup-badge { font-size: 10px; background: var(--accent-soft); color: var(--accent); padding: 2px 6px; border-radius: 4px; border: 1px solid var(--accent); }
-.note-text, .key-badge, .keyup-badge { 
-    white-space: nowrap;   /* 줄바꿈 방지 */
-    overflow: visible;     /* 숨김 없음 */
-    text-overflow: clip;   /* ... 표시 안 함 */
-    max-width: none;       /* 길이 제한 해제 */
-    font-size: 12px;
-    font-weight: 700;
-    opacity: 1;            /* 더 선명하게 보이도록 투명도 제거 */
-}
-.artist-name { flex: 1; font-weight: 600; color: var(--text-sub); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* 2. [노래 제목] 구역: 남은 중간 공간을 다 차지하되, 태그 영역을 침범 안 함 */
 .song-title { 
-    flex: 2; 
+    flex: 1;               /* 가변적으로 늘어나되 */
+    min-width: 0;          /* 내용이 길면 ... 처리를 위해 필요 */
     color: var(--text-main); 
     font-size: 14px; 
     font-weight: 500; 
     white-space: nowrap; 
-    overflow: hidden;      /* 넘치는 부분 숨김 */
-    text-overflow: ellipsis; /* ... 표시 */
-    min-width: 0;          /* flex 박스 내에서 ellipsis 작동을 위한 필수 설정 */
-    padding-right: 10px;
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+    padding-right: 15px;   /* 태그와의 최소 간격 */
+}
+
+/* 3. [태그 영역] 구역: 너비를 넉넉하게 고정하여 제목을 왼쪽으로 밀지 못하게 함 */
+.song-info-tags { 
+    display: flex; 
+    gap: 8px; 
+    align-items: center; 
+    width: 200px;          /* 태그 영역 전체 너비 고정 (밀림 방지 핵심) */
+    flex-shrink: 0;        /* 제목이 길어져도 이 영역은 절대 안 밀림 */
+    justify-content: flex-end; 
+    margin-right: 15px;
+}
+
+/* 4. [Key, KeyUp, 참고] 공통 및 개별 스타일 */
+.note-text, .key-badge, .keyup-badge { 
+    font-size: 13px; 
+    font-weight: 700; 
+    white-space: nowrap; 
+    opacity: 1;
+}
+
+.note-text { color: #777777; } /* 참고: 짙은 회색 */
+
+.key-badge { 
+    color: var(--text-main); 
+    background: #f0ede5; 
+    padding: 2px 6px; 
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+}
+
+.keyup-badge { 
+    color: var(--accent);      /* 키업: 분홍색 */
+    background: var(--accent-soft); 
+    padding: 2px 6px; 
+    border-radius: 4px; 
+    border: 1px solid var(--accent);
 }
 
 .mr-btn, .lyrics-btn { padding: 6px 12px; border-radius: 8px; font-size: 10px; font-weight: 700; text-align: center; min-width: 60px; cursor: pointer; border: 1px solid var(--border-color); text-decoration: none; display: inline-block; }
