@@ -104,38 +104,16 @@ main { margin-top: var(--nav-height); height: calc(100vh - var(--nav-height)); o
 
 #list { flex: 1; overflow-y: auto; }
 .song { display: flex; align-items: center; padding: 14px 20px; border-bottom: 1px solid rgba(0,0,0,0.03); }
-/* 1. [가수 이름] 구역: 너비를 고정하여 제목의 시작 위치를 일치시킴 */
-.artist-name { 
-    width: 120px;          /* 가수 이름 칸 너비 고정 */
-    flex-shrink: 0;        /* 절대 줄어들지 않음 */
-    font-weight: 600; 
-    color: var(--text-sub); 
-    font-size: 13px; 
-    white-space: nowrap; 
-    overflow: hidden; 
-    text-overflow: ellipsis; 
-}
-
-/* 2. [노래 제목] 구역: 남은 중간 공간을 다 차지하되, 태그 영역을 침범 안 함 */
-.song-title { 
-    flex: 1;               /* 가변적으로 늘어나되 */
-    min-width: 0;          /* 내용이 길면 ... 처리를 위해 필요 */
-    color: var(--text-main); 
-    font-size: 14px; 
-    font-weight: 500; 
-    white-space: nowrap; 
-    overflow: hidden; 
-    text-overflow: ellipsis; 
-    padding-right: 15px;   /* 태그와의 최소 간격 */
-}
+.artist-name { width: 120px; flex-shrink: 0; font-weight: 600; color: var(--text-sub); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.song-title { flex: 1; min-width: 0; color: var(--text-main); font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 15px; }
 
 /* 3. [태그 영역] 구역: 너비를 넉넉하게 고정하여 제목을 왼쪽으로 밀지 못하게 함 */
 .song-info-tags { 
     display: flex; 
     gap: 8px; 
     align-items: center; 
-    width: 200px;          /* 태그 영역 전체 너비 고정 (밀림 방지 핵심) */
-    flex-shrink: 0;        /* 제목이 길어져도 이 영역은 절대 안 밀림 */
+    width: 220px;          /* 참고란이 길어질 수 있으니 너비를 살짝 더 늘렸어요 */
+    flex-shrink: 0; 
     justify-content: flex-end; 
     margin-right: 15px;
 }
@@ -148,27 +126,49 @@ main { margin-top: var(--nav-height); height: calc(100vh - var(--nav-height)); o
     opacity: 1;
 }
 
-.note-text { color: #777777; } /* 참고: 짙은 회색 */
+.note-text { 
+    font-size: 13px; 
+    font-weight: 700; 
+    color: #666666 !important; /* 짙은 회색 글씨 */
+    background: none !important; /* 배경색 제거 */
+    border: none !important;     /* 테두리 제거 */
+    padding: 0 !important;       /* 여백 제거 */
+    white-space: nowrap;
+}
 
 .key-badge { 
+    font-size: 13px; 
+    font-weight: 700; 
     color: var(--text-main); 
-    background: #f0ede5; 
-    padding: 2px 6px; 
-    border-radius: 4px;
+    background: #f0ede5 !important; /* 기존 베이지 배경 복구 */
+    padding: 2px 8px; 
+    border-radius: 5px;
     border: 1px solid var(--border-color);
+    white-space: nowrap;
 }
 
 .keyup-badge { 
-    color: var(--accent);      /* 키업: 분홍색 */
-    background: var(--accent-soft); 
-    padding: 2px 6px; 
-    border-radius: 4px; 
+    font-size: 13px; 
+    font-weight: 700; 
+    color: var(--accent) !important; 
+    background: var(--accent-soft) !important; 
+    padding: 2px 8px; 
+    border-radius: 5px; 
     border: 1px solid var(--accent);
+    white-space: nowrap;
 }
 
 .mr-btn, .lyrics-btn { padding: 6px 12px; border-radius: 8px; font-size: 10px; font-weight: 700; text-align: center; min-width: 60px; cursor: pointer; border: 1px solid var(--border-color); text-decoration: none; display: inline-block; }
 .mr-btn { background: #ede3d5; color: var(--text-main); }
-.mr-btn.find { background: #fff; border: 1px dashed var(--accent); color: var(--accent); }
+.mr-btn.find { 
+    background: #f0f7f7 !important; /* 연한 민트/블루 배경 */
+    border: 1px solid #8eb9ff !important; /* 차분한 블루 테두리 */
+    color: #4a7dff !important;      /* 신뢰감 있는 블루 글씨 */
+}
+.mr-btn.find:hover { 
+    background: #e1efff !important; 
+    color: #2b56ff !important; 
+}
 .lyrics-btn { background: transparent; color: var(--text-sub); }
 .lyrics-btn.active { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
 .copy-icon { width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-sub); border-radius: 10px; background: var(--bg-inner); margin-right: 10px; }
