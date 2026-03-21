@@ -11,18 +11,18 @@
 
     <style>
         :root {
-    /* 1. 포인트 컬러: 홈 화면의 은은한 레드와 핑크 톤 유지 */
+            /* 1. 포인트 컬러: 홈 화면의 5% 레드 포인트와 70% 핑크 톤 반영 */
             --spring-pink: #ff8ab4; 
-            --deep-pink: #ff6b9d; /* NOW PLAYING 글씨 색상 */
-    
-    /* 2. 배경: 흰색-보라 대신 '베이지-핑크' 그라데이션으로 변경 (홈 화면과 통일) */
-            --widget-bg: linear-gradient(135deg, rgba(255, 250, 250, 0.95) 0%, rgba(255, 230, 234, 0.9) 100%);
-    
-    /* 3. 테두리: 조금 더 따뜻한 핑크 윤곽 */
+            --deep-pink: #ff5a7a; /* 조금 더 붉은 기가 도는 핑크로 가독성 업 */
+            
+            /* 2. 배경: 왼쪽의 흰색을 베이지(25%)로 바꾸고 핑크(70%)로 넘어가는 쫀득한 그라데이션 */
+            --widget-bg: linear-gradient(135deg, rgba(255, 250, 240, 0.95) 0%, rgba(255, 210, 225, 0.9) 100%);
+            
+            /* 3. 테두리: 은은한 레드 핑크 윤곽 */
             --border-light: rgba(255, 255, 255, 0.9);
-            --border-pink: rgba(255, 142, 173, 0.3);
-    
-    /* 4. 가독성: 다크 웜 브라운 유지 */
+            --border-pink: rgba(255, 120, 150, 0.35);
+            
+            /* 4. 글자색: 따뜻한 브라운 톤 유지 */
             --text-main: #3d2b2b; 
             --text-sub: #7a5f5f;
         }
@@ -39,18 +39,17 @@
             border-radius: 42px; 
             box-sizing: border-box; 
             transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
-            
             border: 1px solid var(--border-light);
             outline: 2px solid var(--border-pink); 
-            
             box-shadow: 
-                0 10px 35px rgba(255, 138, 180, 0.2),
+                0 10px 35px rgba(255, 138, 180, 0.25),
                 0 4px 10px rgba(0, 0, 0, 0.05);
         }
 
+        /* 아이콘 영역도 흰색 대신 베이지 톤으로 변경 */
         .app-icon-area {
             flex-shrink: 0; width: 52px; height: 52px;
-            background: linear-gradient(135deg, #ffffff 0%, #ffeaf2 100%);
+            background: linear-gradient(135deg, #fffaf0 0%, #ffeaf2 100%);
             border-radius: 16px; display: flex; justify-content: center; align-items: center;
             box-shadow: 0 4px 12px rgba(255, 138, 180, 0.15); margin-right: 14px;
             border: 1px solid rgba(255, 255, 255, 0.8);
@@ -62,7 +61,7 @@
         .status-badge { 
             font-size: 9px; font-weight: 900; color: var(--deep-pink);
             letter-spacing: 1px; margin-bottom: 2px;
-            text-shadow: 0 0 10px rgba(255, 138, 180, 0.3);
+            text-shadow: 0 0 10px rgba(255, 90, 122, 0.2);
         }
 
         .title-container { width: 100%; overflow: hidden; white-space: nowrap; position: relative; }
@@ -79,21 +78,18 @@
             margin: 1px 0 0 0; font-size: 12px; font-weight: 600; color: var(--text-sub);
         }
 
-        /* 컨트롤 영역 (스태빌라이저 제거 및 발바닥 컨테이너 추가) */
         .right-controls { flex-shrink: 0; display: flex; align-items: center; margin-left: 5px; }
         
-        /* 🐾 고양이 발바닥 (Paw) 전체 컨테이너 */
         .paw-container {
             position: relative;
             width: 60px;
-            height: 52px; /* 위젯 안쪽에 쏙 들어가는 크기 */
+            height: 52px;
         }
 
-        /* 🐾 작은 발가락 버튼 (이전, 정지, 다음) */
         .toe-bean {
             position: absolute;
             width: 16px; height: 16px;
-            background: rgba(255, 138, 180, 0.85); /* 기존 핑크톤에 맞춤 */
+            background: rgba(255, 138, 180, 0.85); 
             border-radius: 50%;
             display: flex; justify-content: center; align-items: center;
             font-size: 7px; color: #fff;
@@ -104,7 +100,6 @@
         .center-toe { top: 0px; left: 50%; transform: translateX(-50%); }
         .right-toe { top: 7px; right: 1px; transform: rotate(20deg); }
 
-        /* 🐾 메인 패드 (재생 버튼) */
         .btn-play-circle {
             position: absolute;
             bottom: 0; left: 50%; transform: translateX(-50%);
@@ -114,10 +109,9 @@
             font-size: 11px; color: #fff; 
             box-shadow: 0 4px 12px rgba(255, 138, 180, 0.3);
             border: 1px solid rgba(255, 255, 255, 0.5);
-            z-index: 2; /* 파동 효과보다 위에 위치하도록 설정 */
+            z-index: 2;
         }
 
-        /* ✨ 재생 버튼 파동 (Pulse Ripple) 효과 */
         .btn-play-circle::before,
         .btn-play-circle::after {
             content: '';
@@ -128,11 +122,10 @@
             border-radius: 50%;
             transform: translate(-50%, -50%);
             z-index: -1;
-            /* 위젯 테두리를 벗어나지 않도록 scale을 1.8로 제한하여 깔끔하게 처리 */
             animation: pulse-ripple 2s infinite ease-out;
         }
         .btn-play-circle::after {
-            animation-delay: 1s; /* 두 개의 파동이 교차로 퍼지게 설정 */
+            animation-delay: 1s;
         }
 
         @keyframes pulse-ripple {
@@ -140,12 +133,9 @@
             100% { transform: translate(-50%, -50%) scale(1.8); opacity: 0; }
         }
 
-        /* 대기 상태 투명도 및 컨트롤 색상 회색 처리 */
         #widget-card.standby { opacity: 0.9; transform: scale(0.98); outline-color: rgba(255, 138, 180, 0.1); }
         #widget-card.standby .btn-play-circle { background: #e0e0e0; box-shadow: none; color: #fff; border: none;}
         #widget-card.standby .toe-bean { background: #e0e0e0; box-shadow: none; color: #fff; border: none;}
-        
-        /* 대기 상태일 때는 파동 애니메이션 정지 및 숨김 */
         #widget-card.standby .btn-play-circle::before,
         #widget-card.standby .btn-play-circle::after { animation: none; opacity: 0; }
     </style>
@@ -170,13 +160,11 @@
         </div>
     </div>
 
-<script>
+    <script>
         const card = document.getElementById('widget-card');
         const titleEl = document.getElementById('title');
         const artistEl = document.getElementById('artist');
         const statusEl = document.getElementById('status');
-        
-        // 요소 잡기
         const playIconEl = document.querySelector('.btn-play-circle i'); 
         const pageLoadTime = Date.now();
 
@@ -208,10 +196,7 @@
             setTimeout(() => {
                 card.classList.remove('standby');
                 statusEl.innerHTML = "NOW PLAYING 🎵";
-                
-                // 🛠️ [확실한 수정] 클래스명을 통째로 덮어씌워서 무조건 일시정지로 만듭니다!
                 playIconEl.className = 'fa-solid fa-pause';
-
                 titleEl.innerText = title;
                 artistEl.innerText = artist;
                 titleEl.classList.remove('marquee');
@@ -229,10 +214,7 @@
             setTimeout(() => {
                 card.classList.add('standby');
                 statusEl.innerHTML = "READY 🌸";
-                
-                // 🛠️ [확실한 수정] 클래스명을 통째로 덮어씌워서 무조건 재생 버튼으로 원복합니다!
                 playIconEl.className = 'fa-solid fa-play';
-
                 titleEl.innerText = "YOKORING Player";
                 artistEl.innerText = "요코링";
                 titleEl.classList.remove('marquee');
