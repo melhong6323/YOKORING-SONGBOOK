@@ -170,11 +170,14 @@
         </div>
     </div>
 
-    <script>
+<script>
         const card = document.getElementById('widget-card');
         const titleEl = document.getElementById('title');
         const artistEl = document.getElementById('artist');
         const statusEl = document.getElementById('status');
+        
+        // 요소 잡기
+        const playIconEl = document.querySelector('.btn-play-circle i'); 
         const pageLoadTime = Date.now();
 
         const firebaseConfig = {
@@ -205,6 +208,10 @@
             setTimeout(() => {
                 card.classList.remove('standby');
                 statusEl.innerHTML = "NOW PLAYING 🎵";
+                
+                // 🛠️ [확실한 수정] 클래스명을 통째로 덮어씌워서 무조건 일시정지로 만듭니다!
+                playIconEl.className = 'fa-solid fa-pause';
+
                 titleEl.innerText = title;
                 artistEl.innerText = artist;
                 titleEl.classList.remove('marquee');
@@ -222,6 +229,10 @@
             setTimeout(() => {
                 card.classList.add('standby');
                 statusEl.innerHTML = "READY 🌸";
+                
+                // 🛠️ [확실한 수정] 클래스명을 통째로 덮어씌워서 무조건 재생 버튼으로 원복합니다!
+                playIconEl.className = 'fa-solid fa-play';
+
                 titleEl.innerText = "YOKORING Player";
                 artistEl.innerText = "요코링";
                 titleEl.classList.remove('marquee');
