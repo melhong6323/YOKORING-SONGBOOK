@@ -16,7 +16,6 @@
             --deep-pink: #ff6b9d;
             
             /* 2. 가독성을 위해 불투명도를 높인(0.85) 그라데이션 배경 */
-            /* 완전 하얀색에서 아주 연한 분홍색으로 부드럽게 넘어갑니다. */
             --widget-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 225, 240, 0.85) 100%);
             
             /* 3. 테두리: 은은한 핑크색 윤곽 */
@@ -34,19 +33,16 @@
         }
 
         #widget-card {
-            display: flex; align-items: center; width: 400px; height: 84px; padding: 0 18px;
+            display: flex; align-items: center; width: 350px; height: 84px; padding: 0 18px;
             background: var(--widget-bg); 
-            /* 블러 효과는 유지하여 고급스러움을 줍니다. */
             backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
             border-radius: 42px; 
             box-sizing: border-box; 
             transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
             
-            /* 이중 테두리로 확실한 존재감 부여 */
             border: 1px solid var(--border-light);
-            outline: 2px solid var(--border-pink); /* 테두리를 조금 더 굵게 */
+            outline: 2px solid var(--border-pink); 
             
-            /* 그림자: 핑크색 톤을 살려 화사하게 */
             box-shadow: 
                 0 10px 35px rgba(255, 138, 180, 0.2),
                 0 4px 10px rgba(0, 0, 0, 0.05);
@@ -54,7 +50,6 @@
 
         .app-icon-area {
             flex-shrink: 0; width: 52px; height: 52px;
-            /* 아이콘 배경도 그라데이션으로 화사하게 */
             background: linear-gradient(135deg, #ffffff 0%, #ffeaf2 100%);
             border-radius: 16px; display: flex; justify-content: center; align-items: center;
             box-shadow: 0 4px 12px rgba(255, 138, 180, 0.15); margin-right: 14px;
@@ -62,10 +57,10 @@
         }
         .app-icon-area img { width: 80%; height: 80%; object-fit: contain; }
 
-        .info-area { flex-grow: 1; overflow: hidden; display: flex; flex-direction: column; justify-content: center; margin-right: 10px; }
+        .info-area { flex-grow: 1; overflow: hidden; display: flex; flex-direction: column; justify-content: center; margin-right: 5px; }
         
         .status-badge { 
-            font-size: 9px; font-weight: 900; color: var(--deep-pink); /* 글자색을 조금 더 진하게 */
+            font-size: 9px; font-weight: 900; color: var(--deep-pink);
             letter-spacing: 1px; margin-bottom: 2px;
             text-shadow: 0 0 10px rgba(255, 138, 180, 0.3);
         }
@@ -84,33 +79,75 @@
             margin: 1px 0 0 0; font-size: 12px; font-weight: 600; color: var(--text-sub);
         }
 
-        .right-controls { flex-shrink: 0; display: flex; align-items: center; gap: 10px; }
-        .playback-btns { display: flex; align-items: center; gap: 7px; color: var(--text-sub); }
-        .btn-icon { font-size: 12px; opacity: 0.5; }
+        /* 컨트롤 영역 (스태빌라이저 제거 및 발바닥 컨테이너 추가) */
+        .right-controls { flex-shrink: 0; display: flex; align-items: center; margin-left: 5px; }
         
-        /* 재생 버튼: 진한 핑크색으로 포인트를 주어 시선을 끔 */
+        /* 🐾 고양이 발바닥 (Paw) 전체 컨테이너 */
+        .paw-container {
+            position: relative;
+            width: 60px;
+            height: 52px; /* 위젯 안쪽에 쏙 들어가는 크기 */
+        }
+
+        /* 🐾 작은 발가락 버튼 (이전, 정지, 다음) */
+        .toe-bean {
+            position: absolute;
+            width: 16px; height: 16px;
+            background: rgba(255, 138, 180, 0.85); /* 기존 핑크톤에 맞춤 */
+            border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 7px; color: #fff;
+            box-shadow: 0 2px 6px rgba(255, 138, 180, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+        .left-toe { top: 7px; left: 1px; transform: rotate(-20deg); }
+        .center-toe { top: 0px; left: 50%; transform: translateX(-50%); }
+        .right-toe { top: 7px; right: 1px; transform: rotate(20deg); }
+
+        /* 🐾 메인 패드 (재생 버튼) */
         .btn-play-circle {
+            position: absolute;
+            bottom: 0; left: 50%; transform: translateX(-50%);
             width: 32px; height: 32px; border-radius: 50%; 
-            background: rgba(255, 138, 180, 0.9); /* 거의 불투명하게 */
+            background: rgba(255, 138, 180, 0.95); 
             display: flex; justify-content: center; align-items: center;
             font-size: 11px; color: #fff; 
             box-shadow: 0 4px 12px rgba(255, 138, 180, 0.3);
             border: 1px solid rgba(255, 255, 255, 0.5);
+            z-index: 2; /* 파동 효과보다 위에 위치하도록 설정 */
         }
 
-        /* 핑크 비주얼라이저 */
-        .visualizer { display: flex; align-items: flex-end; gap: 3px; height: 18px; padding-bottom: 2px; }
-        .bar { width: 3.5px; background: var(--spring-pink); border-radius: 2px; animation: visualize 0.6s ease-in-out infinite alternate; }
-        .bar:nth-child(1) { animation-delay: 0.0s; height: 30%; }
-        .bar:nth-child(2) { animation-delay: 0.1s; height: 100%; }
-        .bar:nth-child(3) { animation-delay: 0.2s; height: 60%; }
+        /* ✨ 재생 버튼 파동 (Pulse Ripple) 효과 */
+        .btn-play-circle::before,
+        .btn-play-circle::after {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 100%; height: 100%;
+            background: var(--spring-pink);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            z-index: -1;
+            /* 위젯 테두리를 벗어나지 않도록 scale을 1.8로 제한하여 깔끔하게 처리 */
+            animation: pulse-ripple 2s infinite ease-out;
+        }
+        .btn-play-circle::after {
+            animation-delay: 1s; /* 두 개의 파동이 교차로 퍼지게 설정 */
+        }
 
-        @keyframes visualize { 0% { height: 4px; opacity: 0.5; } 100% { height: 18px; opacity: 1; } }
+        @keyframes pulse-ripple {
+            0% { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
+            100% { transform: translate(-50%, -50%) scale(1.8); opacity: 0; }
+        }
 
-        /* 대기 상태 투명도도 높임 (0.8 -> 0.9) */
+        /* 대기 상태 투명도 및 컨트롤 색상 회색 처리 */
         #widget-card.standby { opacity: 0.9; transform: scale(0.98); outline-color: rgba(255, 138, 180, 0.1); }
-        #widget-card.standby .bar { animation: none; height: 4px; opacity: 0.2; }
         #widget-card.standby .btn-play-circle { background: #e0e0e0; box-shadow: none; color: #fff; border: none;}
+        #widget-card.standby .toe-bean { background: #e0e0e0; box-shadow: none; color: #fff; border: none;}
+        
+        /* 대기 상태일 때는 파동 애니메이션 정지 및 숨김 */
+        #widget-card.standby .btn-play-circle::before,
+        #widget-card.standby .btn-play-circle::after { animation: none; opacity: 0; }
     </style>
 </head>
 <body>
@@ -121,13 +158,15 @@
             <div class="title-container"><h1 class="song-title" id="title">YOKORING Player</h1></div>
             <p class="artist-name" id="artist">YOKORING</p>
         </div>
+        
         <div class="right-controls">
-            <div class="playback-btns">
-                <i class="fa-solid fa-backward-step btn-icon"></i>
-                <div class="btn-play-circle"><i class="fa-solid fa-play"></i></div>
-                <i class="fa-solid fa-forward-step btn-icon"></i>
+            <div class="paw-container">
+                <div class="toe-bean left-toe"><i class="fa-solid fa-backward-step"></i></div>
+                <div class="toe-bean center-toe"><i class="fa-solid fa-stop"></i></div>
+                <div class="toe-bean right-toe"><i class="fa-solid fa-forward-step"></i></div>
+                
+                <div class="btn-play-circle main-pad"><i class="fa-solid fa-play"></i></div>
             </div>
-            <div class="visualizer"><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
         </div>
     </div>
 
@@ -193,5 +232,3 @@
     </script>
 </body>
 </html>
-
-
