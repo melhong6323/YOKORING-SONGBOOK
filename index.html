@@ -134,7 +134,7 @@ main { margin-top: var(--nav-height); height: calc(100vh - var(--nav-height)); o
 .song:active { background: rgba(255, 142, 173, 0.2); }
 
 .artist-name { 
-    width: 190px;           
+    width: 190px;            
     margin-right: 25px;    
     flex-shrink: 0; 
     font-weight: 600; 
@@ -429,7 +429,12 @@ function showLyrics(f) {
 }
 function copyText(t, b) { navigator.clipboard.writeText(t).then(() => { const o = b.textContent; b.textContent = '✅'; setTimeout(() => b.textContent = o, 1000); }); }
 function loadYoutube(el, id) { el.innerHTML = `<iframe src="https://www.youtube.com/embed/${id}?autoplay=1" allow="autoplay; encrypted-media; fullscreen" allowfullscreen style="width:100%; height:100%; border:none; border-radius:15px; position:absolute; top:0; left:0;"></iframe>`; }
-function remoteReload() { db.ref('command').set({ type: 'RELOAD', timestamp: Date.now() }); }
+
+/* 👇 [핵심 수정 부분] Widget ReStart 클릭 시 노래 정보 초기화 후 새로고침 신호 전송 */
+function remoteReload() { 
+    db.ref('currentSong').remove(); // 현재 재생중인 노래 데이터 삭제 (위젯 대기 상태 진입)
+    db.ref('command').set({ type: 'RELOAD', timestamp: Date.now() }); // 위젯 자체도 새로고침
+}
 
 /* --- 드래그 로직 --- */
 let isDragging = false, xOff = 0, yOff = 0, startX, startY;
