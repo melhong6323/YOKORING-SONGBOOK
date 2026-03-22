@@ -377,7 +377,8 @@ main { margin-top: var(--nav-height); height: calc(100vh - var(--nav-height)); o
 }
 .lyrics-btn { background: transparent; color: var(--text-sub); }
 .lyrics-btn.active { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
-.copy-icon { width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-sub); border-radius: 10px; background: var(--bg-inner); margin-right: 10px; }
+.copy-icon { width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-sub); border-radius: 10px; background: var(--bg-inner); margin-right: 10px; transition: background 0.2s ease, color 0.2s ease, transform 0.15s ease; }
+.copy-icon:hover { background: var(--accent-soft); color: var(--accent); transform: scale(1.12); }
 
 @media (max-width: 768px) {
     .navbar { padding: 0 20px; justify-content: center; }
@@ -437,6 +438,16 @@ main { margin-top: var(--nav-height); height: calc(100vh - var(--nav-height)); o
 #lyricsText { white-space: pre-wrap; font-size: 18px; line-height: 1.8; color: var(--text-main); margin: 0; font-weight: 400 !important; }
 
 #ganadaContent { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 92%; max-width: 450px; cursor: default; }
+
+/* 커스텀 핑크 스크롤바 */
+#list::-webkit-scrollbar, #artistList::-webkit-scrollbar, #guide::-webkit-scrollbar { width: 4px; }
+#list::-webkit-scrollbar-track, #artistList::-webkit-scrollbar-track, #guide::-webkit-scrollbar-track { background: transparent; }
+#list::-webkit-scrollbar-thumb, #artistList::-webkit-scrollbar-thumb, #guide::-webkit-scrollbar-thumb { background: rgba(255, 142, 173, 0.35); border-radius: 10px; }
+#list::-webkit-scrollbar-thumb:hover, #artistList::-webkit-scrollbar-thumb:hover, #guide::-webkit-scrollbar-thumb:hover { background: rgba(255, 142, 173, 0.65); }
+
+/* 비디오 섹션 제목 */
+.latest-video h3 { font-size: 11px !important; font-weight: 900 !important; letter-spacing: 2px; text-transform: uppercase; color: var(--text-sub) !important; margin-bottom: 18px !important; display: flex; align-items: center; gap: 8px; }
+.latest-video h3::before { content: ''; display: inline-block; width: 14px; height: 2px; background: var(--accent); border-radius: 2px; }
 </style>
 </head>
 <body>
@@ -493,7 +504,7 @@ main { margin-top: var(--nav-height); height: calc(100vh - var(--nav-height)); o
                 </div>
             </div>
             <div class="latest-video">
-                <h3 style="font-size: 18px; font-weight: 800; margin-bottom: 15px;">최신 업로드 영상</h3>
+                <h3>최신 업로드 영상</h3>
                 <div class="video-grid">
                     <div class="video-wrap" onclick="loadYoutube(this, 'XgsKuphtdIU')"><img src="https://img.youtube.com/vi/XgsKuphtdIU/maxresdefault.jpg" class="yt-thumb"><div class="yt-play-btn">▶</div></div>
                     <div class="video-wrap" onclick="loadYoutube(this, 'lAbisQ9vZq0')"><img src="https://img.youtube.com/vi/lAbisQ9vZq0/maxresdefault.jpg" class="yt-thumb"><div class="yt-play-btn">▶</div></div>

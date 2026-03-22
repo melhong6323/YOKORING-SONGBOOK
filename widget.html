@@ -34,24 +34,55 @@
 
         #widget-card {
             display: flex; align-items: center; width: 350px; height: 84px; padding: 0 18px;
-            background: var(--widget-bg); 
+            background: var(--widget-bg);
             backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-            border-radius: 42px; 
-            box-sizing: border-box; 
+            border-radius: 42px;
+            box-sizing: border-box;
+            position: relative;
             transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
-            border: 1px solid var(--border-light);
-            outline: 2px solid var(--border-pink); 
-            box-shadow: 
+            box-shadow:
                 0 10px 35px rgba(255, 138, 180, 0.25),
                 0 4px 10px rgba(0, 0, 0, 0.05);
         }
 
-        /* 아이콘 영역도 흰색 대신 베이지 톤으로 변경 */
+        /* 그라디언트 테두리 — ::before 의사요소로 white→pink 경계선 */
+        #widget-card::before {
+            content: '';
+            position: absolute;
+            inset: -1.5px;
+            border-radius: 44px;
+            background: linear-gradient(160deg, rgba(255,255,255,0.95) 0%, rgba(255,120,150,0.55) 100%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* 카드 shimmer 글로스 */
+        #widget-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 42px;
+            background: linear-gradient(105deg, transparent 20%, rgba(255,255,255,0.13) 50%, transparent 80%);
+            background-size: 200% 100%;
+            background-position: -100% 0;
+            animation: shimmerGloss 7s ease-in-out infinite;
+            pointer-events: none;
+        }
+        @keyframes shimmerGloss {
+            0%       { background-position: -100% 0; }
+            45%, 100% { background-position: 220% 0; }
+        }
+
+        /* 아이콘 영역 Vision Pro specular highlight */
         .app-icon-area {
             flex-shrink: 0; width: 52px; height: 52px;
             background: linear-gradient(135deg, #fffaf0 0%, #ffeaf2 100%);
-            border-radius: 16px; display: flex; justify-content: center; align-items: center;
-            box-shadow: 0 4px 12px rgba(255, 138, 180, 0.15); margin-right: 14px;
+            border-radius: 18px; display: flex; justify-content: center; align-items: center;
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.95),
+                inset 0 -1px 0 rgba(255,138,180,0.12),
+                0 4px 16px rgba(255, 138, 180, 0.22);
+            margin-right: 14px;
             border: 1px solid rgba(255, 255, 255, 0.8);
         }
         .app-icon-area img { width: 80%; height: 80%; object-fit: contain; }
@@ -64,7 +95,7 @@
             text-shadow: 0 0 10px rgba(255, 90, 122, 0.2);
         }
 
-        .title-container { width: 100%; overflow: hidden; white-space: nowrap; position: relative; }
+        /* .title-container merged into paw section above */
         
         .song-title { 
             margin: 0; font-size: 18px; font-weight: 800; color: var(--text-main); 
@@ -82,31 +113,33 @@
         
         .paw-container {
             position: relative;
-            width: 60px;
-            height: 52px;
+            width: 72px;
+            height: 54px;
         }
 
         .toe-bean {
             position: absolute;
             width: 16px; height: 16px;
-            background: rgba(255, 138, 180, 0.85); 
+            background: rgba(255, 138, 180, 0.85);
             border-radius: 50%;
             display: flex; justify-content: center; align-items: center;
             font-size: 7px; color: #fff;
             box-shadow: 0 2px 6px rgba(255, 138, 180, 0.25);
             border: 1px solid rgba(255, 255, 255, 0.6);
         }
-        .left-toe { top: 7px; left: 1px; transform: rotate(-20deg); }
-        .center-toe { top: 0px; left: 50%; transform: translateX(-50%); }
-        .right-toe { top: 7px; right: 1px; transform: rotate(20deg); }
+        /* 4-toe arch: ⏮ [stop] [♡] ⏭ */
+        .toe-1 { top: 14px; left: 0;   transform: rotate(-30deg); }  /* ⏮ backward */
+        .toe-2 { top:  4px; left: 18px; transform: rotate(-10deg); } /* ⏹ stop */
+        .toe-3 { top:  4px; right: 18px; transform: rotate(10deg); } /* ♡ heart */
+        .toe-4 { top: 14px; right: 0;  transform: rotate(30deg); }   /* ⏭ forward */
 
         .btn-play-circle {
             position: absolute;
             bottom: 0; left: 50%; transform: translateX(-50%);
-            width: 32px; height: 32px; border-radius: 50%; 
-            background: rgba(255, 138, 180, 0.95); 
+            width: 34px; height: 34px; border-radius: 50%;
+            background: rgba(255, 138, 180, 0.95);
             display: flex; justify-content: center; align-items: center;
-            font-size: 11px; color: #fff; 
+            font-size: 11px; color: #fff;
             box-shadow: 0 4px 12px rgba(255, 138, 180, 0.3);
             border: 1px solid rgba(255, 255, 255, 0.5);
             z-index: 2;
@@ -124,20 +157,42 @@
             z-index: -1;
             animation: pulse-ripple 2s infinite ease-out;
         }
-        .btn-play-circle::after {
-            animation-delay: 1s;
-        }
+        .btn-play-circle::after { animation-delay: 1s; }
 
         @keyframes pulse-ripple {
             0% { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
             100% { transform: translate(-50%, -50%) scale(1.8); opacity: 0; }
         }
 
-        #widget-card.standby { opacity: 0.9; transform: scale(0.98); outline-color: rgba(255, 138, 180, 0.1); }
-        #widget-card.standby .btn-play-circle { background: #e0e0e0; box-shadow: none; color: #fff; border: none;}
-        #widget-card.standby .toe-bean { background: #e0e0e0; box-shadow: none; color: #fff; border: none;}
+        /* Standby 숨쉬기 애니메이션 */
+        @keyframes standbyBreath {
+            0%, 100% { opacity: 0.85; transform: scale(0.978); }
+            50% { opacity: 0.96; transform: scale(0.992); }
+        }
+        #widget-card.standby { outline-color: rgba(255, 138, 180, 0.1); animation: standbyBreath 3.5s ease-in-out infinite; }
+        #widget-card.standby .btn-play-circle { background: #e0e0e0; box-shadow: none; color: #fff; border: none; }
+        #widget-card.standby .toe-bean { background: #e0e0e0; box-shadow: none; color: #fff; border: none; }
         #widget-card.standby .btn-play-circle::before,
         #widget-card.standby .btn-play-circle::after { animation: none; opacity: 0; }
+
+        /* NOW PLAYING 라이브 도트 */
+        .live-dot {
+            display: inline-block;
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--deep-pink);
+            margin-right: 5px;
+            vertical-align: middle;
+            animation: liveBlink 1.5s ease-in-out infinite;
+        }
+        @keyframes liveBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0.15; } }
+
+        /* 마퀴 오른쪽 페이드 마스크 */
+        .title-container {
+            width: 100%; overflow: hidden; white-space: nowrap; position: relative;
+            -webkit-mask-image: linear-gradient(to right, black 75%, transparent 100%);
+            mask-image: linear-gradient(to right, black 75%, transparent 100%);
+        }
     </style>
 </head>
 <body>
@@ -151,10 +206,10 @@
         
         <div class="right-controls">
             <div class="paw-container">
-                <div class="toe-bean left-toe"><i class="fa-solid fa-backward-step"></i></div>
-                <div class="toe-bean center-toe"><i class="fa-solid fa-stop"></i></div>
-                <div class="toe-bean right-toe"><i class="fa-solid fa-forward-step"></i></div>
-                
+                <div class="toe-bean toe-1"><i class="fa-solid fa-backward-step"></i></div>
+                <div class="toe-bean toe-2"><i class="fa-solid fa-stop"></i></div>
+                <div class="toe-bean toe-3"><i class="fa-solid fa-heart"></i></div>
+                <div class="toe-bean toe-4"><i class="fa-solid fa-forward-step"></i></div>
                 <div class="btn-play-circle main-pad"><i class="fa-solid fa-play"></i></div>
             </div>
         </div>
@@ -195,7 +250,7 @@
             card.style.transform = "translateY(10px) scale(0.95)";
             setTimeout(() => {
                 card.classList.remove('standby');
-                statusEl.innerHTML = "NOW PLAYING 🎵";
+                statusEl.innerHTML = "<span class='live-dot'></span>NOW PLAYING 🎵";
                 playIconEl.className = 'fa-solid fa-pause';
                 titleEl.innerText = title;
                 artistEl.innerText = artist;
