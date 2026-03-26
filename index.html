@@ -634,6 +634,7 @@ function showLyrics(f) {
     fetch(`data/lyrics/${f}`).then(r=>r.text()).then(t=>{ 
         document.getElementById('lyricsText').textContent=t; 
         document.getElementById('lyricsModal').style.display='flex'; 
+        document.querySelector('.lyrics-body').scrollTop = 0;
         resetDrag(); 
     }); 
 }
