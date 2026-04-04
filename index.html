@@ -298,11 +298,13 @@ main { margin-top: var(--nav-height); height: calc(100vh - var(--nav-height)); o
 /* ===== RESPONSIVE ===== */
 @media (max-width: 1024px) { .album-grid { grid-template-columns: repeat(3, 1fr); } }
 @media (max-width: 768px) {
-    .navbar { padding: 0 20px; justify-content: center; }
-    .nav-logo { font-size: 17px; }
+    .navbar { padding: 0 16px; justify-content: space-between; }
+    .nav-logo { font-size: 17px; position: absolute; left: 50%; transform: translateX(-50%); }
+    .nav-logo small { display: none; }
     .nav-menu { display: none; }
-    .nav-social { display: none; }
-    .menu-toggle { display: block; }
+    .nav-social { display: flex; gap: 10px; align-items: center; margin-left: auto; }
+    .nav-social img { height: 18px; }
+    .menu-toggle { display: block; position: static; }
     .left-pane { position: fixed; top: 0; left: -340px; width: 300px; z-index: 1100; background: #fff; padding: 70px 20px 20px; box-shadow: 10px 0 30px rgba(0,0,0,0.1); height: 100vh; }
     .left-pane.open { left: 0; }
     .sidebar-close { display: block; }
@@ -315,9 +317,85 @@ main { margin-top: var(--nav-height); height: calc(100vh - var(--nav-height)); o
     .social-grid { grid-template-columns: repeat(3, 1fr); }
     .profile-img { width: 130px !important; height: 130px !important; }
     .releases-watermark { font-size: clamp(48px, 18vw, 80px); }
+    main { margin-top: var(--nav-height); }
+    body.show-quick-banner main { margin-top: calc(var(--nav-height) + 44px); }
+    body.mobile-menu-open { overflow: hidden; }
 }
 @media (max-width: 640px) { .album-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; } }
 @media (max-width: 480px) { .social-grid { grid-template-columns: repeat(2, 1fr); } }
+
+/* ===== MOBILE MENU ===== */
+#mobileMenuOverlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.45); backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px);
+    z-index: 1050;
+}
+#mobileMenuOverlay.open { display: block; }
+
+#mobileMenu {
+    display: none; position: fixed; top: var(--nav-height); left: 0; width: 100%;
+    background: rgba(255,255,255,0.97);
+    backdrop-filter: blur(20px) saturate(160%); -webkit-backdrop-filter: blur(20px) saturate(160%);
+    z-index: 1060; padding: 18px 20px 22px;
+    border-bottom: 1px solid rgba(255,142,173,0.15);
+    box-shadow: 0 10px 36px rgba(93,60,67,0.13);
+    animation: mobileMenuSlide 0.22s ease-out;
+}
+#mobileMenu.open { display: block; }
+@keyframes mobileMenuSlide { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+
+.mobile-nav-items { display: flex; gap: 8px; margin-bottom: 18px; }
+.mobile-nav-item {
+    flex: 1; padding: 13px 8px; text-align: center;
+    background: var(--bg-inner); border-radius: 14px;
+    font-size: 14px; font-weight: 700; color: var(--text-sub);
+    cursor: url('cursor-pointer.png') 10 10, pointer !important;
+    transition: all 0.2s ease; border: 1.5px solid transparent;
+}
+.mobile-nav-item.active { color: var(--accent); background: var(--accent-soft); border-color: rgba(255,142,173,0.30); }
+
+.mobile-social-row {
+    display: flex; justify-content: center; gap: 18px; padding-top: 16px;
+    border-top: 1px solid rgba(93,60,67,0.07);
+}
+.mobile-social-row a {
+    display: flex; flex-direction: column; align-items: center; gap: 5px;
+    text-decoration: none; opacity: 0.68; transition: opacity 0.2s, transform 0.2s;
+    font-size: 10px; font-weight: 700; color: var(--text-sub);
+}
+.mobile-social-row a:hover { opacity: 1; transform: translateY(-2px); }
+.mobile-social-row img { height: 28px; width: auto; object-fit: contain; }
+
+/* ===== MOBILE QUICK SONGBOOK ===== */
+#mobileQuickSongbook {
+    display: none;
+}
+@media (max-width: 768px) {
+    #mobileQuickSongbook {
+        display: flex; align-items: center; justify-content: center; gap: 8px;
+        position: fixed; top: var(--nav-height); left: 0; width: 100%; height: 44px;
+        background: linear-gradient(90deg, #ff8ead 0%, #ffb3c8 100%);
+        color: #fff; font-size: 14px; font-weight: 800; letter-spacing: 0.3px;
+        z-index: 989; cursor: url('cursor-pointer.png') 10 10, pointer !important;
+        box-shadow: 0 3px 14px rgba(255,142,173,0.40);
+    }
+    #mobileQuickSongbook.hidden { display: none !important; }
+}
+
+/* ===== CATEGORY BTN (mobile list-header) ===== */
+.category-btn {
+    display: none;
+}
+@media (max-width: 768px) {
+    .category-btn {
+        display: flex; align-items: center; gap: 6px; flex-shrink: 0;
+        height: 45px; padding: 0 14px;
+        background: var(--accent-soft); color: var(--accent);
+        border: 1px solid var(--accent); border-radius: 14px;
+        font-size: 12px; font-weight: 800; cursor: url('cursor-pointer.png') 10 10, pointer !important;
+        white-space: nowrap;
+    }
+}
 
 /* ===== MODALS ===== */
 .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); justify-content: center; align-items: center; z-index: 2000; }
@@ -339,7 +417,7 @@ main { margin-top: var(--nav-height); height: calc(100vh - var(--nav-height)); o
 <body>
 
 <nav class="navbar">
-    <div class="menu-toggle" onclick="toggleSidebar()">☰</div>
+    <div class="menu-toggle" onclick="toggleMobileMenu()">☰</div>
     <a class="nav-logo" href="#" onclick="showPage('main'); return false;">
         <img src="KoringSign.png" alt="요코링" class="nav-logo-img">
         요코링 <small>YOKORING</small>
@@ -368,6 +446,40 @@ main { margin-top: var(--nav-height); height: calc(100vh - var(--nav-height)); o
     </div>
 </nav>
 
+<!-- 모바일 메뉴 오버레이 -->
+<div id="mobileMenuOverlay" onclick="closeMobileMenu()"></div>
+
+<!-- 모바일 드롭다운 네비게이션 메뉴 -->
+<div id="mobileMenu">
+    <div class="mobile-nav-items">
+        <div class="mobile-nav-item active" id="mbtn-main" onclick="showPage('main'); closeMobileMenu();">메인</div>
+        <div class="mobile-nav-item" id="mbtn-songbook" onclick="showPage('songbook'); closeMobileMenu();">노래책</div>
+        <div class="mobile-nav-item" id="mbtn-profile" onclick="showPage('profile'); closeMobileMenu();">프로필</div>
+    </div>
+    <div class="mobile-social-row">
+        <a href="https://www.sooplive.co.kr/station/yokoring03" target="_blank" title="SOOP 방송국">
+            <img src="icon-soop.png" alt="SOOP"><span>SOOP</span>
+        </a>
+        <a href="https://www.youtube.com/@%EC%9A%94%EC%BD%94%EB%A7%81" target="_blank" title="노래 유튜브">
+            <img src="icon-youtube.png" alt="YouTube"><span>유튜브</span>
+        </a>
+        <a href="https://www.youtube.com/channel/UCbcDFqBnyJxdPFXeuUHiF1g" target="_blank" title="다시보기 채널">
+            <img src="icon-youtube-main.png" alt="다시보기"><span>다시보기</span>
+        </a>
+        <a href="https://cafe.naver.com/yokoring03" target="_blank" title="코링 베이커리">
+            <img src="icon-cafe.png" alt="카페"><span>카페</span>
+        </a>
+        <a href="https://discord.com/invite/Mn8zBq7nAb" target="_blank" title="디스코드">
+            <img src="icon-discord.png" alt="Discord"><span>디스코드</span>
+        </a>
+    </div>
+</div>
+
+<!-- 모바일 노래책 바로가기 배너 -->
+<div id="mobileQuickSongbook" onclick="showPage('songbook')">
+    📖 노래책 바로가기
+</div>
+
 <main>
 
     <!-- 메인: 앨범 커버 그리드 -->
@@ -395,6 +507,7 @@ main { margin-top: var(--nav-height); height: calc(100vh - var(--nav-height)); o
             </div>
             <div class="right-pane">
                 <div class="list-header">
+                    <button class="category-btn" onclick="toggleSidebar()">☰ 카테고리</button>
                     <input type="text" id="searchInput" placeholder="가수 또는 노래 제목 검색...">
                     <button onclick="remoteReload()" class="reset-btn">Widget ReStart</button>
                 </div>
@@ -580,11 +693,30 @@ function showPage(p) {
     document.querySelectorAll('.nav-item').forEach(ni => ni.classList.remove('active'));
     document.getElementById(p + '-page').classList.add('active');
     document.getElementById('btn-nav-' + p).classList.add('active');
-    const mBtn = document.querySelector('.menu-toggle');
-    if(mBtn) mBtn.style.display = (p === 'songbook' && window.innerWidth <= 768) ? 'block' : 'none';
     document.getElementById('sidebar').classList.remove('open');
+    // 모바일 메뉴 활성 표시 업데이트
+    document.querySelectorAll('.mobile-nav-item').forEach(mi => mi.classList.remove('active'));
+    const mMi = document.getElementById('mbtn-' + p);
+    if (mMi) mMi.classList.add('active');
+    // 노래책 바로가기 배너: 노래책 페이지에서 숨김
+    const qb = document.getElementById('mobileQuickSongbook');
+    if (qb) qb.classList.toggle('hidden', p === 'songbook');
+    // 바로가기 배너가 보일 때 main 여백 조정
+    document.body.classList.toggle('show-quick-banner', p !== 'songbook');
 }
 function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+function toggleMobileMenu() {
+    const menu = document.getElementById('mobileMenu');
+    const overlay = document.getElementById('mobileMenuOverlay');
+    const isOpen = menu.classList.toggle('open');
+    overlay.classList.toggle('open', isOpen);
+    document.body.classList.toggle('mobile-menu-open', isOpen);
+}
+function closeMobileMenu() {
+    document.getElementById('mobileMenu').classList.remove('open');
+    document.getElementById('mobileMenuOverlay').classList.remove('open');
+    document.body.classList.remove('mobile-menu-open');
+}
 function closeM(id) { document.getElementById(id).style.display = 'none'; }
 
 // --- [Firebase & Data] ---
@@ -607,6 +739,7 @@ async function selectCategory(n, el) {
         return { artist: String(r[0].v||''), title: String(r[1].v||''), key: r[2]?String(r[2].v||''):'', keyUp: r[3]?String(r[3].v||''):'', note: r[4]?String(r[4].v||''):'', mr: ml, lyricsFile: findLyricsFile(String(r[0].v||''), String(r[1].v||'')), filterArtist: String(r[0].v||'').split('(')[0].trim() };
     }).filter(s => s !== null);
     currentArtist = '전체'; renderArtistFilter(); renderSongList();
+    document.getElementById('list').scrollTop = 0;
 }
 
 function selectAndScrollArtist(a) {
