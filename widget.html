@@ -11,20 +11,16 @@
 
     <style>
         :root {
-            /* 1. 포인트 컬러: 홈 화면의 5% 레드 포인트와 70% 핑크 톤 반영 */
-            --spring-pink: #ff8ab4; 
-            --deep-pink: #ff5a7a; /* 조금 더 붉은 기가 도는 핑크로 가독성 업 */
+            --spring-plum: #B06CB0;
+            --deep-plum: #834888;
             
-            /* 2. 배경: 왼쪽의 흰색을 베이지(25%)로 바꾸고 핑크(70%)로 넘어가는 쫀득한 그라데이션 */
-            --widget-bg: linear-gradient(135deg, rgba(255, 250, 240, 0.95) 0%, rgba(255, 210, 225, 0.9) 100%);
+            --widget-bg: linear-gradient(135deg, rgba(245, 240, 255, 0.96) 0%, rgba(218, 200, 245, 0.92) 100%);
             
-            /* 3. 테두리: 은은한 레드 핑크 윤곽 */
-            --border-light: rgba(255, 255, 255, 0.9);
-            --border-pink: rgba(255, 120, 150, 0.35);
+            --border-light: rgba(255, 255, 255, 0.92);
+            --border-plum: rgba(160, 110, 200, 0.30);
             
-            /* 4. 글자색: 따뜻한 브라운 톤 유지 */
-            --text-main: #3d2b2b; 
-            --text-sub: #7a5f5f;
+            --text-main: #251535;
+            --text-sub: #7A60A0;
         }
 
         body {
@@ -41,8 +37,8 @@
             position: relative;
             transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
             box-shadow:
-                0 10px 35px rgba(255, 138, 180, 0.25),
-                0 4px 10px rgba(0, 0, 0, 0.05);
+                0 10px 38px rgba(140, 90, 190, 0.22),
+                0 4px 12px rgba(0, 0, 0, 0.04);
         }
 
         /* 그라디언트 테두리 — ::before 의사요소로 white→pink 경계선 */
@@ -76,23 +72,19 @@
         /* 아이콘 영역 Vision Pro specular highlight */
         .app-icon-area {
             flex-shrink: 0; width: 52px; height: 52px;
-            background: linear-gradient(135deg, #fffaf0 0%, #ffeaf2 100%);
+            background: linear-gradient(135deg, #F8F4FF 0%, #EDD8F8 100%);
             border-radius: 18px; display: flex; justify-content: center; align-items: center;
-            box-shadow:
-                inset 0 1px 0 rgba(255,255,255,0.95),
-                inset 0 -1px 0 rgba(255,138,180,0.12),
-                0 4px 16px rgba(255, 138, 180, 0.22);
-            margin-right: 14px;
-            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 4px 14px rgba(140, 90, 190, 0.14); margin-right: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.85);
         }
         .app-icon-area img { width: 80%; height: 80%; object-fit: contain; }
 
         .info-area { flex-grow: 1; overflow: hidden; display: flex; flex-direction: column; justify-content: center; margin-right: 5px; }
         
         .status-badge { 
-            font-size: 9px; font-weight: 900; color: var(--deep-pink);
+            font-size: 9px; font-weight: 900; color: var(--deep-plum);
             letter-spacing: 1px; margin-bottom: 2px;
-            text-shadow: 0 0 10px rgba(255, 90, 122, 0.2);
+            text-shadow: 0 0 10px rgba(131, 72, 136, 0.2);
         }
 
         /* .title-container merged into paw section above */
@@ -120,12 +112,12 @@
         .toe-bean {
             position: absolute;
             width: 16px; height: 16px;
-            background: rgba(255, 138, 180, 0.85);
+            background: rgba(160, 110, 200, 0.82);
             border-radius: 50%;
             display: flex; justify-content: center; align-items: center;
             font-size: 7px; color: #fff;
-            box-shadow: 0 2px 6px rgba(255, 138, 180, 0.25);
-            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 2px 8px rgba(140, 90, 190, 0.22);
+            border: 1px solid rgba(255, 255, 255, 0.62);
         }
         /* 4-toe arch: ⏮ [stop] [♡] ⏭ */
         .toe-1 { top: 14px; left: 0;   transform: rotate(-30deg); }  /* ⏮ backward */
@@ -137,11 +129,11 @@
             position: absolute;
             bottom: 0; left: 50%; transform: translateX(-50%);
             width: 34px; height: 34px; border-radius: 50%;
-            background: rgba(255, 138, 180, 0.95);
+            background: rgba(155, 100, 200, 0.92);
             display: flex; justify-content: center; align-items: center;
             font-size: 11px; color: #fff;
-            box-shadow: 0 4px 12px rgba(255, 138, 180, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 4px 14px rgba(140, 90, 190, 0.28);
+            border: 1px solid rgba(255, 255, 255, 0.52);
             z-index: 2;
         }
 
@@ -169,9 +161,9 @@
             0%, 100% { opacity: 0.85; transform: scale(0.978); }
             50% { opacity: 0.96; transform: scale(0.992); }
         }
-        #widget-card.standby { outline-color: rgba(255, 138, 180, 0.1); animation: standbyBreath 3.5s ease-in-out infinite; }
-        #widget-card.standby .btn-play-circle { background: #e0e0e0; box-shadow: none; color: #fff; border: none; }
-        #widget-card.standby .toe-bean { background: #e0e0e0; box-shadow: none; color: #fff; border: none; }
+        #widget-card.standby { outline-color: rgba(160, 110, 200, 0.1); animation: standbyBreath 3.5s ease-in-out infinite; }
+        #widget-card.standby .btn-play-circle { background: #C8C0D4; box-shadow: none; color: #fff; border: none; }
+        #widget-card.standby .toe-bean { background: #C8C0D4; box-shadow: none; color: #fff; border: none; }
         #widget-card.standby .btn-play-circle::before,
         #widget-card.standby .btn-play-circle::after { animation: none; opacity: 0; }
 
