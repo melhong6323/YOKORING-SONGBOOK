@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>요코링 홈 & 노래책</title>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<style>
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
+
+:root {
+    --bg-main:      #0F0E1A;
+    --bg-elevated:  #1A1830;
+    --bg-card:      #1E1C2E;
+    --bg-inner:     #252340;
+    --accent:       #ff8ead;
+    --accent-soft:  rgba(255, 142, 173, 0.12);
+    --accent-glow:  rgba(255, 142, 173, 0.28);
+    --border-color: rgba(255, 255, 255, 0.06);
+    --text-main:    #EDE8F8;
+    --text-sub:     #9B92B3;
+    --nav-height:   70px;
+}
+
+* { box-sizing: border-box; -webkit-font-smoothing: antialiased; font-family: 'Pretendard', sans-serif !important; }
+
+body {
+    margin: 0;
+    background: var(--bg-main);
+    color: var(--text-main);
+    height: 100vh;
+    overflow: hidden;
+
+}
+
+/* 배경 그레인 텍스처 */
+body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 9998; pointer-events: none;
+    opacity: 0.038;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.80' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+    background-size: 300px 300px;
+}
+
+
+/* ===== NAVBAR ===== */
+.navbar {
+    display: flex; align-items: center; padding: 0 40px; height: var(--nav-height);
+    background: rgba(12, 11, 24, 0.88);
+    backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%);
+    position: fixed; top: 0; width: 100%; z-index: 1000;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 1px 0 rgba(255, 142, 173, 0.14), 0 4px 28px rgba(0, 0, 0, 0.45);
+}
+.nav-logo {
+    font-size: 20px; font-weight: 800; color: var(--text-main);
+    flex-shrink: 0; text-decoration: none;
+    display: flex; align-items: center; gap: 8px;
+}
+.nav-logo span { color: var(--accent); }
+.nav-logo-img {
+    height: 32px; width: auto; object-fit: contain;
+    filter: drop-shadow(0 1px 6px rgba(255, 142, 173, 0.28));
+}
+.nav-menu { display: flex; gap: 20px; position: absolute; left: 50%; transform: translateX(-50%); }
+.nav-item { font-weight: 700; font-size: 15px; cursor: pointer; color: var(--text-sub); padding: 8px 16px; border-radius: 10px; transition: 0.3s; }
+.nav-item.active { color: var(--accent); background: var(--accent-soft); }
+.nav-item:hover:not(.active) { color: var(--text-main); background: rgba(255, 255, 255, 0.05); }
+.menu-toggle { display: none; font-size: 26px; cursor: pointer; color: var(--text-main); position: absolute; left: 20px; z-index: 1001; }
+
+.nav-social {
+    margin-left: auto; display: flex; align-items: center; gap: 14px; flex-shrink: 0;
+}
+.nav-social a {
+    display: flex; align-items: center; text-decoration: none;
+    opacity: 0.55; transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.nav-social a:hover { opacity: 1; transform: translateY(-2px); }
+.nav-social img { height: 22px; width: auto; object-fit: contain; }
+
+/* ===== LAYOUT ===== */
+main { margin-top: var(--nav-height); height: calc(100vh - var(--nav-height)); overflow: hidden; }
+.page { display: none; padding: 20px; height: 100%; overflow-y: auto; animation: fadeIn 0.4s ease-out; }
+.page.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ===== MAIN / RELEASES PAGE ===== */
+#main-page { position: relative; }
+
+.releases-watermark {
+    position: fixed;
+    top: calc(var(--nav-height) + 18px);
+    left: 0; width: 100%; text-align: center;
+    font-size: clamp(72px, 14vw, 160px);
+    font-weight: 900; letter-spacing: -0.03em;
+    color: rgba(255, 142, 173, 0.04);
+    pointer-events: none; user-select: none;
+    z-index: 0; line-height: 1; text-transform: uppercase;
+}
+
+.album-grid {
+    position: relative; z-index: 1;
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 16px; max-width: 1400px; margin: 0 auto; padding-bottom: 40px;
+}
+
+.album-card {
+    position: relative; aspect-ratio: 1 / 1;
+    overflow: hidden; border-radius: 10px;
+    background: var(--bg-elevated);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+}
+.album-card:hover {
+    transform: scale(1.04) translateY(-3px);
+    box-shadow:
+        0 0 0 1px rgba(255, 142, 173, 0.40),
+        0 8px 40px rgba(255, 142, 173, 0.40),
+        0 20px 60px rgba(0, 0, 0, 0.55);
+}
+
+.album-cover-img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.4s ease; }
+.album-card:hover .album-cover-img { transform: scale(1.06); }
+
+.album-placeholder {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, #2A1A25 0%, #3D1E2D 100%);
+}
+.album-placeholder img {
+    width: 48%; height: 48%; object-fit: contain;
+    opacity: 0.60; filter: drop-shadow(0 4px 12px rgba(255, 142, 173, 0.30));
+}
+
+.album-overlay {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 24px 14px 14px;
+    background: linear-gradient(to top, rgba(8, 6, 18, 0.96) 0%, transparent 100%);
+    transform: translateY(100%);
+    transition: transform 0.30s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    display: flex; flex-direction: column; gap: 3px;
+}
+.album-card:hover .album-overlay { transform: translateY(0%); }
+
+.album-overlay-title { font-size: 14px; font-weight: 800; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.2; }
+.album-overlay-artist { font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.65); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.album-overlay-yt { margin-top: 8px; display: flex; align-items: center; gap: 6px; font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.50); letter-spacing: 0.5px; text-transform: uppercase; }
+
+/* ===== PROFILE PAGE ===== */
+.profile-container { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px; padding-bottom: 48px; }
+
+.profile-top {
+    display: flex; gap: 36px; align-items: flex-start;
+    background: rgba(26, 24, 48, 0.90);
+    backdrop-filter: blur(14px) saturate(160%); -webkit-backdrop-filter: blur(14px) saturate(160%);
+    border-radius: 26px; padding: 32px 36px;
+    border: 1px solid var(--border-color);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 8px 36px rgba(0, 0, 0, 0.40);
+}
+.profile-photo-wrap { flex-shrink: 0; }
+.profile-img {
+    width: 160px; height: 160px;
+    border-radius: 50%; border: 3px solid rgba(255, 142, 173, 0.38);
+    background: #1A1830 url('yoko-profile.png') center/cover no-repeat;
+    box-shadow: 0 0 0 6px rgba(255,142,173,0.08), 0 0 0 12px rgba(255,142,173,0.04), 0 12px 36px rgba(255, 142, 173, 0.24);
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+.profile-img:hover {
+    transform: scale(1.04);
+    box-shadow: 0 0 0 8px rgba(255,142,173,0.16), 0 0 0 16px rgba(255,142,173,0.06), 0 18px 50px rgba(255, 142, 173, 0.38);
+}
+.profile-info-wrap { flex: 1; min-width: 0; }
+.profile-name { font-size: 28px; font-weight: 800; margin: 0 0 6px; letter-spacing: -0.5px; color: var(--text-main); }
+.profile-name span { color: var(--accent); }
+.profile-tagline { font-size: 14px; font-weight: 600; color: var(--text-sub); margin: 0 0 22px; }
+
+.profile-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.stat-item {
+    display: flex; flex-direction: column; gap: 3px;
+    background: var(--bg-inner); border-radius: 12px; padding: 10px 14px;
+    border: 1px solid rgba(255, 142, 173, 0.08);
+}
+.stat-label { font-size: 9px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; color: var(--accent); }
+.stat-value { font-size: 14px; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 6px; }
+.color-dot {
+    width: 14px; height: 14px; border-radius: 50%;
+    border: 1.5px solid rgba(255,255,255,0.15);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.35);
+    flex-shrink: 0;
+}
+
+.profile-section {
+    background: rgba(26, 24, 48, 0.90);
+    backdrop-filter: blur(14px) saturate(160%); -webkit-backdrop-filter: blur(14px) saturate(160%);
+    border-radius: 26px; padding: 28px 32px;
+    border: 1px solid var(--border-color);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 8px 36px rgba(0, 0, 0, 0.40);
+}
+.section-title {
+    font-size: 10px; font-weight: 900; letter-spacing: 2.5px; text-transform: uppercase;
+    color: var(--text-sub); margin: 0 0 20px;
+    display: flex; align-items: center; gap: 10px;
+}
+.section-title::before {
+    content: ''; display: inline-block; width: 16px; height: 2px;
+    background: var(--accent); border-radius: 2px; flex-shrink: 0;
+}
+
+.social-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+.social-card {
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    padding: 18px 10px 14px; border-radius: 18px;
+    text-decoration: none; font-size: 11px; font-weight: 700;
+    color: var(--text-main); text-align: center; line-height: 1.3;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 4px 14px rgba(0, 0, 0, 0.30);
+    transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.25s ease, background 0.2s ease;
+}
+.social-card:hover {
+    transform: translateY(-7px) scale(1.04);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 16px 40px rgba(0, 0, 0, 0.45);
+}
+.social-card img { width: 36px; height: 36px; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.35)); }
+.social-card.vp-soop    { background: rgba(80,  200, 255, 0.07); }
+.social-card.vp-youtube { background: rgba(255, 80,  80,  0.07); }
+.social-card.vp-rewatch { background: rgba(180, 180, 210, 0.07); }
+.social-card.vp-cafe    { background: rgba(80,  200, 120, 0.07); }
+.social-card.vp-discord { background: rgba(100, 120, 255, 0.07); }
+.social-card.vp-soop:hover    { background: rgba(80,  200, 255, 0.14); }
+.social-card.vp-youtube:hover { background: rgba(255, 80,  80,  0.14); }
+.social-card.vp-rewatch:hover { background: rgba(180, 180, 210, 0.14); }
+.social-card.vp-cafe:hover    { background: rgba(80,  200, 120, 0.14); }
+.social-card.vp-discord:hover { background: rgba(100, 120, 255, 0.14); }
+
+/* ===== SONGBOOK PAGE ===== */
+.songbook-container { display: flex; gap: 20px; max-width: 1500px; margin: 0 auto; height: 100%; }
+.left-pane { flex: 0 0 320px; display: flex; flex-direction: column; gap: 16px; height: 100%; transition: 0.3s ease; position: relative; }
+.right-pane { flex: 1; background: var(--bg-card); border-radius: 24px; border: 1px solid var(--border-color); display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.40); }
+.sidebar-close { display: none; position: absolute; top: 15px; right: 15px; font-size: 26px; cursor: pointer; color: var(--text-sub); z-index: 10; padding: 5px; }
+
+.glass-card {
+    background: rgba(26, 24, 48, 0.92);
+    backdrop-filter: blur(12px) saturate(160%); -webkit-backdrop-filter: blur(12px) saturate(160%);
+    border-radius: 20px; padding: 20px;
+    border: 1px solid var(--border-color);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 8px 32px rgba(0, 0, 0, 0.30);
+}
+.tab-group { display: flex; flex-wrap: wrap; gap: 6px; }
+.tab { padding: 7px 12px; border-radius: 10px; background: var(--bg-inner); color: var(--text-sub); cursor: pointer; font-size: 12px; font-weight: 600; transition: all 0.2s ease; }
+.tab:hover:not(.active) { background: rgba(255, 142, 173, 0.10); color: var(--text-main); }
+.tab.active { background: linear-gradient(135deg, #ff8ead 0%, #ffb3c8 100%); color: white; border: none; box-shadow: 0 4px 14px rgba(255, 142, 173, 0.40); }
+
+#guide {
+    flex: 1; overflow-y: auto; font-size: 13px; color: var(--text-sub);
+    line-height: 1.8; padding: 20px; text-align: left; font-weight: 400 !important;
+}
+#artistList { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; max-height: 250px; overflow-y: auto; scroll-behavior: smooth; }
+#artistList .tab { text-align: center; font-size: 11px; padding: 6px 2px; border-radius: 20px; }
+#artistList .tab:hover { background: rgba(255, 142, 173, 0.12); color: var(--accent); }
+#artistList .tab.active { background: linear-gradient(135deg, #ff8ead, #ffb3c8); color: white; box-shadow: 0 3px 10px rgba(255, 142, 173, 0.35); border: none; }
+
+.list-header { padding: 15px 20px; background: rgba(15, 14, 26, 0.96); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); display: flex; gap: 10px; align-items: center; border-bottom: 1px solid var(--border-color); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.20); }
+#searchInput { flex: 1; background: var(--bg-inner); border: 1.5px solid var(--border-color); border-radius: 14px; padding: 12px 18px; outline: none; color: var(--text-main); font-size: 14px; transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease; }
+#searchInput::placeholder { color: var(--text-sub); }
+#searchInput:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(255, 142, 173, 0.15); background: rgba(37, 35, 64, 0.85); }
+.reset-btn { flex-shrink: 0; height: 45px; padding: 0 15px; background: var(--accent-soft); color: var(--accent); border: 1px solid rgba(255, 142, 173, 0.30); border-radius: 14px; font-size: 11px; font-weight: 800; cursor: pointer; transition: background 0.2s; }
+.reset-btn:hover { background: rgba(255, 142, 173, 0.22); }
+
+#list { flex: 1; overflow-y: auto; overflow-x: hidden; }
+
+.song {
+    display: flex; align-items: center; padding: 14px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    border-left: 3px solid transparent;
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+}
+.song:hover { background: rgba(255, 142, 173, 0.07); border-left-color: var(--accent); transform: translateX(3px); }
+.song:active { background: rgba(255, 142, 173, 0.14); }
+
+.artist-name {
+    width: 190px; margin-right: 25px; flex-shrink: 0; font-weight: 600;
+    color: var(--text-sub); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.song-title {
+    flex: 1; min-width: 0; color: var(--text-main); font-size: 14px; font-weight: 500;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 15px;
+}
+.song-info-tags { display: flex; gap: 8px; align-items: center; width: 220px; flex-shrink: 0; justify-content: flex-end; margin-right: 15px; }
+
+.note-text { font-size: 13px; font-weight: 700; color: #DDD5B8 !important; background: rgba(221, 213, 184, 0.10) !important; padding: 2px 8px; border-radius: 5px; border: 1px solid rgba(221, 213, 184, 0.20) !important; white-space: nowrap; display: inline-block; opacity: 1; }
+.key-badge { font-size: 13px; font-weight: 700; color: var(--text-sub) !important; background: none !important; border: none !important; padding: 0 !important; white-space: nowrap; }
+.keyup-badge { font-size: 13px; font-weight: 700; color: #ff8ead !important; background: rgba(255, 142, 173, 0.12) !important; padding: 2px 8px; border-radius: 5px; border: 1px solid rgba(255, 142, 173, 0.35) !important; white-space: nowrap; display: inline-block; }
+
+.mr-btn, .lyrics-btn { padding: 6px 12px; border-radius: 8px; font-size: 10px; font-weight: 700; text-align: center; min-width: 60px; cursor: pointer; border: 1px solid var(--border-color); text-decoration: none; display: inline-block; }
+.mr-btn { background: var(--bg-inner); color: var(--text-sub); }
+.mr-btn.find { background: rgba(74, 125, 255, 0.10) !important; border: 1px solid rgba(74, 125, 255, 0.35) !important; color: #7aaeff !important; }
+.mr-btn.find:hover { background: rgba(74, 125, 255, 0.20) !important; color: #aac8ff !important; }
+.lyrics-btn { background: transparent; color: var(--text-sub); }
+.lyrics-btn.active { color: var(--accent); border-color: rgba(255, 142, 173, 0.40); background: var(--accent-soft); }
+.copy-icon { padding: 3px 7px; border-radius: 6px; font-size: 9px; font-weight: 700; cursor: pointer; border: 1px solid var(--border-color); background: transparent; color: var(--text-sub); margin-right: 10px; letter-spacing: 0.05em; transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, opacity 0.2s ease; user-select: none; white-space: nowrap; opacity: 0; flex-shrink: 0; }
+.song:hover .copy-icon { opacity: 1; }
+.copy-icon:hover { background: var(--accent-soft); color: var(--accent); border-color: rgba(255,142,173,0.4); }
+.copy-icon.copied { color: #7ee8a2; border-color: rgba(126,232,162,0.4); background: rgba(126,232,162,0.08); }
+
+/* ===== VIDEO ===== */
+.video-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+.video-wrap { position: relative; padding-bottom: 56.25%; border-radius: 14px; overflow: hidden; cursor: pointer; background: #000; }
+.yt-thumb { position: absolute; top:0; left:0; width:100%; height:100%; object-fit: cover; }
+.yt-play-btn {
+    position: absolute; top:50%; left:50%; transform:translate(-50%, -50%);
+    width:60px; height:60px; background:rgba(0,0,0,0.65); color:#fff;
+    border-radius:50%; display:flex; justify-content:center; align-items:center;
+    font-size:24px; z-index: 2; transition: 0.25s;
+}
+.video-wrap:hover .yt-play-btn { background: var(--accent); transform: translate(-50%, -50%) scale(1.1); }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1024px) { .album-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 768px) {
+    .navbar { padding: 0 16px; justify-content: space-between; }
+    .nav-logo { font-size: 17px; position: absolute; left: 50%; transform: translateX(-50%); }
+    .nav-logo small { display: none; }
+    .nav-menu { display: none; }
+    .nav-social { display: flex; gap: 10px; align-items: center; margin-left: auto; }
+    .nav-social img { height: 18px; }
+    .menu-toggle { display: block; position: static; }
+    .left-pane { position: fixed; top: 0; left: -340px; width: 300px; z-index: 1100; background: #1A1830; padding: 70px 20px 20px; box-shadow: 10px 0 30px rgba(0,0,0,0.55); height: 100vh; }
+    .left-pane.open { left: 0; }
+    .sidebar-close { display: block; }
+    .song-info-tags, .mr-btn, .lyrics-btn { display: none !important; }
+    .song { padding: 12px 15px; }
+    .artist-name { flex: 1; font-size: 12px; }
+    .song-title { flex: 1.5; font-size: 13px; }
+    .profile-top { flex-direction: column; align-items: center; text-align: center; padding: 24px; }
+    .profile-stats { grid-template-columns: 1fr; }
+    .social-grid { grid-template-columns: repeat(3, 1fr); }
+    .profile-img { width: 130px !important; height: 130px !important; }
+    .releases-watermark { font-size: clamp(48px, 18vw, 80px); }
+    main { margin-top: var(--nav-height); }
+    body.show-quick-banner main { margin-top: calc(var(--nav-height) + 44px); }
+    body.mobile-menu-open { overflow: hidden; }
+}
+@media (max-width: 640px) { .album-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; } }
+@media (max-width: 480px) { .social-grid { grid-template-columns: repeat(2, 1fr); } }
+
+/* ===== MOBILE MENU ===== */
+#mobileMenuOverlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.60); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);
+    z-index: 1050;
+}
+#mobileMenuOverlay.open { display: block; }
+
+#mobileMenu {
+    display: none; position: fixed; top: var(--nav-height); left: 0; width: 100%;
+    background: rgba(12, 11, 24, 0.98);
+    backdrop-filter: blur(20px) saturate(160%); -webkit-backdrop-filter: blur(20px) saturate(160%);
+    z-index: 1060; padding: 18px 20px 22px;
+    border-bottom: 1px solid rgba(255, 142, 173, 0.12);
+    box-shadow: 0 10px 36px rgba(0, 0, 0, 0.55);
+    animation: mobileMenuSlide 0.22s ease-out;
+}
+#mobileMenu.open { display: block; }
+@keyframes mobileMenuSlide { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+
+.mobile-nav-items { display: flex; gap: 8px; margin-bottom: 18px; }
+.mobile-nav-item {
+    flex: 1; padding: 13px 8px; text-align: center;
+    background: var(--bg-inner); border-radius: 14px;
+    font-size: 14px; font-weight: 700; color: var(--text-sub);
+    cursor: url('cursor-pointer.png') 10 10, pointer !important;
+    transition: all 0.2s ease; border: 1.5px solid transparent;
+}
+.mobile-nav-item.active { color: var(--accent); background: var(--accent-soft); border-color: rgba(255,142,173,0.25); }
+
+.mobile-social-row {
+    display: flex; justify-content: center; gap: 18px; padding-top: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+.mobile-social-row a {
+    display: flex; flex-direction: column; align-items: center; gap: 5px;
+    text-decoration: none; opacity: 0.60; transition: opacity 0.2s, transform 0.2s;
+    font-size: 10px; font-weight: 700; color: var(--text-sub);
+}
+.mobile-social-row a:hover { opacity: 1; transform: translateY(-2px); }
+.mobile-social-row img { height: 28px; width: auto; object-fit: contain; }
+
+/* ===== MOBILE QUICK SONGBOOK ===== */
+#mobileQuickSongbook {
+    display: none;
+}
+@media (max-width: 768px) {
+    #mobileQuickSongbook {
+        display: flex; align-items: center; justify-content: center; gap: 8px;
+        position: fixed; top: var(--nav-height); left: 0; width: 100%; height: 44px;
+        background: linear-gradient(90deg, #ff8ead 0%, #ffb3c8 100%);
+        color: #fff; font-size: 14px; font-weight: 800; letter-spacing: 0.3px;
+        z-index: 989; cursor: url('cursor-pointer.png') 10 10, pointer !important;
+        box-shadow: 0 3px 14px rgba(255,142,173,0.40);
+    }
+    #mobileQuickSongbook.hidden { display: none !important; }
+}
+
+/* ===== CATEGORY BTN (mobile list-header) ===== */
+.category-btn {
+    display: none;
+}
+@media (max-width: 768px) {
+    .category-btn {
+        display: flex; align-items: center; gap: 6px; flex-shrink: 0;
+        height: 45px; padding: 0 14px;
+        background: var(--accent-soft); color: var(--accent);
+        border: 1px solid rgba(255, 142, 173, 0.35); border-radius: 14px;
+        font-size: 12px; font-weight: 800; cursor: url('cursor-pointer.png') 10 10, pointer !important;
+        white-space: nowrap;
+    }
+}
+
+/* ===== MODALS ===== */
+.modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.65); backdrop-filter: blur(6px); justify-content: center; align-items: center; z-index: 2000; }
+.modal-content { background: #1A1830; width: 92%; max-width: 550px; border-radius: 28px; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.65), 0 0 0 1px rgba(255,255,255,0.06); cursor: grab; }
+.modal-content:active { cursor: grabbing; }
+.modal-header { padding: 20px; color: var(--accent); font-weight: 800; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.08); user-select: none; }
+.modal-close { position: absolute; top: 18px; right: 20px; cursor: pointer; font-size: 22px; z-index: 10; color: var(--text-sub); }
+.lyrics-body { padding: 40px 30px; max-height: 60vh; overflow-y: auto; text-align: center; }
+#lyricsText { white-space: pre-wrap; font-size: 18px; line-height: 1.8; color: var(--text-main); margin: 0; font-weight: 400 !important; }
+#ganadaContent { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 92%; max-width: 450px; cursor: default; }
+
+/* ===== SCROLLBAR ===== */
+#list::-webkit-scrollbar, #artistList::-webkit-scrollbar, #guide::-webkit-scrollbar, .page::-webkit-scrollbar, .lyrics-body::-webkit-scrollbar { width: 7px; }
+#list::-webkit-scrollbar-track, #artistList::-webkit-scrollbar-track, #guide::-webkit-scrollbar-track, .page::-webkit-scrollbar-track, .lyrics-body::-webkit-scrollbar-track { background: transparent; }
+#list::-webkit-scrollbar-thumb, #artistList::-webkit-scrollbar-thumb, #guide::-webkit-scrollbar-thumb, .page::-webkit-scrollbar-thumb, .lyrics-body::-webkit-scrollbar-thumb { background: rgba(255, 142, 173, 0.30); border-radius: 10px; }
+#list::-webkit-scrollbar-thumb:hover, #artistList::-webkit-scrollbar-thumb:hover, #guide::-webkit-scrollbar-thumb:hover, .page::-webkit-scrollbar-thumb:hover, .lyrics-body::-webkit-scrollbar-thumb:hover { background: rgba(255, 142, 173, 0.60); }
+
+/* ===== LOADING SPINNER ===== */
+.list-loading { display: flex; align-items: center; justify-content: center; height: 200px; }
+.list-loading::after { content: ''; width: 28px; height: 28px; border: 3px solid rgba(255,142,173,0.15); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ===== SEARCH HIGHLIGHT ===== */
+mark.hl { background: var(--accent-soft); color: var(--accent); border-radius: 3px; padding: 0 2px; font-weight: 700; font-style: normal; }
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="menu-toggle" onclick="toggleMobileMenu()">☰</div>
+    <a class="nav-logo" href="#" onclick="showPage('main'); return false;">
+        <img src="KoringSign.png" alt="요코링" class="nav-logo-img">
+        요코링 <small>YOKORING</small>
+    </a>
+    <div class="nav-menu">
+        <div class="nav-item active" id="btn-nav-main" onclick="showPage('main')">메인</div>
+        <div class="nav-item" id="btn-nav-songbook" onclick="showPage('songbook')">노래책</div>
+        <div class="nav-item" id="btn-nav-profile" onclick="showPage('profile')">프로필</div>
+    </div>
+    <div class="nav-social">
+        <a href="https://www.sooplive.co.kr/station/yokoring03" target="_blank" title="SOOP 방송국">
+            <img src="icon-soop.png" alt="SOOP">
+        </a>
+        <a href="https://www.youtube.com/@%EC%9A%94%EC%BD%94%EB%A7%81" target="_blank" title="노래 유튜브">
+            <img src="icon-youtube.png" alt="YouTube">
+        </a>
+        <a href="https://www.youtube.com/channel/UCbcDFqBnyJxdPFXeuUHiF1g" target="_blank" title="다시보기 채널">
+            <img src="icon-youtube-main.png" alt="다시보기">
+        </a>
+        <a href="https://cafe.naver.com/yokoring03" target="_blank" title="코링 베이커리">
+            <img src="icon-cafe.png" alt="카페">
+        </a>
+        <a href="https://discord.com/invite/Mn8zBq7nAb" target="_blank" title="디스코드">
+            <img src="icon-discord.png" alt="Discord">
+        </a>
+    </div>
+</nav>
+
+<!-- 모바일 메뉴 오버레이 -->
+<div id="mobileMenuOverlay" onclick="closeMobileMenu()"></div>
+
+<!-- 모바일 드롭다운 네비게이션 메뉴 -->
+<div id="mobileMenu">
+    <div class="mobile-nav-items">
+        <div class="mobile-nav-item active" id="mbtn-main" onclick="showPage('main'); closeMobileMenu();">메인</div>
+        <div class="mobile-nav-item" id="mbtn-songbook" onclick="showPage('songbook'); closeMobileMenu();">노래책</div>
+        <div class="mobile-nav-item" id="mbtn-profile" onclick="showPage('profile'); closeMobileMenu();">프로필</div>
+    </div>
+    <div class="mobile-social-row">
+        <a href="https://www.sooplive.co.kr/station/yokoring03" target="_blank" title="SOOP 방송국">
+            <img src="icon-soop.png" alt="SOOP"><span>SOOP</span>
+        </a>
+        <a href="https://www.youtube.com/@%EC%9A%94%EC%BD%94%EB%A7%81" target="_blank" title="노래 유튜브">
+            <img src="icon-youtube.png" alt="YouTube"><span>유튜브</span>
+        </a>
+        <a href="https://www.youtube.com/channel/UCbcDFqBnyJxdPFXeuUHiF1g" target="_blank" title="다시보기 채널">
+            <img src="icon-youtube-main.png" alt="다시보기"><span>다시보기</span>
+        </a>
+        <a href="https://cafe.naver.com/yokoring03" target="_blank" title="코링 베이커리">
+            <img src="icon-cafe.png" alt="카페"><span>카페</span>
+        </a>
+        <a href="https://discord.com/invite/Mn8zBq7nAb" target="_blank" title="디스코드">
+            <img src="icon-discord.png" alt="Discord"><span>디스코드</span>
+        </a>
+    </div>
+</div>
+
+<!-- 모바일 노래책 바로가기 배너 -->
+<div id="mobileQuickSongbook" onclick="showPage('songbook')">
+    📖 노래책 바로가기
+</div>
+
+<main>
+
+    <!-- 메인: 앨범 커버 그리드 -->
+    <section id="main-page" class="page active">
+        <div class="releases-watermark" aria-hidden="true">COVERS</div>
+        <div class="album-grid" id="albumGrid"></div>
+    </section>
+
+    <!-- 노래책: 기존 구글시트 연동 -->
+    <section id="songbook-page" class="page">
+        <div class="songbook-container">
+            <div class="left-pane" id="sidebar">
+                <span class="sidebar-close" onclick="toggleSidebar()">✕</span>
+                <div class="glass-card">
+                    <div id="tabs" class="tab-group"></div>
+                    <div style="margin-top:15px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                            <span style="font-size:10px; font-weight:800; color:var(--accent);">ARTISTS</span>
+                            <button id="btnGanada" style="background:none; border:none; color:var(--text-sub); font-size:10px; cursor:pointer;">가나다 ⇅</button>
+                        </div>
+                        <div id="artistList"></div>
+                    </div>
+                </div>
+                <div id="guide" class="glass-card"></div>
+            </div>
+            <div class="right-pane">
+                <div class="list-header">
+                    <button class="category-btn" onclick="toggleSidebar()">☰ 카테고리</button>
+                    <input type="text" id="searchInput" placeholder="가수 또는 노래 제목 검색...">
+                    <button onclick="remoteReload()" class="reset-btn">Widget ReStart</button>
+                </div>
+                <div id="list"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 프로필 -->
+    <section id="profile-page" class="page">
+        <div class="profile-container">
+
+            <!-- 프로필 카드 -->
+            <div class="profile-top">
+                <div class="profile-photo-wrap">
+                    <div class="profile-img"></div>
+                </div>
+                <div class="profile-info-wrap">
+                    <h1 class="profile-name">요코링 <span>Yokoring</span></h1>
+                    <p class="profile-tagline">코링이와 넙치의 놀이터입니다.</p>
+                    <div class="profile-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">생일</span>
+                            <span class="stat-value">3월 13일 🎂</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">첫 방송</span>
+                            <span class="stat-value">2020.06.16</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">숲 데뷔</span>
+                            <span class="stat-value">2024.11.11</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">팬네임</span>
+                            <span class="stat-value">넙치 ∝</span>
+                        </div>
+                        <div class="stat-item" style="grid-column: 1 / -1;">
+                            <span class="stat-label">퍼스널 컬러</span>
+                            <span class="stat-value">
+                                <span class="color-dot" style="background:#FE9FA7;"></span>핑크&nbsp;#FE9FA7
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 채널 & 링크 -->
+            <div class="profile-section">
+                <h2 class="section-title">채널 &amp; 링크</h2>
+                <div class="social-grid">
+                    <a href="https://www.sooplive.co.kr/station/yokoring03" target="_blank" class="social-card vp-soop">
+                        <img src="icon-soop.png" alt="SOOP"><span>SOOP 방송국</span>
+                    </a>
+                    <a href="https://www.youtube.com/@%EC%9A%94%EC%BD%94%EB%A7%81" target="_blank" class="social-card vp-youtube">
+                        <img src="icon-youtube.png" alt="YouTube"><span>노래 유튜브</span>
+                    </a>
+                    <a href="https://www.youtube.com/channel/UCbcDFqBnyJxdPFXeuUHiF1g" target="_blank" class="social-card vp-rewatch">
+                        <img src="icon-youtube-main.png" alt="다시보기"><span>다시보기 채널</span>
+                    </a>
+                    <a href="https://cafe.naver.com/yokoring03" target="_blank" class="social-card vp-cafe">
+                        <img src="icon-cafe.png" alt="카페"><span>코링 베이커리</span>
+                    </a>
+                    <a href="https://discord.com/invite/Mn8zBq7nAb" target="_blank" class="social-card vp-discord">
+                        <img src="icon-discord.png" alt="Discord"><span>디스코드</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 최근 업로드 영상 -->
+            <div class="profile-section">
+                <h2 class="section-title">최근 업로드 영상</h2>
+                <div class="video-grid">
+                    <div class="video-wrap" onclick="loadYoutube(this, 'ebUfcukafPA')">
+                        <img src="https://img.youtube.com/vi/ebUfcukafPA/maxresdefault.jpg" class="yt-thumb">
+                        <div class="yt-play-btn">▶</div>
+                    </div>
+                    <div class="video-wrap" onclick="loadYoutube(this, 'lAbisQ9vZq0')">
+                        <img src="https://img.youtube.com/vi/lAbisQ9vZq0/maxresdefault.jpg" class="yt-thumb">
+                        <div class="yt-play-btn">▶</div>
+                    </div>
+                    <div class="video-wrap" onclick="loadYoutube(this, 'A3IdFggN4aQ')">
+                        <img src="https://img.youtube.com/vi/A3IdFggN4aQ/maxresdefault.jpg" class="yt-thumb">
+                        <div class="yt-play-btn">▶</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+</main>
+
+<div id="lyricsModal" class="modal">
+    <div class="modal-content" id="dragTarget">
+        <div class="modal-header">LYRICS</div>
+        <span class="modal-close" onclick="closeM('lyricsModal')">✕</span>
+        <div class="lyrics-body"><pre id="lyricsText"></pre></div>
+    </div>
+</div>
+
+<div id="ganadaModal" class="modal">
+    <div class="modal-content" id="ganadaContent">
+        <div class="modal-header">가수 선택</div>
+        <span class="modal-close" onclick="closeM('ganadaModal')">✕</span>
+        <div id="ganadaList" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; max-height:400px; overflow-y:auto; padding:20px;"></div>
+    </div>
+</div>
+
+<script>
+// ==========================================
+// ALBUM DATA — 새 커버곡 추가 시 이 배열 맨 위에 추가
+// image: albums/ 폴더 내 파일명 (없으면 "" 로 둠)
+// ==========================================
+const ALBUMS = [
+    // 예시: { title: "곡제목", artist: "원곡가수", image: "cover-example.jpg", youtubeUrl: "https://www.youtube.com/watch?v=XXXXX" },
+    { title: "Whatever (Prod.Chewiser)", artist: "요코링", image: "Whatever.webp", youtubeUrl: "https://www.youtube.com/watch?v=spD5mnYrOvk"},
+    { title: "All the way (Prod.YoungTaylor x AlsBeats)", artist: "요코링", image: "Alltheway.webp", youtubeUrl: "https://www.youtube.com/watch?v=0wS8p_lJSBo"},
+    { title: "Curious (Prod.WhiteLIT)", artist: "요코링", image: "Curious.webp", youtubeUrl: "https://www.youtube.com/watch?v=ZyLEP631F44"},
+    { title: "Blue (원곡: 볼빨간 사춘기)", artist: "요코링", image: "Blue.webp", youtubeUrl: "https://www.youtube.com/watch?v=IxVgqZ4Oo4c"},
+    { title: "Fix you (원곡: Skinny Brown)", artist: "요코링", image: "fixyou.webp", youtubeUrl: "https://www.youtube.com/watch?v=5d1_LKLF2Dg"},
+    { title: "Auburn (원곡: 데이먼스 이어)", artist: "요코링", image: "Auburn.webp", youtubeUrl: "https://www.youtube.com/watch?v=lAbisQ9vZq0"},
+    { title: "너의 바다 (원곡: 호피폴라)", artist: "요코링", image: "너의바다.webp", youtubeUrl: "https://www.youtube.com/watch?v=t9wNfKu19V8"},
+    { title: "창백한 푸른 점 (원곡: 심규선)", artist: "요코링", image: "창백한푸른점.webp", youtubeUrl: "https://www.youtube.com/watch?v=hY33cXrLdOg"},
+    { title: "난설헌[蘭雪軒] (원곡: 심규선)", artist: "요코링", image: "난설헌.webp", youtubeUrl: "https://www.youtube.com/watch?v=T5Ode0fzlTQ"},
+    { title: "Opening (원곡: LUCY)", artist: "요코링", image: "Opening.webp", youtubeUrl: "https://www.youtube.com/watch?v=zsJ8WOReIek"},
+    { title: "경북 경산시 (원곡: 김승민)", artist: "요코링", image: "경북경산시.webp", youtubeUrl: "https://www.youtube.com/watch?v=V5HhxB7V2fo"},
+    { title: "물망초 (원곡: V.et)", artist: "요코링", image: "물망초.webp", youtubeUrl: "https://www.youtube.com/watch?v=1PhnAEfLwtc"},
+    { title: "푸른 산호초 (원곡: 마츠다 세이코)", artist: "요코링", image: "푸른산호초.webp", youtubeUrl: "https://www.youtube.com/watch?v=oLtSZRZQZUA"},
+    { title: "소로 小路 (원곡: 심규선)", artist: "요코링", image: "소로.webp", youtubeUrl: "https://www.youtube.com/watch?v=mWuBisZ_y-"},
+    { title: "요란 搖亂 (원곡: 심규선)", artist: "요코링", image: "요란.webp", youtubeUrl: "https://www.youtube.com/watch?v=0mlJNP46MOc"},
+    { title: "수월경화 水月鏡花 (원곡: 김승민)", artist: "요코링", image: "수월경화.webp", youtubeUrl: "https://www.youtube.com/watch?v=U0mji7IT8Xs"},
+    { title: "Part Of Her (원곡: 한요한, 김승민)", artist: "요코링", image: "PartOfHer.webp", youtubeUrl: "https://www.youtube.com/watch?v=QUMvsABnVtw"}
+];
+
+function renderAlbums() {
+    const grid = document.getElementById('albumGrid');
+    if (!grid) return;
+    grid.innerHTML = '';
+    ALBUMS.forEach(album => {
+        const card = document.createElement('div');
+        card.className = 'album-card';
+        card.setAttribute('role', 'button');
+        card.setAttribute('tabindex', '0');
+        card.setAttribute('aria-label', album.title + ' — ' + album.artist);
+        if (album.youtubeUrl) {
+            card.addEventListener('click', () => window.open(album.youtubeUrl, '_blank', 'noopener'));
+            card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') window.open(album.youtubeUrl, '_blank', 'noopener'); });
+        }
+        if (album.image) {
+            const img = document.createElement('img');
+            img.className = 'album-cover-img';
+            img.src = 'albums/' + album.image;
+            img.alt = album.title;
+            img.addEventListener('error', () => { if (card.contains(img)) card.removeChild(img); card.insertBefore(buildAlbumPlaceholder(), card.firstChild); });
+            card.appendChild(img);
+        } else {
+            card.appendChild(buildAlbumPlaceholder());
+        }
+        const overlay = document.createElement('div');
+        overlay.className = 'album-overlay';
+        overlay.innerHTML = '<div class="album-overlay-title">' + album.title + '</div>'
+            + '<div class="album-overlay-artist">' + album.artist + '</div>'
+            + '<div class="album-overlay-yt"><i class="fa-brands fa-youtube" style="font-size:14px; color:#FF4444;"></i>&nbsp;YouTube에서 보기</div>';
+        card.appendChild(overlay);
+        grid.appendChild(card);
+    });
+}
+
+function buildAlbumPlaceholder() {
+    const ph = document.createElement('div');
+    ph.className = 'album-placeholder';
+    const logo = document.createElement('img');
+    logo.src = 'KoringSign.png';
+    logo.alt = '요코링';
+    ph.appendChild(logo);
+    return ph;
+}
+
+// --- [UI Logic] ---
+function showPage(p) {
+    document.querySelectorAll('.page').forEach(pg => pg.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(ni => ni.classList.remove('active'));
+    document.getElementById(p + '-page').classList.add('active');
+    document.getElementById('btn-nav-' + p).classList.add('active');
+    document.getElementById('sidebar').classList.remove('open');
+    // 모바일 메뉴 활성 표시 업데이트
+    document.querySelectorAll('.mobile-nav-item').forEach(mi => mi.classList.remove('active'));
+    const mMi = document.getElementById('mbtn-' + p);
+    if (mMi) mMi.classList.add('active');
+    // 노래책 바로가기 배너: 노래책 페이지에서 숨김
+    const qb = document.getElementById('mobileQuickSongbook');
+    if (qb) qb.classList.toggle('hidden', p === 'songbook');
+    // 바로가기 배너가 보일 때 main 여백 조정
+    document.body.classList.toggle('show-quick-banner', p !== 'songbook');
+}
+function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+function toggleMobileMenu() {
+    const menu = document.getElementById('mobileMenu');
+    const overlay = document.getElementById('mobileMenuOverlay');
+    const isOpen = menu.classList.toggle('open');
+    overlay.classList.toggle('open', isOpen);
+    document.body.classList.toggle('mobile-menu-open', isOpen);
+}
+function closeMobileMenu() {
+    document.getElementById('mobileMenu').classList.remove('open');
+    document.getElementById('mobileMenuOverlay').classList.remove('open');
+    document.body.classList.remove('mobile-menu-open');
+}
+function closeM(id) { document.getElementById(id).style.display = 'none'; }
+
+// --- [Firebase & Data] ---
+const firebaseConfig = { apiKey: "AIzaSyDDSJWWYCzwmM8DSIYI4w3vGPKSshpFhGk", authDomain: "yokoring-songbook.firebaseapp.com", databaseURL: "https://yokoring-songbook-default-rtdb.firebaseio.com", projectId: "yokoring-songbook" };
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+const SHEET_ID = '1bSs04gJ8HyVil5PM0TBAm-4c_BeAqbU7ENMZ2AQcUVI', SHEET_NAMES = ['사용설명서','K-POP','POP','J-POP','숙제곡','신곡'];
+let currentSongs = [], currentArtist = '전체', lyricsList = [];
+
+async function loadLyricsList() { try { const r = await fetch('data/lyrics_list.json'); lyricsList = await r.json(); } catch(e) {} }
+function normalizeStr(s) { return s.trim().replace(/\s+/g, ' '); }
+function findLyricsFile(a, t) { const na = normalizeStr(a), nt = normalizeStr(t); const f = lyricsList.find(l => normalizeStr(l.artist) === na && normalizeStr(l.title) === nt); return f ? f.file : null; }
+async function fetchSheet(s) { const r = await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&headers=0&sheet=${encodeURIComponent(s)}`); const t = await r.text(); const j = JSON.parse(t.substring(47, t.length-2)); return j.table.rows.map(row => row.c); }
+
+async function selectCategory(n, el) {
+    document.querySelectorAll('.tab-group .tab').forEach(t => t.classList.remove('active')); el.classList.add('active');
+    document.getElementById('list').innerHTML = '<div class="list-loading"></div>';
+    const rows = await fetchSheet(n);
+    currentSongs = rows.slice(1).map(r => {
+        if (!r || !r[0] || !r[1]) return null;
+        let ml = ''; if (r[5] && String(r[5].v||'').startsWith('http')) ml = String(r[5].v); else if (r[6] && String(r[6].v||'').startsWith('http')) ml = String(r[6].v);
+        return { artist: String(r[0].v||''), title: String(r[1].v||''), key: r[2]?String(r[2].v||''):'', keyUp: r[3]?String(r[3].v||''):'', note: r[4]?String(r[4].v||''):'', mr: ml, lyricsFile: findLyricsFile(String(r[0].v||''), String(r[1].v||'')), filterArtist: String(r[0].v||'').split('(')[0].trim() };
+    }).filter(s => s !== null);
+    currentArtist = '전체'; renderArtistFilter(); renderSongList();
+    document.getElementById('list').scrollTop = 0;
+}
+
+function selectAndScrollArtist(a) {
+    if (currentArtist === a) { currentArtist = '전체'; } else { currentArtist = a; }
+    renderArtistFilter(); renderSongList();
+    const target = document.getElementById('art-btn-' + a);
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function renderArtistFilter() {
+    const m = {}; currentSongs.forEach(s => { m[s.filterArtist] = (m[s.filterArtist] || 0) + 1; });
+    const sorted = Object.keys(m).sort((a,b) => m[b] - m[a]);
+    const el = document.getElementById('artistList'); el.innerHTML = '';
+    const all = document.createElement('div'); all.className = 'tab' + (currentArtist === '전체' ? ' active' : ''); all.textContent = 'ALL';
+    all.onclick = () => { currentArtist = '전체'; renderArtistFilter(); renderSongList(); if(window.innerWidth <= 768) toggleSidebar(); };
+    el.appendChild(all);
+    sorted.forEach(a => {
+        const b = document.createElement('div'); b.className = 'tab' + (currentArtist === a ? ' active' : ''); b.textContent = a; b.id = 'art-btn-' + a;
+        b.onclick = () => { selectAndScrollArtist(a); if(window.innerWidth <= 768) toggleSidebar(); };
+        el.appendChild(b);
+    });
+}
+
+function hl(text, q) {
+    const safe = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    if (!q) return safe;
+    return safe.replace(new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi'), m => `<mark class="hl">${m}</mark>`);
+}
+function renderSongList() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    const el = document.getElementById('list'); el.innerHTML = '';
+    const f = currentSongs.filter(s => (currentArtist === '전체' || s.filterArtist === currentArtist) && (s.title.toLowerCase().includes(q) || s.artist.toLowerCase().includes(q)));
+    f.forEach(s => {
+        const d = document.createElement('div'); d.className = 'song';
+        const tags = `<div class="song-info-tags">${s.note ? `<span class="note-text">${s.note}</span>` : ''}${s.key ? `<span class="key-badge">${s.key}</span>` : ''}${s.keyUp ? `<span class="keyup-badge">${s.keyUp}</span>` : ''}</div>`;
+        let mb = s.mr ? `<a class="mr-btn" href="${s.mr}" target="_blank" onclick="sendToWidget('${s.title.replace(/'/g,"\\'")}', '${s.artist.replace(/'/g,"\\'")}')">MR</a>` : `<a class="mr-btn find" href="https://www.youtube.com/results?search_query=${encodeURIComponent(s.title+' '+s.artist+' MR')}" target="_blank">MR 찾기</a>`;
+        d.innerHTML = `<div class="copy-icon" onclick="copyText('${s.artist} - ${s.title}', this)">COPY</div><div class="artist-name">${hl(s.artist,q)}</div><div class="song-title">${hl(s.title,q)}</div>${tags}${mb}<span class="lyrics-btn ${s.lyricsFile?'active':''}" onclick="showLyrics('${s.lyricsFile}')">LYRICS</span>`;
+        el.appendChild(d);
+    });
+}
+
+function sendToWidget(t, a) { db.ref('currentSong').set({ title: t, artist: a, timestamp: Date.now() }); }
+
+function showLyrics(f) {
+    if(!f || f==='null') return;
+    fetch(`data/lyrics/${f}`).then(r=>r.text()).then(t=>{
+        document.getElementById('lyricsText').textContent=t;
+        document.getElementById('lyricsModal').style.display='flex';
+        document.querySelector('.lyrics-body').scrollTop=0;
+        resetDrag();
+    });
+}
+function copyText(t, b) { navigator.clipboard.writeText(t).then(() => { b.textContent = 'Copied'; b.classList.add('copied'); setTimeout(() => { b.textContent = 'COPY'; b.classList.remove('copied'); }, 1200); }); }
+function loadYoutube(el, id) { el.innerHTML = `<iframe src="https://www.youtube.com/embed/${id}?autoplay=1" allow="autoplay; encrypted-media; fullscreen" allowfullscreen style="width:100%; height:100%; border:none; border-radius:14px; position:absolute; top:0; left:0;"></iframe>`; }
+
+function remoteReload() {
+    db.ref('currentSong').remove();
+    db.ref('command').set({ type: 'RELOAD', timestamp: Date.now() });
+}
+
+/* --- 드래그 로직 --- */
+let isDragging = false, xOff = 0, yOff = 0, startX, startY;
+const dragT = document.getElementById("dragTarget");
+
+function resetDrag() {
+    xOff = 0; yOff = 0;
+    dragT.style.transform = `translate(-50%, -50%)`;
+}
+
+dragT.addEventListener("mousedown", dStart); dragT.addEventListener("touchstart", dStart);
+function dStart(e) {
+    if (e.target.classList.contains('modal-close')) return;
+    const cx = e.type === "touchstart" ? e.touches[0].clientX : e.clientX;
+    const cy = e.type === "touchstart" ? e.touches[0].clientY : e.clientY;
+    startX = cx - xOff; startY = cy - yOff;
+    isDragging = true;
+}
+function dMove(e) {
+    if (isDragging) {
+        e.preventDefault();
+        const cx = e.type === "touchmove" ? e.touches[0].clientX : e.clientX;
+        const cy = e.type === "touchmove" ? e.touches[0].clientY : e.clientY;
+        xOff = cx - startX; yOff = cy - startY;
+        dragT.style.transform = `translate(calc(-50% + ${xOff}px), calc(-50% + ${yOff}px))`;
+    }
+}
+document.addEventListener("mousemove", dMove); document.addEventListener("mouseup", () => isDragging = false);
+document.addEventListener("touchmove", dMove, {passive: false}); document.addEventListener("touchend", () => isDragging = false);
+
+document.getElementById('btnGanada').onclick = () => {
+    const list = document.getElementById('ganadaList'); list.innerHTML = ''; const map = {}; currentSongs.forEach(s => { map[s.filterArtist] = 1; });
+    Object.keys(map).sort((a,b) => a.localeCompare(b,'ko')).forEach(a => {
+        const b = document.createElement('div'); b.className = 'tab'; b.style.textAlign = 'center'; b.textContent = a;
+        b.onclick = () => { selectAndScrollArtist(a); closeM('ganadaModal'); if(window.innerWidth <= 768) toggleSidebar(); };
+        list.appendChild(b);
+    });
+    document.getElementById('ganadaModal').style.display = 'flex';
+};
+
+document.getElementById('searchInput').oninput = () => renderSongList();
+(async () => {
+    await loadLyricsList(); const tbs = document.getElementById('tabs');
+    SHEET_NAMES.slice(1).forEach(n => { const tb = document.createElement('div'); tb.className='tab'; tb.textContent=n; tb.onclick=()=>selectCategory(n, tb); tbs.appendChild(tb); });
+    const gR = await fetchSheet('사용설명서'); document.getElementById('guide').innerHTML = gR.map(r=>r?r[0]?.v||'':'').join('<br>');
+    tbs.firstChild.click();
+    renderAlbums();
+    showPage('main');
+})();
+</script>
+</body>
+</html>
