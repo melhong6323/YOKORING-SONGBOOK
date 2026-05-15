@@ -366,7 +366,9 @@ async function loadSong(data) {
 
     if (lyricsFile && lyricsFile !== 'null') {
         try {
-            const resp = await fetch(`data/lyrics/${lyricsFile}`);
+            const lrcFile = lyricsFile.replace(/\.[^.]+$/, '.lrc');
+            let resp = await fetch(`data/lyrics/${lrcFile}`);
+            if (!resp.ok) resp = await fetch(`data/lyrics/${lyricsFile}`);
             const text = await resp.text();
             lrcData = parseLRC(text);
         } catch(e) {
