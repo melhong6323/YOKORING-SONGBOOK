@@ -318,7 +318,7 @@ let currentYoutubeId = null;
 function onYouTubeIframeAPIReady() {
     ytPlayer = new YT.Player('yt-hidden-player', {
         height: '1', width: '1',
-        playerVars: { autoplay: 0, controls: 0 },
+        playerVars: { autoplay: 0, controls: 0, mute: 1 },
         events: {
             onReady: () => { ytReady = true; },
             onStateChange: (e) => {
@@ -378,7 +378,7 @@ async function loadSong(data) {
     if (lrcData && lrcData.isLRC) {
         renderLRCMode();
         buildLegend(lrcData.colorMap);
-        updateLRCDisplay(0);
+        startSyncLoop();
     } else if (lrcData && !lrcData.isLRC) {
         renderPlainText(lrcData.rawLines);
         document.getElementById('widgetLegend').classList.add('hidden');
