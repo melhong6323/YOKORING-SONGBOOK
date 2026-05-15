@@ -323,7 +323,7 @@ function onYouTubeIframeAPIReady() {
             onReady: () => { ytReady = true; },
             onStateChange: (e) => {
                 if (e.data === YT.PlayerState.PLAYING) startSyncLoop();
-                else stopSyncLoop();
+                else if (e.data === YT.PlayerState.PAUSED || e.data === YT.PlayerState.ENDED) stopSyncLoop();
             }
         }
     });
@@ -546,7 +546,7 @@ function renderPlainText(rawLines) {
     rawLines.forEach(line => {
         const el = document.createElement('div');
         el.className = 'lw-pt-line';
-        el.textContent = line || ' ';
+        if (line) { el.textContent = line; } else { el.innerHTML = '&nbsp;'; }
         container.appendChild(el);
     });
     wrap.appendChild(container);
