@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>요코링 홈 & 노래책</title>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="menu-toggle" onclick="toggleMobileMenu()">☰</div>
+    <a class="nav-logo" href="#" onclick="showPage('main'); return false;">
+        <img src="KoringSign.png" alt="요코링" class="nav-logo-img">
+        요코링 <small>YOKORING</small>
+    </a>
+    <div class="nav-menu">
+        <div class="nav-item active" id="btn-nav-main" onclick="showPage('main')">메인</div>
+        <div class="nav-item" id="btn-nav-songbook" onclick="showPage('songbook')">노래책</div>
+        <div class="nav-item" id="btn-nav-profile" onclick="showPage('profile')">프로필</div>
+    </div>
+    <div class="nav-social">
+        <a href="https://www.sooplive.co.kr/station/yokoring03" target="_blank" title="SOOP 방송국">
+            <img src="icon-soop.png" alt="SOOP">
+        </a>
+        <a href="https://www.youtube.com/@%EC%9A%94%EC%BD%94%EB%A7%81" target="_blank" title="노래 유튜브">
+            <img src="icon-youtube.png" alt="YouTube">
+        </a>
+        <a href="https://www.youtube.com/channel/UCbcDFqBnyJxdPFXeuUHiF1g" target="_blank" title="다시보기 채널">
+            <img src="icon-youtube-main.png" alt="다시보기">
+        </a>
+        <a href="https://cafe.naver.com/yokoring03" target="_blank" title="코링 베이커리">
+            <img src="icon-cafe.png" alt="카페">
+        </a>
+        <a href="https://discord.com/invite/Mn8zBq7nAb" target="_blank" title="디스코드">
+            <img src="icon-discord.png" alt="Discord">
+        </a>
+    </div>
+</nav>
+
+<!-- 모바일 메뉴 오버레이 -->
+<div id="mobileMenuOverlay" onclick="closeMobileMenu()"></div>
+
+<!-- 모바일 드롭다운 네비게이션 메뉴 -->
+<div id="mobileMenu">
+    <div class="mobile-nav-items">
+        <div class="mobile-nav-item active" id="mbtn-main" onclick="showPage('main'); closeMobileMenu();">메인</div>
+        <div class="mobile-nav-item" id="mbtn-songbook" onclick="showPage('songbook'); closeMobileMenu();">노래책</div>
+        <div class="mobile-nav-item" id="mbtn-profile" onclick="showPage('profile'); closeMobileMenu();">프로필</div>
+    </div>
+    <div class="mobile-social-row">
+        <a href="https://www.sooplive.co.kr/station/yokoring03" target="_blank" title="SOOP 방송국">
+            <img src="icon-soop.png" alt="SOOP"><span>SOOP</span>
+        </a>
+        <a href="https://www.youtube.com/@%EC%9A%94%EC%BD%94%EB%A7%81" target="_blank" title="노래 유튜브">
+            <img src="icon-youtube.png" alt="YouTube"><span>유튜브</span>
+        </a>
+        <a href="https://www.youtube.com/channel/UCbcDFqBnyJxdPFXeuUHiF1g" target="_blank" title="다시보기 채널">
+            <img src="icon-youtube-main.png" alt="다시보기"><span>다시보기</span>
+        </a>
+        <a href="https://cafe.naver.com/yokoring03" target="_blank" title="코링 베이커리">
+            <img src="icon-cafe.png" alt="카페"><span>카페</span>
+        </a>
+        <a href="https://discord.com/invite/Mn8zBq7nAb" target="_blank" title="디스코드">
+            <img src="icon-discord.png" alt="Discord"><span>디스코드</span>
+        </a>
+    </div>
+</div>
+
+<!-- 모바일 노래책 바로가기 배너 -->
+<div id="mobileQuickSongbook" onclick="showPage('songbook')">
+    📖 노래책 바로가기
+</div>
+
+<main>
+
+    <!-- 메인: 앨범 커버 그리드 -->
+    <section id="main-page" class="page active">
+        <div class="releases-watermark" aria-hidden="true">COVERS</div>
+        <div class="album-grid" id="albumGrid"></div>
+    </section>
+
+    <!-- 노래책: 기존 구글시트 연동 -->
+    <section id="songbook-page" class="page">
+        <div class="songbook-container">
+            <div class="left-pane" id="sidebar">
+                <span class="sidebar-close" onclick="toggleSidebar()">✕</span>
+                <div class="glass-card">
+                    <div id="tabs" class="tab-group"></div>
+                    <div style="margin-top:15px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                            <span style="font-size:10px; font-weight:800; color:var(--accent);">ARTISTS</span>
+                            <button id="btnGanada" style="background:none; border:none; color:var(--text-sub); font-size:10px; cursor:pointer;">가나다 ⇅</button>
+                        </div>
+                        <div id="artistList"></div>
+                    </div>
+                </div>
+                <div id="guide" class="glass-card"></div>
+            </div>
+            <div class="right-pane">
+                <div class="list-header">
+                    <button class="category-btn" onclick="toggleSidebar()">☰ 카테고리</button>
+                    <input type="text" id="searchInput" placeholder="가수 또는 노래 제목 검색...">
+                    <button onclick="remoteReload()" class="reset-btn">Widget ReStart</button>
+                </div>
+                <div id="list"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 프로필 -->
+    <section id="profile-page" class="page">
+        <div class="profile-container">
+
+            <!-- 프로필 카드 -->
+            <div class="profile-top">
+                <div class="profile-photo-wrap">
+                    <div class="profile-img"></div>
+                </div>
+                <div class="profile-info-wrap">
+                    <h1 class="profile-name">요코링 <span>Yokoring</span></h1>
+                    <p class="profile-tagline">코링이와 넙치의 놀이터입니다.</p>
+                    <div class="profile-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">생일</span>
+                            <span class="stat-value">3월 13일 🎂</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">첫 방송</span>
+                            <span class="stat-value">2020.06.16</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">숲 데뷔</span>
+                            <span class="stat-value">2024.11.11</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">팬네임</span>
+                            <span class="stat-value">넙치 ∝</span>
+                        </div>
+                        <div class="stat-item" style="grid-column: 1 / -1;">
+                            <span class="stat-label">퍼스널 컬러</span>
+                            <span class="stat-value">
+                                <span class="color-dot" style="background:#FE9FA7;"></span>핑크&nbsp;#FE9FA7
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 채널 & 링크 -->
+            <div class="profile-section">
+                <h2 class="section-title">채널 &amp; 링크</h2>
+                <div class="social-grid">
+                    <a href="https://www.sooplive.co.kr/station/yokoring03" target="_blank" class="social-card vp-soop">
+                        <img src="icon-soop.png" alt="SOOP"><span>SOOP 방송국</span>
+                    </a>
+                    <a href="https://www.youtube.com/@%EC%9A%94%EC%BD%94%EB%A7%81" target="_blank" class="social-card vp-youtube">
+                        <img src="icon-youtube.png" alt="YouTube"><span>노래 유튜브</span>
+                    </a>
+                    <a href="https://www.youtube.com/channel/UCbcDFqBnyJxdPFXeuUHiF1g" target="_blank" class="social-card vp-rewatch">
+                        <img src="icon-youtube-main.png" alt="다시보기"><span>다시보기 채널</span>
+                    </a>
+                    <a href="https://cafe.naver.com/yokoring03" target="_blank" class="social-card vp-cafe">
+                        <img src="icon-cafe.png" alt="카페"><span>코링 베이커리</span>
+                    </a>
+                    <a href="https://discord.com/invite/Mn8zBq7nAb" target="_blank" class="social-card vp-discord">
+                        <img src="icon-discord.png" alt="Discord"><span>디스코드</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 최근 업로드 영상 -->
+            <div class="profile-section">
+                <h2 class="section-title">최근 업로드 영상</h2>
+                <div class="video-grid">
+                    <div class="video-wrap" onclick="loadYoutube(this, 'ebUfcukafPA')">
+                        <img src="https://img.youtube.com/vi/ebUfcukafPA/maxresdefault.jpg" class="yt-thumb">
+                        <div class="yt-play-btn">▶</div>
+                    </div>
+                    <div class="video-wrap" onclick="loadYoutube(this, 'lAbisQ9vZq0')">
+                        <img src="https://img.youtube.com/vi/lAbisQ9vZq0/maxresdefault.jpg" class="yt-thumb">
+                        <div class="yt-play-btn">▶</div>
+                    </div>
+                    <div class="video-wrap" onclick="loadYoutube(this, 'A3IdFggN4aQ')">
+                        <img src="https://img.youtube.com/vi/A3IdFggN4aQ/maxresdefault.jpg" class="yt-thumb">
+                        <div class="yt-play-btn">▶</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+</main>
+
+<div id="lyricsModal" class="modal">
+    <div class="modal-content" id="dragTarget">
+        <div class="modal-header">LYRICS</div>
+        <span class="modal-close" onclick="closeM('lyricsModal')">✕</span>
+        <div class="lyrics-body"><pre id="lyricsText"></pre></div>
+    </div>
+</div>
+
+<div id="ganadaModal" class="modal">
+    <div class="modal-content" id="ganadaContent">
+        <div class="modal-header">가수 선택</div>
+        <span class="modal-close" onclick="closeM('ganadaModal')">✕</span>
+        <div id="ganadaList" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; max-height:400px; overflow-y:auto; padding:20px;"></div>
+    </div>
+</div>
+
+<script src="js/firebase-config.js"></script>
+<script src="js/albums.js"></script>
+<script src="js/songbook.js"></script>
+<script src="js/ui.js"></script>
+</body>
+</html>
