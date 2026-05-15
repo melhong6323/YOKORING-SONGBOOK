@@ -320,7 +320,12 @@ function onYouTubeIframeAPIReady() {
         height: '1', width: '1',
         playerVars: { autoplay: 0, controls: 0, mute: 1 },
         events: {
-            onReady: () => { ytReady = true; },
+            onReady: () => {
+                ytReady = true;
+                if (currentYoutubeId) {
+                    ytPlayer.loadVideoById({ videoId: currentYoutubeId, startSeconds: 0 });
+                }
+            },
             onStateChange: (e) => {
                 if (e.data === YT.PlayerState.PLAYING) startSyncLoop();
                 else if (e.data === YT.PlayerState.PAUSED || e.data === YT.PlayerState.ENDED) stopSyncLoop();
@@ -353,9 +358,12 @@ async function loadSong(data) {
     document.getElementById('lw-artist').textContent = artist || '';
 
     // YouTube 플레이어 로드
-    if (youtubeId && youtubeId !== currentYoutubeId && ytReady) {
+    if (youtubeId) {
+        const isNewVideo = youtubeId !== currentYoutubeId;
         currentYoutubeId = youtubeId;
-        ytPlayer.loadVideoById({ videoId: youtubeId, startSeconds: 0 });
+        if (ytReady && isNewVideo) {
+            ytPlayer.loadVideoById({ videoId: youtubeId, startSeconds: 0 });
+        }
     }
 
     // 가사 로드
