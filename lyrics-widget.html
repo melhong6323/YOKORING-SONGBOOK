@@ -356,7 +356,6 @@ async function loadSong(data) {
     if (youtubeId && youtubeId !== currentYoutubeId && ytReady) {
         currentYoutubeId = youtubeId;
         ytPlayer.loadVideoById({ videoId: youtubeId, startSeconds: 0 });
-        ytPlayer.pauseVideo();
     }
 
     // 가사 로드
@@ -379,7 +378,7 @@ async function loadSong(data) {
     if (lrcData && lrcData.isLRC) {
         renderLRCMode();
         buildLegend(lrcData.colorMap);
-        if (ytReady && ytPlayer.getPlayerState && ytPlayer.getPlayerState() === YT.PlayerState.PLAYING) startSyncLoop();
+        updateLRCDisplay(0);
     } else if (lrcData && !lrcData.isLRC) {
         renderPlainText(lrcData.rawLines);
         document.getElementById('widgetLegend').classList.add('hidden');
