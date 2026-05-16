@@ -784,9 +784,8 @@ async function loadSong(data) {
     document.getElementById('lw-artist').textContent = artist || '';
 
     if (youtubeId) {
-        const isNewVideo = youtubeId !== currentYoutubeId;
         currentYoutubeId = youtubeId;
-        if (ytReady && isNewVideo) {
+        if (ytReady) {
             ytPlayer.cueVideoById({ videoId: youtubeId, startSeconds: 0 });
         }
     }
