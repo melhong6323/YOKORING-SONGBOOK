@@ -2162,5 +2162,20 @@
     "artist": "이무진",
     "title": "청춘만화",
     "file": "이무진_청춘만화.txt"
+  },
+  {
+    "artist": "블랙핑크",
+    "title": "pinkvenom",
+    "file": "블핑_pinkvenom.txt"
+  },
+  {
+    "artist": "IZ*ONE(아이즈원)",
+    "title": "라비앙로즈 (La Vie en Rose)",
+    "file": "아이즈원_라비앙로즈.txt"
+  },
+  {
+    "artist": "LE SSERAFIM (르세라핌)",
+    "title": "FEARLESS",
+    "file": "르세라핌_Fearless.txt"
   }
 ]
