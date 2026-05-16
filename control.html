@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>YOKORING 방송인 컨트롤</title>
+    <title>노래 위젯 컨트롤</title>
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
 
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -220,13 +220,16 @@
             flex: 1;
             min-height: 0;
             overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4px;
+            align-content: start;
         }
         #artistList::-webkit-scrollbar { width: 3px; }
         #artistList::-webkit-scrollbar-track { background: transparent; }
         #artistList::-webkit-scrollbar-thumb { background: rgba(255,142,173,0.2); border-radius: 3px; }
+        #artistList .tab { text-align: center; }
+        #artistList .tab.tab-full { grid-column: 1 / -1; text-align: left; }
 
         .tab {
             padding: 7px 12px;
@@ -733,7 +736,7 @@ let isSeeking = false;
 // ===== YouTube IFrame API =====
 function onYouTubeIframeAPIReady() {
     ytPlayer = new YT.Player('yt-hidden-player', {
-        height: '1', width: '1',
+        height: '200', width: '200',
         playerVars: { autoplay: 0, controls: 0, mute: 0 },
         events: {
             onReady: () => {
@@ -762,11 +765,6 @@ db.ref('currentSong').on('value', (snap) => {
     else resetWidget();
 });
 
-db.ref('command').on('value', (snap) => {
-    const cmd = snap.val();
-    if (!cmd || cmd.timestamp <= pageLoadTime) return;
-    if (cmd.type === 'RELOAD') location.reload();
-});
 
 // ===== 곡 로드 =====
 async function loadSong(data) {
@@ -1075,6 +1073,28 @@ function bcRestart() {
     resetWidget();
     db.ref('currentSong').remove();
     db.ref('command').set({ type: 'RELOAD', timestamp: Date.now() });
+}
+
+// ===== renderArtistFilter 오버라이드 (2열 배치, 긴 이름 1열) =====
+function renderArtistFilter() {
+    const m = {};
+    currentSongs.forEach(s => { m[s.filterArtist] = (m[s.filterArtist] || 0) + 1; });
+    const sorted = Object.keys(m).sort((a, b) => m[b] - m[a]);
+    const el = document.getElementById('artistList');
+    el.innerHTML = '';
+    const all = document.createElement('div');
+    all.className = 'tab' + (currentArtist === '전체' ? ' active' : '');
+    all.textContent = 'ALL';
+    all.onclick = () => { currentArtist = '전체'; renderArtistFilter(); renderSongList(); };
+    el.appendChild(all);
+    sorted.forEach(a => {
+        const b = document.createElement('div');
+        b.className = 'tab' + (currentArtist === a ? ' active' : '') + (a.length > 7 ? ' tab-full' : '');
+        b.textContent = a;
+        b.id = 'art-btn-' + a;
+        b.onclick = () => { selectAndScrollArtist(a); };
+        el.appendChild(b);
+    });
 }
 
 // ===== renderSongList 오버라이드 (테이블 행 방식) =====
