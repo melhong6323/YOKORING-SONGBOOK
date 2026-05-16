@@ -228,7 +228,7 @@
         #artistList::-webkit-scrollbar { width: 3px; }
         #artistList::-webkit-scrollbar-track { background: transparent; }
         #artistList::-webkit-scrollbar-thumb { background: rgba(255,142,173,0.2); border-radius: 3px; }
-        #artistList .tab { text-align: center; }
+        #artistList .tab { text-align: center; min-width: 0; }
         #artistList .tab.tab-full { grid-column: 1 / -1; text-align: left; }
 
         .tab {
@@ -610,7 +610,7 @@
                 </div>
             </div>
 
-            <div id="yt-hidden-player" style="position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;pointer-events:none;"></div>
+            <div id="yt-hidden-player" style="position:fixed;top:-9999px;left:-9999px;width:200px;height:200px;pointer-events:none;"></div>
 
             <div id="lyrics-card" class="standby">
                 <div class="lw-header">
@@ -1007,8 +1007,13 @@ function stopSyncLoop() {
 function togglePlay() {
     if (!ytReady || !ytPlayer) return;
     const state = ytPlayer.getPlayerState();
-    if (state === YT.PlayerState.PLAYING) ytPlayer.pauseVideo();
-    else ytPlayer.playVideo();
+    if (state === YT.PlayerState.PLAYING) {
+        ytPlayer.pauseVideo();
+    } else if (state === -1 && currentYoutubeId) {
+        ytPlayer.loadVideoById({ videoId: currentYoutubeId, startSeconds: 0 });
+    } else {
+        ytPlayer.playVideo();
+    }
 }
 
 function onSeekInput(val) {
