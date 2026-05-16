@@ -20,6 +20,7 @@
 
         body {
             margin: 0;
+            padding-top: 52px;
             background: transparent;
             font-family: 'Pretendard', sans-serif;
             display: flex;
@@ -27,6 +28,7 @@
             align-items: center;
             min-height: 100vh;
             overflow: hidden;
+            box-sizing: border-box;
         }
 
         /* ===== 위젯 카드 ===== */
@@ -168,13 +170,6 @@
             width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
         }
 
-        /* ===== 오프셋 컨트롤 (헤더 우측) ===== */
-        .lw-offset-row {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
         .offset-display {
             font-size: 10px; font-weight: 700; color: var(--text-sub);
             min-width: 46px; text-align: center;
@@ -254,11 +249,73 @@
             opacity: 0.45;
             padding: 10px 0;
         }
+
+        /* ===== 컨트롤 패널 (운영자 전용 / OBS 숨김: #control-panel { display: none !important; }) ===== */
+        #control-panel {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 18px;
+            background: rgba(10, 8, 20, 0.93);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid rgba(255, 142, 173, 0.18);
+            box-sizing: border-box;
+        }
+
+        #cp-play-btn {
+            font-size: 13px; font-weight: 700;
+            padding: 5px 14px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 142, 173, 0.35);
+            background: rgba(255, 142, 173, 0.12);
+            color: var(--spring-pink);
+            cursor: pointer;
+            transition: background 0.2s;
+            flex-shrink: 0;
+        }
+        #cp-play-btn:hover { background: rgba(255, 142, 173, 0.24); }
+
+        #cp-time {
+            font-size: 11px; font-weight: 700; color: var(--text-sub);
+            flex-shrink: 0; min-width: 92px; text-align: center;
+        }
+
+        #cp-seek {
+            flex: 1;
+            height: 4px;
+            accent-color: var(--spring-pink);
+            cursor: pointer;
+            min-width: 0;
+        }
+
+        .cp-offset {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            flex-shrink: 0;
+        }
     </style>
 </head>
 <body>
 
-<!-- 숨겨진 YouTube 플레이어 (마스터 클락) -->
+<!-- 운영자 컨트롤 패널 (OBS Custom CSS로 숨김 가능) -->
+<div id="control-panel">
+    <button id="cp-play-btn" onclick="togglePlay()">▶</button>
+    <span id="cp-time">0:00 / 0:00</span>
+    <input type="range" id="cp-seek" min="0" max="1000" value="0" step="1"
+           oninput="onSeekInput(this.value)"
+           onchange="onSeekChange(this.value)">
+    <div class="cp-offset">
+        <button class="offset-adj" onclick="adjustOffset(-200)">-0.2s</button>
+        <div class="offset-display" id="offsetDisplay">+0ms</div>
+        <button class="offset-adj" onclick="adjustOffset(200)">+0.2s</button>
+    </div>
+</div>
+
+<!-- 숨겨진 YouTube 플레이어 (MR 재생 소스) -->
 <div id="yt-hidden-player" style="position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;pointer-events:none;"></div>
 
 <!-- 가사 위젯 카드 -->
@@ -276,11 +333,6 @@
         </div>
         <div class="lw-header-right">
             <div id="widgetLegend" class="hidden"></div>
-            <div class="lw-offset-row">
-                <button class="offset-adj" onclick="adjustOffset(-200)">-0.2s</button>
-                <div class="offset-display" id="offsetDisplay">+0ms</div>
-                <button class="offset-adj" onclick="adjustOffset(200)">+0.2s</button>
-            </div>
         </div>
     </div>
 
@@ -313,22 +365,28 @@ let currentLineIdx = -1;
 let manualOffset = 0;       // ms
 let rafId = null;
 let currentYoutubeId = null;
+let isSeeking = false;
 
 // ===== YouTube IFrame API =====
 function onYouTubeIframeAPIReady() {
     ytPlayer = new YT.Player('yt-hidden-player', {
         height: '1', width: '1',
-        playerVars: { autoplay: 0, controls: 0, mute: 1 },
+        playerVars: { autoplay: 0, controls: 0, mute: 0 },
         events: {
             onReady: () => {
                 ytReady = true;
                 if (currentYoutubeId) {
-                    ytPlayer.loadVideoById({ videoId: currentYoutubeId, startSeconds: 0 });
+                    ytPlayer.cueVideoById({ videoId: currentYoutubeId, startSeconds: 0 });
                 }
             },
             onStateChange: (e) => {
-                if (e.data === YT.PlayerState.PLAYING) startSyncLoop();
-                else if (e.data === YT.PlayerState.PAUSED || e.data === YT.PlayerState.ENDED) stopSyncLoop();
+                if (e.data === YT.PlayerState.PLAYING) {
+                    startSyncLoop();
+                    document.getElementById('cp-play-btn').textContent = '⏸';
+                } else if (e.data === YT.PlayerState.PAUSED || e.data === YT.PlayerState.ENDED) {
+                    stopSyncLoop();
+                    document.getElementById('cp-play-btn').textContent = '▶';
+                }
             }
         }
     });
@@ -357,14 +415,17 @@ async function loadSong(data) {
     document.getElementById('lw-title').textContent = title || '';
     document.getElementById('lw-artist').textContent = artist || '';
 
-    // YouTube 플레이어 로드
+    // YouTube 플레이어 로드 (버퍼링만, 재생은 사용자가 ▶ 클릭 시 시작)
     if (youtubeId) {
         const isNewVideo = youtubeId !== currentYoutubeId;
         currentYoutubeId = youtubeId;
         if (ytReady && isNewVideo) {
-            ytPlayer.loadVideoById({ videoId: youtubeId, startSeconds: 0 });
+            ytPlayer.cueVideoById({ videoId: youtubeId, startSeconds: 0 });
         }
     }
+    document.getElementById('cp-play-btn').textContent = '▶';
+    document.getElementById('cp-seek').value = 0;
+    document.getElementById('cp-time').textContent = '0:00 / 0:00';
 
     // 가사 로드
     stopSyncLoop();
@@ -386,7 +447,6 @@ async function loadSong(data) {
     if (lrcData && lrcData.isLRC) {
         renderLRCMode();
         buildLegend(lrcData.colorMap);
-        startSyncLoop();
     } else if (lrcData && !lrcData.isLRC) {
         renderPlainText(lrcData.rawLines);
         document.getElementById('widgetLegend').classList.add('hidden');
@@ -410,6 +470,9 @@ function resetWidget() {
     document.getElementById('lw-artist').textContent = '요코링';
     document.getElementById('widgetLegend').classList.add('hidden');
     document.getElementById('lw-lyrics-wrap').innerHTML = '<div class="lw-standby-text">♪ 노래를 선택하면 가사가 표시됩니다</div>';
+    document.getElementById('cp-play-btn').textContent = '▶';
+    document.getElementById('cp-seek').value = 0;
+    document.getElementById('cp-time').textContent = '0:00 / 0:00';
 }
 
 // ===== Firebase command 처리 =====
@@ -577,15 +640,23 @@ function binarySearch(lines, ct) {
 
 function startSyncLoop() {
     stopSyncLoop();
-    if (!lrcData || !lrcData.isLRC) return;
     function loop() {
         if (!ytReady || !ytPlayer) { rafId = requestAnimationFrame(loop); return; }
         try {
-            const ct = ytPlayer.getCurrentTime() + (manualOffset / 1000);
-            const idx = binarySearch(lrcData.lines, ct);
-            if (idx !== currentLineIdx) {
-                currentLineIdx = idx;
-                updateLRCDisplay(idx);
+            const cur = ytPlayer.getCurrentTime();
+            const dur = ytPlayer.getDuration();
+            if (dur > 0 && !isSeeking) {
+                document.getElementById('cp-seek').value = (cur / dur) * 1000;
+                document.getElementById('cp-time').textContent =
+                    `${formatTime(cur)} / ${formatTime(dur)}`;
+            }
+            if (lrcData && lrcData.isLRC) {
+                const ct = cur + (manualOffset / 1000);
+                const idx = binarySearch(lrcData.lines, ct);
+                if (idx !== currentLineIdx) {
+                    currentLineIdx = idx;
+                    updateLRCDisplay(idx);
+                }
             }
         } catch(e) {}
         rafId = requestAnimationFrame(loop);
@@ -595,6 +666,47 @@ function startSyncLoop() {
 
 function stopSyncLoop() {
     if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+}
+
+// ===== 컨트롤 패널 =====
+function togglePlay() {
+    if (!ytReady || !ytPlayer) return;
+    const state = ytPlayer.getPlayerState();
+    if (state === YT.PlayerState.PLAYING) ytPlayer.pauseVideo();
+    else ytPlayer.playVideo();
+}
+
+function onSeekInput(val) {
+    isSeeking = true;
+    if (!ytReady || !ytPlayer) return;
+    try {
+        const dur = ytPlayer.getDuration();
+        if (dur > 0) document.getElementById('cp-time').textContent =
+            `${formatTime((val / 1000) * dur)} / ${formatTime(dur)}`;
+    } catch(e) {}
+}
+
+function onSeekChange(val) {
+    isSeeking = false;
+    if (!ytReady || !ytPlayer) return;
+    try {
+        const dur = ytPlayer.getDuration();
+        if (dur > 0) {
+            const seekTo = (val / 1000) * dur;
+            ytPlayer.seekTo(seekTo, true);
+            if (lrcData && lrcData.isLRC) {
+                const ct = seekTo + (manualOffset / 1000);
+                const idx = binarySearch(lrcData.lines, ct);
+                currentLineIdx = idx;
+                updateLRCDisplay(idx);
+            }
+        }
+    } catch(e) {}
+}
+
+function formatTime(sec) {
+    const s = Math.max(0, Math.floor(sec));
+    return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 }
 
 // ===== 오프셋 조정 =====
