@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>노래 위젯 컨트롤</title>
+    <title>위젯 컨트롤</title>
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
 
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -617,7 +617,9 @@
                 </div>
             </div>
 
-            <div id="yt-hidden-player" style="position:fixed;top:-9999px;left:-9999px;width:200px;height:200px;pointer-events:none;"></div>
+            <div id="yt-player-wrapper" style="position:fixed;top:-9999px;left:-9999px;width:200px;height:200px;pointer-events:none;">
+                <div id="yt-hidden-player"></div>
+            </div>
 
             <div id="lyrics-card" class="standby">
                 <div class="lw-header">
@@ -662,7 +664,7 @@
                     <span class="bc-guide-icon">🎵</span>
                     <div>
                         <b>노래 선택</b><br>
-                        중앙 목록에서 곡을 찾아 <b>▶ 선택</b> 클릭 → 재생바 ▶ 버튼으로 MR 시작
+                        중앙 목록에서 곡을 찾아 <b>▶ 선택</b> 클릭 → 재생바 <b>▶ 버튼</b>으로 MR 시작
                     </div>
                 </div>
                 <div class="bc-guide-item">
@@ -679,7 +681,7 @@
                     <div>
                         <b>파트별 색상 설정</b><br>
                         파트별 가사가 설정되어 있으면 위젯 상단에 색상 설정이 표시됩니다.<br>
-                        <code class="bc-code">[COLOR:이름:#색상코드]</code>
+                        아래와 같은 파트별 색상을 눌러 원하는 색상으로 변경이 가능합니다<br>
                         <div class="bc-color-row">
                             <div class="bc-color-chip">
                                 <span class="bc-chip-dot" style="background:#ff8ead;"></span>파트A
@@ -741,16 +743,16 @@ let currentYoutubeId = null;
 let isSeeking = false;
 
 // ===== YouTube IFrame API =====
-function onYouTubeIframeAPIReady() {
+function initYtPlayer() {
     ytPlayer = new YT.Player('yt-hidden-player', {
         height: '200', width: '200',
         playerVars: { autoplay: 0, controls: 0, mute: 0 },
         events: {
-            onReady: () => {
+            onReady: (e) => {
                 ytReady = true;
-                ytPlayer.setVolume(30);
+                e.target.setVolume(Number(document.getElementById('cp-volume-slider').value));
                 if (currentYoutubeId) {
-                    ytPlayer.cueVideoById({ videoId: currentYoutubeId, startSeconds: 0 });
+                    e.target.cueVideoById({ videoId: currentYoutubeId, startSeconds: 0 });
                 }
             },
             onStateChange: (e) => {
@@ -761,9 +763,17 @@ function onYouTubeIframeAPIReady() {
                     stopSyncLoop();
                     document.getElementById('cp-play-btn').textContent = '▶';
                 }
+            },
+            onError: () => {
+                stopSyncLoop();
+                document.getElementById('cp-play-btn').textContent = '⚠';
             }
         }
     });
+}
+
+function onYouTubeIframeAPIReady() {
+    initYtPlayer();
 }
 
 // ===== Firebase 리스너 =====
@@ -1026,10 +1036,10 @@ function togglePlay() {
     const state = ytPlayer.getPlayerState();
     if (state === YT.PlayerState.PLAYING) {
         ytPlayer.pauseVideo();
-    } else if (state === -1 && currentYoutubeId) {
-        ytPlayer.loadVideoById({ videoId: currentYoutubeId, startSeconds: 0 });
-    } else {
+    } else if (state === YT.PlayerState.PAUSED) {
         ytPlayer.playVideo();
+    } else if (currentYoutubeId) {
+        ytPlayer.loadVideoById({ videoId: currentYoutubeId, startSeconds: 0 });
     }
 }
 
@@ -1092,6 +1102,15 @@ function bcSelect(title, artist, lyricsFile, youtubeId, rowEl) {
 }
 
 function bcRestart() {
+    ytReady = false;
+    currentYoutubeId = null;
+    if (ytPlayer) {
+        try { ytPlayer.destroy(); } catch(e) {}
+        ytPlayer = null;
+    }
+    document.getElementById('yt-player-wrapper').innerHTML = '<div id="yt-hidden-player"></div>';
+    initYtPlayer();
+
     resetWidget();
     db.ref('currentSong').remove();
     db.ref('command').set({ type: 'RELOAD', timestamp: Date.now() });
