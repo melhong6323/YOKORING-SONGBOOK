@@ -130,9 +130,10 @@
             flex: 1;
             overflow-y: auto;
         }
-        #list::-webkit-scrollbar { width: 4px; }
-        #list::-webkit-scrollbar-track { background: transparent; }
-        #list::-webkit-scrollbar-thumb { background: rgba(255,142,173,0.25); border-radius: 4px; }
+        #list::-webkit-scrollbar { width: 8px; }
+        #list::-webkit-scrollbar-track { background: rgba(255,255,255,0.06); border-radius: 8px; }
+        #list::-webkit-scrollbar-thumb { background: rgba(255,142,173,0.55); border-radius: 8px; }
+        #list::-webkit-scrollbar-thumb:hover { background: rgba(255,142,173,0.85); }
 
         .bc-song-row {
             display: grid;
@@ -225,10 +226,11 @@
             gap: 4px;
             align-content: start;
         }
-        #artistList::-webkit-scrollbar { width: 3px; }
-        #artistList::-webkit-scrollbar-track { background: transparent; }
-        #artistList::-webkit-scrollbar-thumb { background: rgba(255,142,173,0.2); border-radius: 3px; }
-        #artistList .tab { text-align: center; min-width: 0; white-space: normal; word-break: keep-all; }
+        #artistList::-webkit-scrollbar { width: 8px; }
+        #artistList::-webkit-scrollbar-track { background: rgba(255,255,255,0.06); border-radius: 8px; }
+        #artistList::-webkit-scrollbar-thumb { background: rgba(255,142,173,0.55); border-radius: 8px; }
+        #artistList::-webkit-scrollbar-thumb:hover { background: rgba(255,142,173,0.85); }
+        #artistList .tab { text-align: center; min-width: 0; white-space: normal; word-break: normal; text-overflow: clip; }
         #artistList .tab.tab-full { grid-column: 1 / -1; text-align: left; }
 
         .tab {
@@ -418,9 +420,10 @@
             overflow-y: auto;
             text-align: center;
         }
-        .lw-plaintext::-webkit-scrollbar { width: 4px; }
-        .lw-plaintext::-webkit-scrollbar-track { background: transparent; }
-        .lw-plaintext::-webkit-scrollbar-thumb { background: rgba(255, 142, 173, 0.30); border-radius: 4px; }
+        .lw-plaintext::-webkit-scrollbar { width: 8px; }
+        .lw-plaintext::-webkit-scrollbar-track { background: rgba(255,255,255,0.06); border-radius: 8px; }
+        .lw-plaintext::-webkit-scrollbar-thumb { background: rgba(255,142,173,0.55); border-radius: 8px; }
+        .lw-plaintext::-webkit-scrollbar-thumb:hover { background: rgba(255,142,173,0.85); }
         .lw-pt-line {
             font-size: 14px;
             font-weight: 500;
@@ -507,6 +510,10 @@
             flex: 1;
             overflow-y: auto;
         }
+        .bc-guide::-webkit-scrollbar { width: 8px; }
+        .bc-guide::-webkit-scrollbar-track { background: rgba(255,255,255,0.06); border-radius: 8px; }
+        .bc-guide::-webkit-scrollbar-thumb { background: rgba(255,142,173,0.55); border-radius: 8px; }
+        .bc-guide::-webkit-scrollbar-thumb:hover { background: rgba(255,142,173,0.85); }
         .bc-guide-title {
             font-size: 10px;
             font-weight: 900;
@@ -600,7 +607,7 @@
                        onchange="onSeekChange(this.value)">
                 <div class="cp-volume">
                     🔊
-                    <input type="range" id="cp-volume-slider" min="0" max="100" value="100" step="1"
+                    <input type="range" id="cp-volume-slider" min="0" max="100" value="30" step="1"
                            oninput="setVolume(this.value)">
                 </div>
                 <div class="cp-offset">
@@ -741,6 +748,7 @@ function onYouTubeIframeAPIReady() {
         events: {
             onReady: () => {
                 ytReady = true;
+                ytPlayer.setVolume(30);
                 if (currentYoutubeId) {
                     ytPlayer.cueVideoById({ videoId: currentYoutubeId, startSeconds: 0 });
                 }
