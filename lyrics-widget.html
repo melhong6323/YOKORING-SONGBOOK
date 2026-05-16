@@ -21,6 +21,7 @@
         body {
             margin: 0;
             padding: 0;
+            padding-top: 50px;
             background: transparent;
             font-family: 'Pretendard', sans-serif;
             overflow: hidden;
@@ -38,7 +39,7 @@
             width: 100%;
             height: 280px;
             padding: 18px 22px;
-            background: var(--card-bg);
+            background: transparent;
             backdrop-filter: blur(24px) saturate(180%);
             -webkit-backdrop-filter: blur(24px) saturate(180%);
             border-radius: 28px;
@@ -61,34 +62,13 @@
             border-radius: 30px;
             background: linear-gradient(135deg,
                 rgba(255, 142, 173, 0.75) 0%,
-                rgba(255, 142, 173, 0.15) 45%,
-                transparent 70%);
+                rgba(255, 142, 173, 0.15) 31%,
+                transparent 49%);
             z-index: -1;
             pointer-events: none;
         }
 
-        #lyrics-card::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: 28px;
-            background: linear-gradient(105deg, transparent 20%, rgba(255,255,255,0.08) 50%, transparent 80%);
-            background-size: 200% 100%;
-            background-position: -100% 0;
-            animation: shimmerGloss 7s ease-in-out infinite;
-            pointer-events: none;
-        }
-        @keyframes shimmerGloss {
-            0%        { background-position: -100% 0; }
-            45%, 100% { background-position: 220% 0; }
-        }
-
         /* Standby 상태 */
-        @keyframes standbyBreath {
-            0%, 100% { opacity: 0.85; transform: scale(0.978); }
-            50%       { opacity: 0.96; transform: scale(0.992); }
-        }
-        #lyrics-card.standby { animation: standbyBreath 3.5s ease-in-out infinite; }
         #lyrics-card.standby {
             box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.05), 0 4px 20px rgba(0, 0, 0, 0.50);
         }
@@ -139,9 +119,7 @@
             border-radius: 50%; background: var(--deep-pink);
             margin-right: 5px; vertical-align: middle;
             box-shadow: 0 0 6px rgba(255, 107, 149, 0.7);
-            animation: liveBlink 1.5s ease-in-out infinite;
         }
-        @keyframes liveBlink { 0%, 100% { opacity: 1; } 50% { opacity: 0.15; } }
 
         /* ===== 헤더 우측 (범례 + 오프셋) ===== */
         .lw-header-right {
@@ -318,6 +296,20 @@
             gap: 5px;
             flex-shrink: 0;
         }
+
+        .cp-volume {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex-shrink: 0;
+            font-size: 12px;
+        }
+        #cp-volume-slider {
+            width: 70px;
+            height: 4px;
+            accent-color: var(--spring-pink);
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -331,6 +323,11 @@
     <input type="range" id="cp-seek" min="0" max="1000" value="0" step="1"
            oninput="onSeekInput(this.value)"
            onchange="onSeekChange(this.value)">
+    <div class="cp-volume">
+        🔊
+        <input type="range" id="cp-volume-slider" min="0" max="100" value="100" step="1"
+               oninput="setVolume(this.value)">
+    </div>
     <div class="cp-offset">
         <button class="offset-adj" onclick="adjustOffset(-200)">-0.2s</button>
         <div class="offset-display" id="offsetDisplay">+0ms</div>
@@ -750,6 +747,11 @@ function onSeekChange(val) {
 function formatTime(sec) {
     const s = Math.max(0, Math.floor(sec));
     return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+}
+
+// ===== 음량 조절 =====
+function setVolume(val) {
+    if (ytReady && ytPlayer) ytPlayer.setVolume(Number(val));
 }
 
 // ===== 오프셋 조정 =====
