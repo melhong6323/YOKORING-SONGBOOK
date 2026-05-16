@@ -228,7 +228,7 @@
         #artistList::-webkit-scrollbar { width: 3px; }
         #artistList::-webkit-scrollbar-track { background: transparent; }
         #artistList::-webkit-scrollbar-thumb { background: rgba(255,142,173,0.2); border-radius: 3px; }
-        #artistList .tab { text-align: center; min-width: 0; }
+        #artistList .tab { text-align: center; min-width: 0; white-space: normal; word-break: keep-all; }
         #artistList .tab.tab-full { grid-column: 1 / -1; text-align: left; }
 
         .tab {
@@ -389,7 +389,7 @@
             justify-content: center;
         }
         .lrc-line {
-            font-size: 13px;
+            font-size: 15px;
             font-weight: 500;
             color: var(--text-sub);
             opacity: 0.40;
@@ -407,8 +407,8 @@
                 0 0 36px rgba(255, 142, 173, 0.35);
         }
         .lrc-line.adjacent {
-            opacity: 0.35;
-            font-size: 13px;
+            opacity: 0.75;
+            font-size: 15px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -907,6 +907,16 @@ function updateLRCDisplay(idx) {
     } else {
         currEl.style.color = '';
         currEl.style.textShadow = '';
+    }
+    if (prevLine && prevLine.member) {
+        prevEl.style.color = getMemberColor(prevLine.member, lrcData.colorMap);
+    } else {
+        prevEl.style.color = '';
+    }
+    if (nextLine && nextLine.member) {
+        nextEl.style.color = getMemberColor(nextLine.member, lrcData.colorMap);
+    } else {
+        nextEl.style.color = '';
     }
 }
 
