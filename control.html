@@ -883,6 +883,7 @@ async function loadSong(data) {
 
     // 커스텀 파트 상태 초기화
     customAssignments = {};
+    customMembers = [];
     rawLinesRef = null;
     songLoaded = true;
     if (editModeActive) {
@@ -927,7 +928,7 @@ async function loadSong(data) {
 
     if (lrcData && lrcData.isLRC) {
         // LRC COLOR 태그 → 멤버 자동 세팅 (기존 멤버가 없을 때만)
-        if (Object.keys(lrcData.colorMap).length > 0 && customMembers.length === 0) {
+        if (Object.keys(lrcData.colorMap).length > 0) {
             customMembers = Object.entries(lrcData.colorMap).map(([name, color]) => ({ name, color }));
             lrcData.lines.forEach((line, idx) => {
                 if (line.member) {
@@ -1442,7 +1443,8 @@ function bcSelect(title, artist, lyricsFile, youtubeId, rowEl) {
     if (rowEl) rowEl.classList.add('selected');
     // 새 곡 선택 시 assignments 즉시 초기화 (Firebase에도 반영)
     customAssignments = {};
-    db.ref('customParts').set({ members: customMembers, assignments: {} });
+    customMembers = [];
+    db.ref('customParts').set({ members: [], assignments: {} });
     sendToWidget(title, artist, lyricsFile, youtubeId);
 }
 
