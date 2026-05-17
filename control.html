@@ -258,7 +258,7 @@
 
         #lyrics-card {
             width: 100%;
-            height: 280px;
+            height: 350px;
             padding: 18px 22px;
             background: rgba(13, 11, 26, 0.80);
             backdrop-filter: blur(24px) saturate(180%);
@@ -402,11 +402,11 @@
             font-size: 20px;
             font-weight: 800;
             opacity: 1;
-            color: var(--spring-pink);
+            color: var(--text-main);
             white-space: normal;
             text-shadow:
-                0 0 18px rgba(255, 142, 173, 0.75),
-                0 0 36px rgba(255, 142, 173, 0.35);
+                0 0 18px rgba(237, 232, 248, 0.55),
+                0 0 36px rgba(237, 232, 248, 0.22);
         }
         .lrc-line.adjacent {
             opacity: 0.75;
@@ -425,10 +425,10 @@
         .lw-plaintext::-webkit-scrollbar-thumb { background: rgba(255,142,173,0.55); border-radius: 8px; }
         .lw-plaintext::-webkit-scrollbar-thumb:hover { background: rgba(255,142,173,0.85); }
         .lw-pt-line {
-            font-size: 14px;
+            font-size: 16px;
             font-weight: 500;
-            color: var(--text-sub);
-            opacity: 0.65;
+            color: rgba(240, 238, 250, 0.88);
+            opacity: 1;
             line-height: 1.8;
         }
         .lw-standby-text {
@@ -507,7 +507,6 @@
             border: 1px solid var(--border);
             border-radius: 16px;
             padding: 18px 20px;
-            flex: 1;
             overflow-y: auto;
         }
         .bc-guide::-webkit-scrollbar { width: 8px; }
@@ -647,18 +646,11 @@
             <div class="bc-guide-title">📋 GUIDE</div>
             <div class="bc-guide-items">
                 <div class="bc-guide-item">
-                    <span class="bc-guide-icon">▶</span>
-                    <div>
-                        <b>재생바</b><br>
-                        ▶ 재생/일시정지 &middot; 시크바로 구간 이동 &middot; 🔊 음량 조절 &middot; ±0.2s로 가사 싱크 미세 조정
-                    </div>
-                </div>
-                <div class="bc-guide-item">
                     <span class="bc-guide-icon">📸</span>
                     <div>
                         <b>브라우저 캡처</b><br>
-                        OBS에서 위의 가사 위젯 부분만 브라우저 캡처 하여 싱크된 가사만 오버레이로 사용하세요.<br>
-                        그게 싫다면 가사 영역 말고 상단 로고가 있는 부분(가수-제목이 나오는 위젯 상단영역)만 캡처해도 상관없음.
+                        OBS에서 위의 가사 위젯 부분만 브라우저 캡처하여 싱크된 가사만 오버레이로 사용하세요.<br>
+                        또는 상단 로고가 있는 부분(가수-제목이 나오는 위젯 상단영역)만 캡처해도 상관없음.
                     </div>
                 </div>
                 <div class="bc-guide-item">
@@ -895,6 +887,7 @@ function renderLRCMode() {
     const prev = document.createElement('div'); prev.className = 'lrc-line adjacent'; prev.id = 'lrc-prev'; wrap.appendChild(prev);
     const curr = document.createElement('div'); curr.className = 'lrc-line current'; curr.id = 'lrc-curr'; wrap.appendChild(curr);
     const next = document.createElement('div'); next.className = 'lrc-line adjacent'; next.id = 'lrc-next'; wrap.appendChild(next);
+    const next2 = document.createElement('div'); next2.className = 'lrc-line adjacent'; next2.id = 'lrc-next2'; wrap.appendChild(next2);
 }
 
 function lrcTextToHtml(text) {
@@ -911,13 +904,28 @@ function updateLRCDisplay(idx) {
     const prevLine = get(idx - 1);
     const currLine = get(idx);
     const nextLine = get(idx + 1);
+    const next2Line = get(idx + 2);
     const prevEl = document.getElementById('lrc-prev');
     const currEl = document.getElementById('lrc-curr');
     const nextEl = document.getElementById('lrc-next');
+    const next2El = document.getElementById('lrc-next2');
     if (!prevEl || !currEl || !nextEl) return;
-    prevEl.innerHTML = lrcTextToHtml(prevLine ? prevLine.text : '');
+
+    // 이전 가사: 마지막 1줄만
+    const prevText = prevLine ? prevLine.text.split('\n').slice(-1)[0] : '';
+    prevEl.innerHTML = lrcTextToHtml(prevText);
+
     currEl.innerHTML = lrcTextToHtml(currLine ? currLine.text : '');
     nextEl.innerHTML = lrcTextToHtml(nextLine ? nextLine.text : '');
+
+    // 다다음 가사: 첫 줄 미리보기
+    if (next2El) {
+        const next2Text = next2Line ? next2Line.text.split('\n')[0] : '';
+        next2El.innerHTML = lrcTextToHtml(next2Text);
+        next2El.style.color = (next2Line && next2Line.member)
+            ? getMemberColor(next2Line.member, lrcData.colorMap) : '';
+    }
+
     if (currLine) {
         const color = getMemberColor(currLine.member, lrcData.colorMap);
         currEl.style.color = color;
@@ -939,8 +947,8 @@ function updateLRCDisplay(idx) {
 }
 
 function getMemberColor(member, colorMap) {
-    if (!member) return 'var(--spring-pink)';
-    return localStorage.getItem('yokoring_color_' + member) || colorMap[member] || 'var(--spring-pink)';
+    if (!member) return 'var(--text-main)';
+    return localStorage.getItem('yokoring_color_' + member) || colorMap[member] || 'var(--text-main)';
 }
 
 function buildLegend(colorMap) {
