@@ -138,7 +138,3 @@ function copyText(t, b) {
     });
 }
 
-function remoteReload() {
-    db.ref('currentSong').remove();
-    db.ref('command').set({ type: 'RELOAD', timestamp: Date.now() });
-}

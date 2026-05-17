@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>YOKORING Lyrics Widget</title>
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+    <style>
+        :root {
+            --spring-pink: #ff8ead;
+            --deep-pink:   #ff6b95;
+            --card-bg:     rgba(15, 14, 26, 0.88);
+            --text-main:   #EDE8F8;
+            --text-sub:    #9B92B3;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            padding-top: 50px;
+            background: transparent;
+            font-family: 'Pretendard', sans-serif;
+            overflow: hidden;
+        }
+
+        .widget-container {
+            width: 540px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ===== 위젯 카드 ===== */
+        #lyrics-card {
+            width: 100%;
+            height: 350px;
+            padding: 18px 22px;
+            background: rgba(13, 11, 26, 0.80);
+            backdrop-filter: blur(24px) saturate(180%);
+            -webkit-backdrop-filter: blur(24px) saturate(180%);
+            border-radius: 28px;
+            box-sizing: border-box;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            transition: box-shadow 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+            box-shadow:
+                0 0 0 1px rgba(255, 142, 173, 0.30),
+                0 0 28px rgba(255, 142, 173, 0.18),
+                0 8px 36px rgba(0, 0, 0, 0.65),
+                inset 0 1px 0 rgba(255, 255, 255, 0.06);
+        }
+
+        #lyrics-card::before {
+            content: '';
+            position: absolute;
+            inset: -1.5px;
+            border-radius: 30px;
+            background: linear-gradient(135deg,
+                rgba(255, 142, 173, 0.75) 0%,
+                rgba(255, 142, 173, 0.15) 31%,
+                transparent 49%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        #lyrics-card.standby {
+            box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.05), 0 4px 20px rgba(0, 0, 0, 0.50);
+        }
+
+        /* ===== 헤더 영역 ===== */
+        .lw-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+            flex-shrink: 0;
+        }
+
+        .lw-song-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+            flex: 1;
+        }
+
+        .lw-icon {
+            flex-shrink: 0;
+            width: 40px; height: 40px;
+            background: rgba(255, 142, 173, 0.10);
+            border-radius: 14px;
+            display: flex; justify-content: center; align-items: center;
+            box-shadow: 0 0 0 1px rgba(255, 142, 173, 0.28), 0 0 14px rgba(255, 142, 173, 0.18);
+        }
+        .lw-icon img { width: 72%; height: 72%; object-fit: contain; }
+
+        .lw-meta { min-width: 0; flex: 1; }
+        .lw-status {
+            font-size: 9px; font-weight: 900; color: var(--spring-pink);
+            letter-spacing: 1.5px; margin-bottom: 2px;
+            text-shadow: 0 0 10px rgba(255, 142, 173, 0.65);
+        }
+        .lw-title {
+            font-size: 14px; font-weight: 800; color: var(--text-main);
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            letter-spacing: -0.3px;
+        }
+        .lw-artist { font-size: 11px; font-weight: 600; color: var(--text-sub); margin-top: 1px; }
+
+        .live-dot {
+            display: inline-block; width: 6px; height: 6px;
+            border-radius: 50%; background: var(--deep-pink);
+            margin-right: 5px; vertical-align: middle;
+            box-shadow: 0 0 6px rgba(255, 107, 149, 0.7);
+        }
+
+        /* ===== 헤더 우측 (범례) ===== */
+        .lw-header-right {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
+        /* ===== 멤버 범례 (표시 전용, 상호작용 없음) ===== */
+        #widgetLegend {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+        #widgetLegend.hidden { display: none; }
+
+        .legend-chip {
+            display: flex; align-items: center; gap: 5px;
+            padding: 3px 9px; border-radius: 20px;
+            font-size: 10px; font-weight: 800;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.10);
+            cursor: default;
+        }
+        .legend-dot {
+            width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+        }
+
+        /* ===== 구분선 ===== */
+        .lw-divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.07);
+            margin-bottom: 14px;
+            flex-shrink: 0;
+        }
+
+        /* ===== 가사 영역 ===== */
+        #lw-lyrics-wrap {
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .lw-lyrics-area {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            text-align: center;
+            padding: 0;
+            justify-content: center;
+        }
+
+        .lrc-line {
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-sub);
+            opacity: 0.40;
+            transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            line-height: 1.5;
+        }
+        .lrc-line.current {
+            font-size: 20px;
+            font-weight: 800;
+            opacity: 1;
+            color: var(--text-main);
+            white-space: normal;
+            text-shadow:
+                0 0 18px rgba(237, 232, 248, 0.55),
+                0 0 36px rgba(237, 232, 248, 0.22);
+        }
+        .lrc-line.adjacent {
+            opacity: 0.75;
+            font-size: 15px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* ===== plain text 모드 (스크롤 가능) ===== */
+        .lw-plaintext {
+            flex: 1;
+            overflow-y: auto;
+            text-align: center;
+        }
+        .lw-plaintext::-webkit-scrollbar { width: 8px; }
+        .lw-plaintext::-webkit-scrollbar-track { background: rgba(255,255,255,0.06); border-radius: 8px; }
+        .lw-plaintext::-webkit-scrollbar-thumb { background: rgba(255,142,173,0.55); border-radius: 8px; }
+        .lw-plaintext::-webkit-scrollbar-thumb:hover { background: rgba(255,142,173,0.85); }
+
+        .lw-pt-line {
+            font-size: 16px;
+            font-weight: 500;
+            color: rgba(240, 238, 250, 0.88);
+            opacity: 1;
+            line-height: 1.8;
+        }
+
+        /* ===== Standby ===== */
+        .lw-standby-text {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-sub);
+            opacity: 0.45;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="widget-container">
+
+<!-- 가사 위젯 카드 -->
+<div id="lyrics-card" class="standby">
+
+    <!-- 헤더 -->
+    <div class="lw-header">
+        <div class="lw-song-info">
+            <div class="lw-icon"><img src="KoringSign.png" alt="요코링"></div>
+            <div class="lw-meta">
+                <div class="lw-status" id="lw-status">READY 🌸</div>
+                <div class="lw-title" id="lw-title">YOKORING Lyrics</div>
+                <div class="lw-artist" id="lw-artist">요코링</div>
+            </div>
+        </div>
+        <div class="lw-header-right">
+            <div id="widgetLegend" class="hidden"></div>
+        </div>
+    </div>
+
+    <div class="lw-divider"></div>
+
+    <!-- 가사 표시 영역 -->
+    <div id="lw-lyrics-wrap">
+        <div class="lw-standby-text">♪ 노래를 선택하면 가사가 표시됩니다</div>
+    </div>
+
+</div>
+
+</div><!-- /.widget-container -->
+
+<script>
+// ===== Firebase 초기화 =====
+const firebaseConfig = {
+    apiKey: "AIzaSyDDSJWWYCzwmM8DSIYI4w3vGPKSshpFhGk",
+    authDomain: "yokoring-songbook.firebaseapp.com",
+    databaseURL: "https://yokoring-songbook-default-rtdb.firebaseio.com",
+    projectId: "yokoring-songbook"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// ===== 상태 =====
+let lrcData = null;
+let currentLineIdx = -1;
+let rafId = null;
+let playStateRef = null;
+let customPartsData = null;
+
+// ===== Firebase 리스너 =====
+db.ref('currentSong').on('value', (snap) => {
+    const data = snap.val();
+    if (data && (data.title || data.artist)) loadSong(data);
+    else resetWidget();
+});
+
+db.ref('playState').on('value', (snap) => {
+    playStateRef = snap.val();
+    if (!playStateRef || !playStateRef.isPlaying) {
+        stopLocalLoop();
+        if (playStateRef && lrcData && lrcData.isLRC) {
+            const ct = playStateRef.currentTime + (playStateRef.offset / 1000);
+            const idx = binarySearch(lrcData.lines, ct);
+            if (idx !== currentLineIdx) { currentLineIdx = idx; updateLRCDisplay(idx); }
+        }
+    } else if (lrcData && lrcData.isLRC) {
+        startLocalLoop();
+    }
+});
+
+db.ref('customParts').on('value', (snap) => {
+    customPartsData = snap.val();
+    applyCustomParts();
+});
+
+// ===== 곡 로드 =====
+async function loadSong(data) {
+    const { title, artist, lyricsFile } = data;
+
+    document.getElementById('lyrics-card').classList.remove('standby');
+    document.getElementById('lw-status').innerHTML = "<span class='live-dot'></span>NOW PLAYING 🎵";
+    document.getElementById('lw-title').textContent = title || '';
+    document.getElementById('lw-artist').textContent = artist || '';
+
+    stopLocalLoop();
+    currentLineIdx = -1;
+    lrcData = null;
+
+    if (lyricsFile && lyricsFile !== 'null') {
+        try {
+            const lrcFile = lyricsFile.replace(/\.[^.]+$/, '.lrc');
+            let resp = await fetch(`data/lyrics/${lrcFile}`);
+            if (!resp.ok) resp = await fetch(`data/lyrics/${lyricsFile}`);
+            const text = await resp.text();
+            lrcData = parseLRC(text);
+        } catch(e) {
+            lrcData = null;
+        }
+    }
+
+    if (lrcData && lrcData.isLRC) {
+        renderLRCMode();
+        buildLegend();
+        if (playStateRef && playStateRef.isPlaying) startLocalLoop();
+    } else if (lrcData && !lrcData.isLRC) {
+        renderPlainText(lrcData.rawLines);
+        buildLegend();
+    } else {
+        renderNoLyrics();
+        buildLegend();
+    }
+}
+
+function resetWidget() {
+    stopLocalLoop();
+    lrcData = null;
+    currentLineIdx = -1;
+
+    const card = document.getElementById('lyrics-card');
+    card.classList.add('standby');
+    document.getElementById('lw-status').textContent = 'READY 🌸';
+    document.getElementById('lw-title').textContent = 'YOKORING Lyrics';
+    document.getElementById('lw-artist').textContent = '요코링';
+    document.getElementById('widgetLegend').classList.add('hidden');
+    const wrap = document.getElementById('lw-lyrics-wrap');
+    wrap.className = '';
+    wrap.innerHTML = '<div class="lw-standby-text">♪ 노래를 선택하면 가사가 표시됩니다</div>';
+}
+
+// ===== LRC 파서 =====
+function parseLRC(text) {
+    const colorMap = {};
+    let offset = 0;
+    const lines = [];
+    const rawLines = [];
+
+    text.split('\n').forEach(line => {
+        const trimmed = line.trim();
+        if (!trimmed) { rawLines.push(''); return; }
+
+        const colorMatch = trimmed.match(/^\[COLOR:(.+?):([0-9a-fA-F]{3,6})\]$/);
+        if (colorMatch) { colorMap[colorMatch[1]] = '#' + colorMatch[2]; return; }
+
+        const offsetMatch = trimmed.match(/^\[offset:\s*(-?\d+)\]$/);
+        if (offsetMatch) { offset = parseInt(offsetMatch[1]); return; }
+
+        const lrcMatch = trimmed.match(/^\[(\d{2}):(\d{2})\.(\d{1,2})\](?:\[([^\]]*)\])?\s*(.*)/);
+        if (lrcMatch) {
+            const centisec = lrcMatch[3].length === 1 ? parseInt(lrcMatch[3]) * 10 : parseInt(lrcMatch[3]);
+            const time = parseInt(lrcMatch[1]) * 60 + parseInt(lrcMatch[2]) + centisec / 100 + offset / 1000;
+            lines.push({ time, member: lrcMatch[4] || null, text: lrcMatch[5] });
+            return;
+        }
+
+        if (lines.length > 0) {
+            lines[lines.length - 1].text += '\n' + trimmed;
+        } else {
+            rawLines.push(trimmed);
+        }
+    });
+
+    return { colorMap, lines, rawLines, isLRC: lines.length > 0 };
+}
+
+// ===== 가사 렌더 (LRC 모드) =====
+function renderLRCMode() {
+    const wrap = document.getElementById('lw-lyrics-wrap');
+    wrap.innerHTML = '';
+    wrap.className = 'lw-lyrics-area';
+    const prev = document.createElement('div'); prev.className = 'lrc-line adjacent'; prev.id = 'lrc-prev'; wrap.appendChild(prev);
+    const curr = document.createElement('div'); curr.className = 'lrc-line current'; curr.id = 'lrc-curr'; wrap.appendChild(curr);
+    const next = document.createElement('div'); next.className = 'lrc-line adjacent'; next.id = 'lrc-next'; wrap.appendChild(next);
+    const next2 = document.createElement('div'); next2.className = 'lrc-line adjacent'; next2.id = 'lrc-next2'; wrap.appendChild(next2);
+}
+
+function lrcTextToHtml(text) {
+    if (!text) return '';
+    return text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/\n/g, '<br>');
+}
+
+function updateLRCDisplay(idx) {
+    if (!lrcData) return;
+    const lines = lrcData.lines;
+    const get = (i) => (i >= 0 && i < lines.length) ? lines[i] : null;
+
+    const prevLine = get(idx - 1);
+    const currLine = get(idx);
+    const nextLine = get(idx + 1);
+    const next2Line = get(idx + 2);
+
+    const prevEl = document.getElementById('lrc-prev');
+    const currEl = document.getElementById('lrc-curr');
+    const nextEl = document.getElementById('lrc-next');
+    const next2El = document.getElementById('lrc-next2');
+    if (!prevEl || !currEl || !nextEl) return;
+
+    const prevText = prevLine ? prevLine.text.split('\n').slice(-1)[0] : '';
+    prevEl.innerHTML = lrcTextToHtml(prevText);
+    currEl.innerHTML = lrcTextToHtml(currLine ? currLine.text : '');
+    nextEl.innerHTML = lrcTextToHtml(nextLine ? nextLine.text : '');
+
+    if (next2El) {
+        const next2Text = next2Line ? next2Line.text.split('\n')[0] : '';
+        next2El.innerHTML = lrcTextToHtml(next2Text);
+        const n2color = getEffectiveColor(idx + 2, next2Line ? next2Line.member : null, lrcData.colorMap);
+        next2El.style.color = n2color || '';
+    }
+
+    const currColor = getEffectiveColor(idx, currLine ? currLine.member : null, lrcData.colorMap);
+    if (currColor) {
+        currEl.style.color = currColor;
+        currEl.style.textShadow = `0 0 18px ${currColor}88, 0 0 36px ${currColor}44`;
+    } else if (currLine) {
+        const color = getMemberColor(currLine.member, lrcData.colorMap);
+        currEl.style.color = color;
+        currEl.style.textShadow = `0 0 18px ${color}88, 0 0 36px ${color}44`;
+    } else {
+        currEl.style.color = '';
+        currEl.style.textShadow = '';
+    }
+
+    const prevColor = getEffectiveColor(idx - 1, prevLine ? prevLine.member : null, lrcData.colorMap);
+    if (prevColor) {
+        prevEl.style.color = prevColor;
+    } else if (prevLine && prevLine.member) {
+        prevEl.style.color = getMemberColor(prevLine.member, lrcData.colorMap);
+    } else {
+        prevEl.style.color = '';
+    }
+
+    const nextColor = getEffectiveColor(idx + 1, nextLine ? nextLine.member : null, lrcData.colorMap);
+    if (nextColor) {
+        nextEl.style.color = nextColor;
+    } else if (nextLine && nextLine.member) {
+        nextEl.style.color = getMemberColor(nextLine.member, lrcData.colorMap);
+    } else {
+        nextEl.style.color = '';
+    }
+}
+
+function escapeHtml(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ===== 멤버 컬러 =====
+function getMemberColor(member, colorMap) {
+    if (!member) return 'var(--text-main)';
+    return localStorage.getItem('yokoring_color_' + member) || colorMap[member] || 'var(--text-main)';
+}
+
+function getEffectiveColor(lineIdx, member, colorMap) {
+    if (customPartsData && customPartsData.members && customPartsData.assignments) {
+        const mi = customPartsData.assignments[String(lineIdx)];
+        if (mi !== undefined && customPartsData.members[mi]) {
+            return customPartsData.members[mi].color;
+        }
+    }
+    return ''; // empty = fall back to caller's logic
+}
+
+function applyCustomParts() {
+    // TXT 라인 색상 업데이트
+    document.querySelectorAll('.lw-pt-line').forEach(el => {
+        const idx = el.dataset.idx;
+        if (!customPartsData || !customPartsData.members || !customPartsData.assignments) {
+            el.style.color = '';
+            return;
+        }
+        const mi = customPartsData.assignments[idx];
+        el.style.color = (mi !== undefined && customPartsData.members[mi])
+            ? customPartsData.members[mi].color : '';
+    });
+    // LRC 현재 표시 줄 즉시 갱신
+    if (lrcData && lrcData.isLRC && currentLineIdx >= 0) updateLRCDisplay(currentLineIdx);
+    buildLegend();
+}
+
+// ===== 범례 빌드 (표시 전용) =====
+function buildLegend() {
+    const legend = document.getElementById('widgetLegend');
+    if (!legend) return;
+    legend.innerHTML = '';
+    let members = [];
+    if (customPartsData && customPartsData.members && customPartsData.members.length > 0) {
+        members = customPartsData.members;
+    } else if (lrcData && lrcData.colorMap) {
+        members = Object.entries(lrcData.colorMap).map(([name, color]) => ({ name, color }));
+    }
+    if (!members.length) { legend.classList.add('hidden'); return; }
+    legend.classList.remove('hidden');
+    legend.innerHTML = members.map(m =>
+        `<div class="legend-chip"><div class="legend-dot" style="background:${m.color};"></div>` +
+        `<span style="color:${m.color};">${escapeHtml(m.name)}</span></div>`
+    ).join('');
+}
+
+// ===== plain text 렌더 =====
+function renderPlainText(rawLines) {
+    const wrap = document.getElementById('lw-lyrics-wrap');
+    wrap.className = '';
+    wrap.innerHTML = '';
+    const container = document.createElement('div');
+    container.className = 'lw-plaintext';
+    rawLines.forEach((line, i) => {
+        const el = document.createElement('div');
+        el.className = 'lw-pt-line';
+        el.dataset.idx = String(i);
+        if (line) { el.textContent = line; } else { el.innerHTML = '&nbsp;'; }
+        // customParts가 이미 있으면 색상 적용
+        if (customPartsData && customPartsData.assignments && customPartsData.members) {
+            const mi = customPartsData.assignments[String(i)];
+            if (mi !== undefined && customPartsData.members[mi]) el.style.color = customPartsData.members[mi].color;
+        }
+        container.appendChild(el);
+    });
+    wrap.appendChild(container);
+}
+
+function renderNoLyrics() {
+    const wrap = document.getElementById('lw-lyrics-wrap');
+    wrap.className = '';
+    wrap.innerHTML = '<div class="lw-standby-text">♪ 가사 파일이 없습니다</div>';
+}
+
+// ===== 싱크 엔진 =====
+function binarySearch(lines, ct) {
+    let lo = 0, hi = lines.length - 1, result = -1;
+    while (lo <= hi) {
+        const mid = (lo + hi) >> 1;
+        if (lines[mid].time <= ct) { result = mid; lo = mid + 1; }
+        else hi = mid - 1;
+    }
+    return result;
+}
+
+function startLocalLoop() {
+    stopLocalLoop();
+    function loop() {
+        if (!playStateRef || !playStateRef.isPlaying) return;
+        const elapsed = (Date.now() - playStateRef.timestamp) / 1000;
+        const ct = playStateRef.currentTime + elapsed + (playStateRef.offset / 1000);
+        const idx = binarySearch(lrcData.lines, ct);
+        if (idx !== currentLineIdx) {
+            currentLineIdx = idx;
+            updateLRCDisplay(idx);
+        }
+        rafId = requestAnimationFrame(loop);
+    }
+    rafId = requestAnimationFrame(loop);
+}
+
+function stopLocalLoop() {
+    if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+}
+</script>
+</body>
+</html>

@@ -588,6 +588,96 @@
             border-radius: 50%;
             flex-shrink: 0;
         }
+
+        /* ===== 멤버 패널 ===== */
+        .member-panel {
+            display: flex; flex-wrap: wrap; gap: 5px; align-items: center;
+            padding: 5px 0 8px; flex-shrink: 0;
+        }
+        .member-panel.hidden { display: none; }
+        .mp-chip {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 3px 8px 3px 6px; border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.14);
+            background: rgba(255,255,255,0.04);
+            font-size: 12px; font-weight: 600; cursor: default;
+            transition: background 0.12s;
+        }
+        .mp-chip:hover { background: rgba(255,255,255,0.08); }
+        .mp-dot {
+            width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0;
+            cursor: pointer; outline: none; border: none; padding: 0;
+        }
+        .mp-del {
+            margin-left: 1px; opacity: 0.4; font-size: 14px; line-height: 1;
+            cursor: pointer; flex-shrink: 0;
+        }
+        .mp-del:hover { opacity: 0.9; }
+        .mp-btn {
+            background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.13);
+            color: var(--text-sub); border-radius: 12px; padding: 3px 10px;
+            font-size: 11px; font-weight: 600; cursor: pointer;
+            font-family: 'Pretendard', sans-serif; transition: all 0.15s;
+        }
+        .mp-btn:hover { background: rgba(255,255,255,0.12); color: var(--text-main); }
+        .mp-btn.active { background: var(--spring-pink); color: #1a0a12; border-color: var(--spring-pink); }
+        .mp-btn.mp-danger { border-color: rgba(255,80,80,0.35); color: rgba(255,130,130,0.85); }
+        .mp-btn.mp-danger:hover { background: rgba(255,80,80,0.10); }
+        .add-member-form {
+            display: flex; align-items: center; gap: 5px;
+            padding: 3px 0 7px; flex-shrink: 0;
+        }
+        .add-member-form.hidden { display: none; }
+        .add-member-form input[type="text"] {
+            flex: 1; min-width: 0; padding: 4px 8px; border-radius: 8px;
+            border: 1px solid rgba(255,142,173,0.25); background: rgba(255,255,255,0.06);
+            color: var(--text-main); font-size: 12px; font-family: 'Pretendard', sans-serif; outline: none;
+        }
+        .add-member-form input[type="color"] {
+            width: 28px; height: 26px; padding: 2px; flex-shrink: 0;
+            border-radius: 6px; border: 1px solid rgba(255,255,255,0.18);
+            background: rgba(255,255,255,0.06); cursor: pointer;
+        }
+
+        /* ===== 파트 편집 모드 ===== */
+        .lw-edit-mode {
+            overflow-y: auto; flex: 1; padding: 2px 0;
+        }
+        .lw-edit-mode::-webkit-scrollbar { width: 6px; }
+        .lw-edit-mode::-webkit-scrollbar-track { background: rgba(255,255,255,0.04); border-radius: 6px; }
+        .lw-edit-mode::-webkit-scrollbar-thumb { background: rgba(255,142,173,0.40); border-radius: 6px; }
+        .edit-row {
+            display: flex; align-items: center; gap: 8px; padding: 4px 6px;
+            border-radius: 7px; cursor: pointer; transition: background 0.12s;
+        }
+        .edit-row:hover { background: rgba(255,255,255,0.06); }
+        .edit-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+        .edit-time {
+            font-size: 10px; color: var(--text-sub); flex-shrink: 0;
+            width: 38px; font-family: 'Courier New', monospace;
+        }
+        .edit-text {
+            font-size: 13px; color: var(--text-main); opacity: 0.78;
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        }
+
+        /* ===== 멤버 픽커 팝업 ===== */
+        .member-picker {
+            background: rgba(13,11,26,0.97); border: 1px solid rgba(255,255,255,0.14);
+            border-radius: 14px; padding: 8px; display: flex; flex-wrap: wrap; gap: 6px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.75); backdrop-filter: blur(16px);
+            min-width: 110px; max-width: 260px;
+        }
+        .member-picker button {
+            padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 700;
+            cursor: pointer; font-family: 'Pretendard', sans-serif; transition: opacity 0.15s;
+        }
+        .member-picker button:hover { opacity: 0.78; }
+        .mp-clear {
+            background: rgba(255,255,255,0.06) !important;
+            border: 1px solid rgba(255,255,255,0.15) !important;
+            color: var(--text-sub) !important;
+        }
     </style>
 </head>
 <body>
@@ -630,11 +720,21 @@
                             <div class="lw-artist" id="lw-artist">요코링</div>
                         </div>
                     </div>
-                    <div class="lw-header-right">
-                        <div id="widgetLegend" class="hidden"></div>
-                    </div>
                 </div>
                 <div class="lw-divider"></div>
+                <div class="member-panel hidden" id="memberPanel">
+                    <div id="memberChips"></div>
+                    <button class="mp-btn" id="btnAddMember" onclick="toggleAddForm()">+ 추가</button>
+                    <button class="mp-btn" id="btnEditMode" onclick="toggleEditMode()" style="display:none">파트 편집</button>
+                    <button class="mp-btn mp-danger" onclick="clearAssignments()">초기화</button>
+                </div>
+                <div class="add-member-form hidden" id="addMemberForm">
+                    <input type="text" id="newMemberName" placeholder="이름" maxlength="10"
+                           onkeydown="if(event.key==='Enter')confirmAddMember()">
+                    <input type="color" id="newMemberColor" value="#89B4FA">
+                    <button class="mp-btn" onclick="confirmAddMember()">추가</button>
+                    <button class="mp-btn" onclick="cancelAddMember()">취소</button>
+                </div>
                 <div id="lw-lyrics-wrap">
                     <div class="lw-standby-text">♪ 노래를 선택하면 가사가 표시됩니다</div>
                 </div>
@@ -668,24 +768,22 @@
                     </div>
                 </div>
                 <div class="bc-guide-divider"></div>
-                <div class="bc-guide-color-title">🎨 LYRICS COLOR</div>
+                <div class="bc-guide-color-title">🎨 PART 배정</div>
                 <div class="bc-guide-item" style="margin-top:0">
                     <span class="bc-guide-icon">🎨</span>
                     <div>
-                        <b>파트별 색상 설정</b><br>
-                        파트별 가사가 설정되어 있으면 위젯 상단에 색상 설정이 표시됩니다.<br>
-                        아래와 같은 파트별 색상을 눌러 원하는 색상으로 변경이 가능합니다<br>
-                        <div class="bc-color-row">
-                            <div class="bc-color-chip">
-                                <span class="bc-chip-dot" style="background:#ff8ead;"></span>파트A
-                            </div>
-                            <div class="bc-color-chip">
-                                <span class="bc-chip-dot" style="background:#7eb8f7;"></span>파트B
-                            </div>
-                            <div class="bc-color-chip">
-                                <span class="bc-chip-dot" style="background:#9bf5b0;"></span>파트C
-                            </div>
-                        </div>
+                        <b>멤버 추가</b><br>
+                        곡 선택 후 위젯 카드 내 <b>+ 추가</b> 버튼으로 멤버(이름+색상)를 추가하세요.<br>
+                        색점(●)을 클릭하면 색상을, ×를 클릭하면 멤버를 삭제합니다.
+                    </div>
+                </div>
+                <div class="bc-guide-item" style="margin-top:4px">
+                    <span class="bc-guide-icon">✏</span>
+                    <div>
+                        <b>파트 배정</b><br>
+                        LRC 곡: <b>파트 편집</b> 버튼 → 전체 가사 목록에서 줄 클릭 → 멤버 선택<br>
+                        TXT 곡: 가사 줄을 직접 클릭 → 멤버 선택<br>
+                        배정 결과는 공용 악보(lyrics-widget)에 실시간 반영됩니다.
                     </div>
                 </div>
             </div>
@@ -734,6 +832,15 @@ let manualOffset = 0;
 let rafId = null;
 let currentYoutubeId = null;
 let isSeeking = false;
+let lastPlayStatePush = 0;
+
+// ===== 커스텀 파트 상태 =====
+let customMembers = [];
+let customAssignments = {};
+let cpPushTimer = null;
+let editModeActive = false;
+let rawLinesRef = null;
+let songLoaded = false;
 
 // ===== YouTube IFrame API =====
 function initYtPlayer() {
@@ -755,6 +862,7 @@ function initYtPlayer() {
                 } else if (e.data === YT.PlayerState.PAUSED || e.data === YT.PlayerState.ENDED) {
                     stopSyncLoop();
                     document.getElementById('cp-play-btn').textContent = '▶';
+                    pushPlayState(false);
                 }
             },
             onError: () => {
@@ -769,17 +877,19 @@ function onYouTubeIframeAPIReady() {
     initYtPlayer();
 }
 
-// ===== Firebase 리스너 =====
-db.ref('currentSong').on('value', (snap) => {
-    const data = snap.val();
-    if (data && (data.title || data.artist)) loadSong(data);
-    else resetWidget();
-});
-
-
 // ===== 곡 로드 =====
 async function loadSong(data) {
     const { title, artist, lyricsFile, youtubeId } = data;
+
+    // 커스텀 파트 상태 초기화
+    customAssignments = {};
+    rawLinesRef = null;
+    songLoaded = true;
+    if (editModeActive) {
+        editModeActive = false;
+        const btnEdit = document.getElementById('btnEditMode');
+        if (btnEdit) btnEdit.classList.remove('active');
+    }
 
     document.getElementById('lyrics-card').classList.remove('standby');
     document.getElementById('lw-status').innerHTML = "<span class='live-dot'></span>NOW PLAYING 🎵";
@@ -799,6 +909,9 @@ async function loadSong(data) {
     stopSyncLoop();
     currentLineIdx = -1;
     lrcData = null;
+    manualOffset = 0;
+    document.getElementById('offsetDisplay').textContent = '+0ms';
+    db.ref('playState').set({ currentTime: 0, offset: 0, isPlaying: false, timestamp: Date.now() });
 
     if (lyricsFile && lyricsFile !== 'null') {
         try {
@@ -813,15 +926,25 @@ async function loadSong(data) {
     }
 
     if (lrcData && lrcData.isLRC) {
+        // LRC COLOR 태그 → 멤버 자동 세팅 (기존 멤버가 없을 때만)
+        if (Object.keys(lrcData.colorMap).length > 0 && customMembers.length === 0) {
+            customMembers = Object.entries(lrcData.colorMap).map(([name, color]) => ({ name, color }));
+            lrcData.lines.forEach((line, idx) => {
+                if (line.member) {
+                    const mi = customMembers.findIndex(m => m.name === line.member);
+                    if (mi >= 0) customAssignments[String(idx)] = mi;
+                }
+            });
+        }
         renderLRCMode();
-        buildLegend(lrcData.colorMap);
     } else if (lrcData && !lrcData.isLRC) {
+        rawLinesRef = lrcData.rawLines;
         renderPlainText(lrcData.rawLines);
-        document.getElementById('widgetLegend').classList.add('hidden');
     } else {
         renderNoLyrics();
-        document.getElementById('widgetLegend').classList.add('hidden');
     }
+    renderMemberPanel();
+    pushCustomParts();
 }
 
 function resetWidget() {
@@ -829,13 +952,21 @@ function resetWidget() {
     lrcData = null;
     currentLineIdx = -1;
     currentYoutubeId = null;
+    songLoaded = false;
+    rawLinesRef = null;
+    if (editModeActive) {
+        editModeActive = false;
+        const btnEdit = document.getElementById('btnEditMode');
+        if (btnEdit) btnEdit.classList.remove('active');
+    }
     if (ytReady) ytPlayer.stopVideo();
 
     document.getElementById('lyrics-card').classList.add('standby');
     document.getElementById('lw-status').textContent = 'READY 🌸';
     document.getElementById('lw-title').textContent = 'YOKORING Lyrics';
     document.getElementById('lw-artist').textContent = '요코링';
-    document.getElementById('widgetLegend').classList.add('hidden');
+    document.getElementById('memberPanel').classList.add('hidden');
+    document.getElementById('addMemberForm').classList.add('hidden');
     const wrap = document.getElementById('lw-lyrics-wrap');
     wrap.className = '';
     wrap.innerHTML = '<div class="lw-standby-text">♪ 노래를 선택하면 가사가 표시됩니다</div>';
@@ -922,11 +1053,22 @@ function updateLRCDisplay(idx) {
     if (next2El) {
         const next2Text = next2Line ? next2Line.text.split('\n')[0] : '';
         next2El.innerHTML = lrcTextToHtml(next2Text);
-        next2El.style.color = (next2Line && next2Line.member)
-            ? getMemberColor(next2Line.member, lrcData.colorMap) : '';
+        const n2mi = customAssignments[String(idx + 2)];
+        if (n2mi !== undefined && customMembers[n2mi]) {
+            next2El.style.color = customMembers[n2mi].color;
+        } else if (next2Line && next2Line.member) {
+            next2El.style.color = getMemberColor(next2Line.member, lrcData.colorMap);
+        } else {
+            next2El.style.color = '';
+        }
     }
 
-    if (currLine) {
+    const currMi = customAssignments[String(idx)];
+    if (currMi !== undefined && customMembers[currMi]) {
+        const color = customMembers[currMi].color;
+        currEl.style.color = color;
+        currEl.style.textShadow = `0 0 18px ${color}88, 0 0 36px ${color}44`;
+    } else if (currLine) {
         const color = getMemberColor(currLine.member, lrcData.colorMap);
         currEl.style.color = color;
         currEl.style.textShadow = `0 0 18px ${color}88, 0 0 36px ${color}44`;
@@ -934,12 +1076,20 @@ function updateLRCDisplay(idx) {
         currEl.style.color = '';
         currEl.style.textShadow = '';
     }
-    if (prevLine && prevLine.member) {
+
+    const prevMi = customAssignments[String(idx - 1)];
+    if (prevMi !== undefined && customMembers[prevMi]) {
+        prevEl.style.color = customMembers[prevMi].color;
+    } else if (prevLine && prevLine.member) {
         prevEl.style.color = getMemberColor(prevLine.member, lrcData.colorMap);
     } else {
         prevEl.style.color = '';
     }
-    if (nextLine && nextLine.member) {
+
+    const nextMi = customAssignments[String(idx + 1)];
+    if (nextMi !== undefined && customMembers[nextMi]) {
+        nextEl.style.color = customMembers[nextMi].color;
+    } else if (nextLine && nextLine.member) {
         nextEl.style.color = getMemberColor(nextLine.member, lrcData.colorMap);
     } else {
         nextEl.style.color = '';
@@ -951,31 +1101,188 @@ function getMemberColor(member, colorMap) {
     return localStorage.getItem('yokoring_color_' + member) || colorMap[member] || 'var(--text-main)';
 }
 
-function buildLegend(colorMap) {
-    const legend = document.getElementById('widgetLegend');
-    legend.innerHTML = '';
-    const members = Object.keys(colorMap);
-    if (members.length === 0) { legend.classList.add('hidden'); return; }
-    legend.classList.remove('hidden');
-    members.forEach(name => {
-        const color = getMemberColor(name, colorMap);
-        const chip = document.createElement('div');
-        chip.className = 'legend-chip';
-        chip.title = '클릭하여 색상 변경';
-        chip.innerHTML = `<div class="legend-dot" style="background:${color};"></div><span style="color:${color};">${name}</span>`;
-        chip.onclick = () => {
-            const input = document.createElement('input');
-            input.type = 'color';
-            input.value = color.startsWith('#') ? color : '#ff8ead';
-            input.onchange = () => {
-                localStorage.setItem('yokoring_color_' + name, input.value);
-                buildLegend(colorMap);
-                if (currentLineIdx >= 0) updateLRCDisplay(currentLineIdx);
+function escapeHtml(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ===== 멤버 패널 =====
+function renderMemberPanel() {
+    const panel = document.getElementById('memberPanel');
+    const chips = document.getElementById('memberChips');
+    if (!panel || !chips) return;
+    chips.innerHTML = '';
+    customMembers.forEach((m, i) => {
+        const chip = document.createElement('span');
+        chip.className = 'mp-chip';
+        const dot = document.createElement('span');
+        dot.className = 'mp-dot';
+        dot.style.background = m.color;
+        dot.title = '색상 변경';
+        dot.onclick = e => {
+            e.stopPropagation();
+            const inp = document.createElement('input');
+            inp.type = 'color';
+            inp.value = /^#[0-9a-f]{6}$/i.test(m.color) ? m.color : '#ff8ead';
+            inp.oninput = ev => {
+                customMembers[i].color = ev.target.value;
+                renderMemberPanel();
+                pushCustomParts();
+                refreshLyricsColors();
             };
-            input.click();
+            inp.click();
         };
-        legend.appendChild(chip);
+        const nameSpan = document.createElement('span');
+        nameSpan.textContent = m.name;
+        const del = document.createElement('span');
+        del.className = 'mp-del';
+        del.textContent = '×';
+        del.title = '삭제';
+        del.onclick = e => { e.stopPropagation(); removeMember(i); };
+        chip.appendChild(dot);
+        chip.appendChild(nameSpan);
+        chip.appendChild(del);
+        chips.appendChild(chip);
     });
+    const btnEdit = document.getElementById('btnEditMode');
+    if (btnEdit) btnEdit.style.display = (lrcData && lrcData.isLRC) ? '' : 'none';
+    panel.classList.toggle('hidden', !songLoaded);
+}
+
+function toggleAddForm() {
+    const form = document.getElementById('addMemberForm');
+    form.classList.toggle('hidden');
+    if (!form.classList.contains('hidden')) {
+        document.getElementById('newMemberName').focus();
+    }
+}
+
+function confirmAddMember() {
+    const nameEl = document.getElementById('newMemberName');
+    const colorEl = document.getElementById('newMemberColor');
+    const name = nameEl.value.trim();
+    if (!name) { nameEl.focus(); return; }
+    customMembers.push({ name, color: colorEl.value });
+    nameEl.value = '';
+    colorEl.value = '#89B4FA';
+    document.getElementById('addMemberForm').classList.add('hidden');
+    renderMemberPanel();
+    pushCustomParts();
+}
+
+function cancelAddMember() {
+    document.getElementById('newMemberName').value = '';
+    document.getElementById('addMemberForm').classList.add('hidden');
+}
+
+function removeMember(i) {
+    customMembers.splice(i, 1);
+    Object.keys(customAssignments).forEach(k => {
+        const v = customAssignments[k];
+        if (v === i) delete customAssignments[k];
+        else if (v > i) customAssignments[k] = v - 1;
+    });
+    renderMemberPanel();
+    pushCustomParts();
+    refreshLyricsColors();
+}
+
+function clearAssignments() {
+    customAssignments = {};
+    pushCustomParts();
+    refreshLyricsColors();
+}
+
+function pushCustomParts() {
+    clearTimeout(cpPushTimer);
+    cpPushTimer = setTimeout(() => {
+        db.ref('customParts').set({ members: customMembers, assignments: customAssignments });
+    }, 300);
+}
+
+function refreshLyricsColors() {
+    if (lrcData && lrcData.isLRC && currentLineIdx >= 0) updateLRCDisplay(currentLineIdx);
+    document.querySelectorAll('.lw-pt-line').forEach(el => {
+        const mi = customAssignments[el.dataset.idx];
+        el.style.color = (mi !== undefined && customMembers[mi]) ? customMembers[mi].color : '';
+    });
+    if (editModeActive) renderEditMode();
+}
+
+// ===== 파트 편집 모드 =====
+function toggleEditMode() {
+    if (!lrcData || !lrcData.isLRC) return;
+    editModeActive = !editModeActive;
+    document.getElementById('btnEditMode').classList.toggle('active', editModeActive);
+    if (editModeActive) {
+        renderEditMode();
+    } else {
+        renderLRCMode();
+        if (currentLineIdx >= 0) updateLRCDisplay(currentLineIdx);
+    }
+}
+
+function renderEditMode() {
+    const wrap = document.getElementById('lw-lyrics-wrap');
+    wrap.innerHTML = '';
+    wrap.className = 'lw-edit-mode';
+    const lines = lrcData
+        ? lrcData.lines
+        : (rawLinesRef || []).map(t => ({ time: null, text: t, member: null }));
+    lines.forEach((line, idx) => {
+        const mi = customAssignments[String(idx)];
+        const member = (mi !== undefined) ? customMembers[mi] : null;
+        const dotColor = member ? member.color : 'rgba(255,255,255,0.18)';
+        const rowText = typeof line === 'string' ? line : (line.text || '');
+        const timeVal = (lrcData && line.time != null)
+            ? `[${String(Math.floor(line.time / 60)).padStart(2,'0')}:${String(Math.floor(line.time % 60)).padStart(2,'0')}]`
+            : '';
+        const row = document.createElement('div');
+        row.className = 'edit-row';
+        row.dataset.idx = idx;
+        row.innerHTML = `<div class="edit-dot" style="background:${dotColor}"></div>` +
+            `<span class="edit-time">${escapeHtml(timeVal)}</span>` +
+            `<span class="edit-text">${escapeHtml(rowText)}</span>`;
+        row.onclick = () => showMemberPicker(idx, row);
+        wrap.appendChild(row);
+    });
+}
+
+function showMemberPicker(lineIdx, anchorEl) {
+    document.querySelectorAll('.member-picker').forEach(p => p.remove());
+    if (customMembers.length === 0) return;
+    const picker = document.createElement('div');
+    picker.className = 'member-picker';
+    customMembers.forEach((m, mi) => {
+        const btn = document.createElement('button');
+        btn.style.cssText = `background:${m.color}22; border:1px solid ${m.color}66; color:${m.color};`;
+        btn.textContent = m.name;
+        btn.onclick = e => {
+            e.stopPropagation();
+            customAssignments[String(lineIdx)] = mi;
+            pushCustomParts();
+            picker.remove();
+            if (editModeActive) renderEditMode();
+            else refreshLyricsColors();
+        };
+        picker.appendChild(btn);
+    });
+    const clrBtn = document.createElement('button');
+    clrBtn.textContent = '해제';
+    clrBtn.className = 'mp-clear';
+    clrBtn.onclick = e => {
+        e.stopPropagation();
+        delete customAssignments[String(lineIdx)];
+        pushCustomParts();
+        picker.remove();
+        if (editModeActive) renderEditMode();
+        else refreshLyricsColors();
+    };
+    picker.appendChild(clrBtn);
+    document.body.appendChild(picker);
+    const rect = anchorEl.getBoundingClientRect();
+    const left = Math.min(rect.left, window.innerWidth - 270);
+    picker.style.cssText = `position:fixed; top:${rect.bottom + 4}px; left:${left}px; z-index:9999;`;
+    setTimeout(() => document.addEventListener('click', () => picker.remove(), { once: true }), 0);
 }
 
 function renderPlainText(rawLines) {
@@ -984,10 +1291,14 @@ function renderPlainText(rawLines) {
     wrap.innerHTML = '';
     const container = document.createElement('div');
     container.className = 'lw-plaintext';
-    rawLines.forEach(line => {
+    rawLines.forEach((line, i) => {
         const el = document.createElement('div');
         el.className = 'lw-pt-line';
+        el.dataset.idx = String(i);
         if (line) { el.textContent = line; } else { el.innerHTML = '&nbsp;'; }
+        const mi = customAssignments[String(i)];
+        if (mi !== undefined && customMembers[mi]) el.style.color = customMembers[mi].color;
+        el.onclick = () => showMemberPicker(i, el);
         container.appendChild(el);
     });
     wrap.appendChild(container);
@@ -1029,10 +1340,27 @@ function startSyncLoop() {
                     updateLRCDisplay(idx);
                 }
             }
+            const now = Date.now();
+            if (now - lastPlayStatePush > 1000) {
+                lastPlayStatePush = now;
+                db.ref('playState').set({ currentTime: cur, offset: manualOffset, isPlaying: true, timestamp: now });
+            }
         } catch(e) {}
         rafId = requestAnimationFrame(loop);
     }
     rafId = requestAnimationFrame(loop);
+}
+
+function pushPlayState(isPlaying) {
+    if (!ytReady || !ytPlayer) return;
+    try {
+        db.ref('playState').set({
+            currentTime: ytPlayer.getCurrentTime(),
+            offset: manualOffset,
+            isPlaying: isPlaying,
+            timestamp: Date.now()
+        });
+    } catch(e) {}
 }
 
 function stopSyncLoop() {
@@ -1076,6 +1404,8 @@ function onSeekChange(val) {
                 currentLineIdx = idx;
                 updateLRCDisplay(idx);
             }
+            const isPlaying = ytPlayer.getPlayerState() === YT.PlayerState.PLAYING;
+            db.ref('playState').set({ currentTime: seekTo, offset: manualOffset, isPlaying: isPlaying, timestamp: Date.now() });
         }
     } catch(e) {}
 }
@@ -1095,10 +1425,13 @@ function adjustOffset(ms) {
         (manualOffset >= 0 ? '+' : '') + manualOffset + 'ms';
     if (lrcData && lrcData.isLRC && ytReady) {
         try {
-            const ct = ytPlayer.getCurrentTime() + (manualOffset / 1000);
+            const cur = ytPlayer.getCurrentTime();
+            const ct = cur + (manualOffset / 1000);
             const idx = binarySearch(lrcData.lines, ct);
             currentLineIdx = idx;
             updateLRCDisplay(idx);
+            const isPlaying = ytPlayer.getPlayerState() === YT.PlayerState.PLAYING;
+            db.ref('playState').set({ currentTime: cur, offset: manualOffset, isPlaying: isPlaying, timestamp: Date.now() });
         } catch(e) {}
     }
 }
@@ -1107,6 +1440,9 @@ function adjustOffset(ms) {
 function bcSelect(title, artist, lyricsFile, youtubeId, rowEl) {
     document.querySelectorAll('.bc-song-row.selected').forEach(r => r.classList.remove('selected'));
     if (rowEl) rowEl.classList.add('selected');
+    // 새 곡 선택 시 assignments 즉시 초기화 (Firebase에도 반영)
+    customAssignments = {};
+    db.ref('customParts').set({ members: customMembers, assignments: {} });
     sendToWidget(title, artist, lyricsFile, youtubeId);
 }
 
@@ -1183,6 +1519,22 @@ function renderSongList() {
 // ===== 초기화 =====
 window.addEventListener('load', async () => {
     await loadLyricsList();
+
+    // 저장된 customParts 멤버 복원 (assignments는 곡 로드 시 초기화)
+    try {
+        const cpSnap = await db.ref('customParts').once('value');
+        const cpData = cpSnap.val();
+        if (cpData && cpData.members && Array.isArray(cpData.members)) {
+            customMembers = cpData.members;
+        }
+    } catch(e) {}
+
+    // currentSong 리스너 (customParts 로드 후 등록)
+    db.ref('currentSong').on('value', (snap) => {
+        const data = snap.val();
+        if (data && (data.title || data.artist)) loadSong(data);
+        else resetWidget();
+    });
 
     SHEET_NAMES.slice(1).forEach((name, i) => {
         const t = document.createElement('div');
