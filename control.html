@@ -678,6 +678,149 @@
             border: 1px solid rgba(255,255,255,0.15) !important;
             color: var(--text-sub) !important;
         }
+
+        /* ===== 프리셋 Drawer ===== */
+        #preset-overlay {
+            display: none; position: fixed; inset: 0; z-index: 1000;
+            background: rgba(0,0,0,0.45);
+        }
+        #preset-overlay.open { display: block; }
+        #preset-drawer {
+            position: fixed; top: 0; right: 0; height: 100vh; width: 340px; z-index: 1001;
+            background: var(--dark-bg); border-left: 1px solid var(--border);
+            transform: translateX(100%);
+            transition: transform 0.28s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            display: flex; flex-direction: column;
+        }
+        #preset-drawer.open { transform: translateX(0); }
+        #preset-drawer-inner { display: flex; flex-direction: column; height: 100%; overflow: hidden; }
+        .pd-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 16px 18px 12px; border-bottom: 1px solid var(--border); flex-shrink: 0;
+        }
+        .pd-title { font-size: 13px; font-weight: 900; color: var(--spring-pink); letter-spacing: 1px; }
+        .pd-close {
+            background: none; border: none; color: var(--text-sub); font-size: 16px;
+            cursor: pointer; padding: 2px 6px; border-radius: 6px; transition: color 0.15s;
+        }
+        .pd-close:hover { color: var(--text-main); }
+        .pd-save-btn {
+            margin: 12px 18px 8px; padding: 9px 0; border-radius: 12px;
+            border: 1px solid rgba(255,142,173,0.4); background: rgba(255,142,173,0.10);
+            color: var(--spring-pink); font-size: 12px; font-weight: 700; cursor: pointer;
+            width: calc(100% - 36px); transition: background 0.2s; flex-shrink: 0;
+            font-family: 'Pretendard', sans-serif;
+        }
+        .pd-save-btn:hover { background: rgba(255,142,173,0.22); }
+        #preset-accordion { flex: 1; overflow-y: auto; padding: 4px 0 16px; }
+        #preset-accordion::-webkit-scrollbar { width: 6px; }
+        #preset-accordion::-webkit-scrollbar-track { background: rgba(255,255,255,0.04); border-radius: 6px; }
+        #preset-accordion::-webkit-scrollbar-thumb { background: rgba(255,142,173,0.40); border-radius: 6px; }
+        .pd-empty { text-align: center; padding: 40px 20px; font-size: 12px; color: var(--text-sub); opacity: 0.5; }
+        .preset-song-group { border-bottom: 1px solid var(--border); }
+        .preset-song-header {
+            display: flex; align-items: center; gap: 8px; padding: 11px 18px;
+            cursor: pointer; transition: background 0.15s;
+        }
+        .preset-song-header:hover { background: rgba(255,142,173,0.06); }
+        .psh-pin { font-size: 12px; color: var(--spring-pink); flex-shrink: 0; }
+        .psh-title {
+            flex: 1; font-size: 12px; font-weight: 700; color: var(--text-main);
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .psh-count { font-size: 10px; color: var(--text-sub); flex-shrink: 0; }
+        .psh-arrow { font-size: 10px; color: var(--text-sub); transition: transform 0.2s; flex-shrink: 0; }
+        .preset-song-group.open .psh-arrow { transform: rotate(180deg); }
+        .preset-list { display: none; padding: 0 10px 6px; }
+        .preset-song-group.open .preset-list { display: block; }
+        .preset-item {
+            display: flex; align-items: flex-start; gap: 10px; padding: 9px 10px;
+            border-radius: 10px; cursor: pointer; transition: background 0.15s; margin-bottom: 3px;
+        }
+        .preset-item:hover { background: rgba(255,255,255,0.05); }
+        .preset-item-main { flex: 1; min-width: 0; }
+        .pi-desc {
+            font-size: 12px; font-weight: 700; color: var(--text-main);
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 3px;
+        }
+        .pi-meta { font-size: 10px; color: var(--text-sub); margin-bottom: 5px; }
+        .pi-dots { display: flex; gap: 5px; align-items: center; }
+        .pi-dot {
+            width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+            cursor: default; position: relative;
+        }
+        .pi-dot:hover::after {
+            content: attr(data-name);
+            position: absolute; bottom: calc(100% + 5px); left: 50%; transform: translateX(-50%);
+            background: rgba(13,11,26,0.97); border: 1px solid rgba(255,255,255,0.14);
+            color: var(--text-main); font-size: 10px; font-weight: 600;
+            padding: 3px 8px; border-radius: 6px; white-space: nowrap; z-index: 9999;
+        }
+        .preset-item-actions { display: flex; flex-direction: column; align-items: center; gap: 6px; flex-shrink: 0; }
+        .pi-pin-btn, .pi-del-btn {
+            background: none; border: none; cursor: pointer; font-size: 13px;
+            padding: 2px 4px; border-radius: 5px; transition: background 0.15s;
+        }
+        .pi-pin-btn { color: rgba(255,255,255,0.3); }
+        .pi-pin-btn.pinned { color: var(--spring-pink); }
+        .pi-pin-btn:hover { background: rgba(255,142,173,0.12); color: var(--spring-pink); }
+        .pi-del-btn { color: rgba(255,100,100,0.45); }
+        .pi-del-btn:hover { background: rgba(255,80,80,0.12); color: rgba(255,100,100,0.9); }
+
+        /* ===== 저장 모달 ===== */
+        #preset-modal-overlay {
+            display: none; position: fixed; inset: 0; z-index: 2000; background: rgba(0,0,0,0.55);
+        }
+        #preset-modal-overlay.open { display: block; }
+        #preset-save-modal {
+            display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            z-index: 2001; background: rgba(18,15,34,0.98);
+            border: 1px solid rgba(255,142,173,0.25); border-radius: 18px;
+            padding: 24px 24px 20px; width: 320px;
+            box-shadow: 0 12px 48px rgba(0,0,0,0.75);
+        }
+        #preset-save-modal.open { display: block; }
+        .psm-title { font-size: 13px; font-weight: 900; color: var(--spring-pink); letter-spacing: 1px; margin-bottom: 16px; }
+        .psm-label { font-size: 10px; font-weight: 700; color: var(--text-sub); letter-spacing: 0.8px; margin-bottom: 5px; }
+        #psm-desc, #psm-author {
+            width: 100%; padding: 8px 12px; border-radius: 10px;
+            border: 1px solid rgba(255,142,173,0.22); background: rgba(255,255,255,0.05);
+            color: var(--text-main); font-size: 13px; font-family: 'Pretendard', sans-serif;
+            outline: none; box-sizing: border-box; margin-bottom: 12px;
+        }
+        #psm-desc:focus, #psm-author:focus { border-color: rgba(255,142,173,0.5); }
+        .psm-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 4px; }
+        .psm-btn {
+            padding: 7px 16px; border-radius: 10px; font-size: 12px; font-weight: 700;
+            cursor: pointer; font-family: 'Pretendard', sans-serif; transition: background 0.2s;
+        }
+        .psm-cancel { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.13); color: var(--text-sub); }
+        .psm-cancel:hover { background: rgba(255,255,255,0.12); }
+        .psm-overwrite { background: rgba(255,200,100,0.10); border: 1px solid rgba(255,200,100,0.30); color: #f5d66e; }
+        .psm-overwrite:hover { background: rgba(255,200,100,0.20); }
+        .psm-save { background: rgba(255,142,173,0.14); border: 1px solid rgba(255,142,173,0.40); color: var(--spring-pink); }
+        .psm-save:hover { background: rgba(255,142,173,0.26); }
+        .psm-btn.hidden { display: none; }
+
+        /* ===== Undo Toast ===== */
+        #preset-toast {
+            position: fixed; bottom: -80px; left: 50%; transform: translateX(-50%);
+            z-index: 3000; background: rgba(18,15,34,0.97);
+            border: 1px solid rgba(255,142,173,0.30); border-radius: 14px;
+            padding: 10px 16px; display: flex; align-items: center; gap: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.65);
+            transition: bottom 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            white-space: nowrap;
+        }
+        #preset-toast.show { bottom: 24px; }
+        #preset-toast-msg { font-size: 12px; color: var(--text-main); font-weight: 600; }
+        #preset-toast-undo {
+            font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 8px;
+            border: 1px solid rgba(255,142,173,0.40); background: rgba(255,142,173,0.12);
+            color: var(--spring-pink); cursor: pointer; font-family: 'Pretendard', sans-serif;
+            transition: background 0.15s;
+        }
+        #preset-toast-undo:hover { background: rgba(255,142,173,0.24); }
     </style>
 </head>
 <body>
@@ -797,6 +940,7 @@
             <input type="text" id="searchInput" placeholder="가수 또는 노래 제목 검색..."
                    oninput="renderSongList()">
             <button class="bc-restart-btn" onclick="bcRestart()">Widget ReStart</button>
+            <button class="bc-restart-btn" onclick="openPresetDrawer()" style="border-color:rgba(255,142,173,0.5);background:rgba(255,142,173,0.14);">프리셋 보관함</button>
         </div>
         <div class="bc-list-header">
             <div>가수</div>
@@ -815,6 +959,40 @@
         <div id="artistList"></div>
     </div>
 
+</div>
+
+<!-- ===== 프리셋 Drawer ===== -->
+<div id="preset-overlay" onclick="closePresetDrawer()"></div>
+<div id="preset-drawer">
+    <div id="preset-drawer-inner">
+        <div class="pd-header">
+            <span class="pd-title">PRESET LIBRARY</span>
+            <button class="pd-close" onclick="closePresetDrawer()">✕</button>
+        </div>
+        <button class="pd-save-btn" onclick="openSaveModal()">현재 세팅 저장</button>
+        <div id="preset-accordion"></div>
+    </div>
+</div>
+
+<!-- ===== 저장 모달 ===== -->
+<div id="preset-modal-overlay" onclick="closeSaveModal()"></div>
+<div id="preset-save-modal">
+    <div class="psm-title">PRESET SAVE</div>
+    <div class="psm-label">설명</div>
+    <input type="text" id="psm-desc" placeholder="세팅 설명 입력..." onkeydown="if(event.key==='Enter')document.getElementById('psm-author').focus()">
+    <div class="psm-label">작성자</div>
+    <input type="text" id="psm-author" placeholder="이름/역할 입력..." onkeydown="if(event.key==='Enter')savePreset(false)">
+    <div class="psm-actions">
+        <button class="psm-btn psm-cancel" onclick="closeSaveModal()">취소</button>
+        <button class="psm-btn psm-overwrite hidden" id="psm-overwrite-btn" onclick="savePreset(true)">덮어쓰기</button>
+        <button class="psm-btn psm-save" onclick="savePreset(false)">새로 저장</button>
+    </div>
+</div>
+
+<!-- ===== Undo Toast ===== -->
+<div id="preset-toast">
+    <span id="preset-toast-msg"></span>
+    <button id="preset-toast-undo" onclick="undoPresetLoad()">실행 취소</button>
 </div>
 
 <script src="js/firebase-config.js"></script>
@@ -841,6 +1019,11 @@ let cpPushTimer = null;
 let editModeActive = false;
 let rawLinesRef = null;
 let songLoaded = false;
+
+// ===== 프리셋 상태 =====
+let currentSongMeta = null;
+let activePresetId = null;
+let presetUndoState = null;
 
 // ===== YouTube IFrame API =====
 function initYtPlayer() {
@@ -886,6 +1069,8 @@ async function loadSong(data) {
     customMembers = [];
     rawLinesRef = null;
     songLoaded = true;
+    currentSongMeta = { title, artist };
+    activePresetId = null;
     if (editModeActive) {
         editModeActive = false;
         const btnEdit = document.getElementById('btnEditMode');
@@ -1516,6 +1701,255 @@ function renderSongList() {
             </div>`;
         el.appendChild(row);
     });
+}
+
+// ===== 프리셋 보관함 =====
+function openPresetDrawer() {
+    document.getElementById('preset-drawer').classList.add('open');
+    document.getElementById('preset-overlay').classList.add('open');
+    loadPresetMeta();
+}
+
+function closePresetDrawer() {
+    document.getElementById('preset-drawer').classList.remove('open');
+    document.getElementById('preset-overlay').classList.remove('open');
+}
+
+async function loadPresetMeta() {
+    const acc = document.getElementById('preset-accordion');
+    acc.innerHTML = '<div class="pd-empty">불러오는 중...</div>';
+    try {
+        const snap = await db.ref('lyric_presets_meta').once('value');
+        const metaMap = snap.val() || {};
+        renderPresetAccordion(metaMap);
+    } catch(e) {
+        acc.innerHTML = '<div class="pd-empty">불러오기 실패</div>';
+    }
+}
+
+function renderPresetAccordion(metaMap) {
+    const acc = document.getElementById('preset-accordion');
+    acc.innerHTML = '';
+    const entries = Object.entries(metaMap);
+    if (entries.length === 0) {
+        acc.innerHTML = '<div class="pd-empty">저장된 프리셋이 없습니다</div>';
+        return;
+    }
+
+    const groups = {};
+    entries.forEach(([id, meta]) => {
+        const key = meta.song_title || '(곡 없음)';
+        if (!groups[key]) groups[key] = [];
+        groups[key].push({ id, ...meta });
+    });
+
+    const sortedGroups = Object.entries(groups).sort(([, aList], [, bList]) => {
+        const aPinned = aList.some(p => p.is_pinned);
+        const bPinned = bList.some(p => p.is_pinned);
+        if (aPinned !== bPinned) return aPinned ? -1 : 1;
+        const aLatest = Math.max(...aList.map(p => p.updated_at || 0));
+        const bLatest = Math.max(...bList.map(p => p.updated_at || 0));
+        return bLatest - aLatest;
+    });
+
+    sortedGroups.forEach(([songTitle, presets]) => {
+        const group = document.createElement('div');
+        group.className = 'preset-song-group';
+
+        const hasPinned = presets.some(p => p.is_pinned);
+        const header = document.createElement('div');
+        header.className = 'preset-song-header';
+        header.innerHTML =
+            (hasPinned ? '<span class="psh-pin">★</span>' : '') +
+            `<span class="psh-title">${escapeHtml(songTitle)}</span>` +
+            `<span class="psh-count">${presets.length}개</span>` +
+            '<span class="psh-arrow">▼</span>';
+        header.onclick = () => group.classList.toggle('open');
+
+        const list = document.createElement('div');
+        list.className = 'preset-list';
+
+        presets.sort((a, b) => {
+            if (a.is_pinned !== b.is_pinned) return a.is_pinned ? -1 : 1;
+            return (b.updated_at || 0) - (a.updated_at || 0);
+        });
+
+        presets.forEach(preset => list.appendChild(createPresetItem(preset)));
+        group.appendChild(header);
+        group.appendChild(list);
+        acc.appendChild(group);
+    });
+}
+
+function createPresetItem(preset) {
+    const item = document.createElement('div');
+    item.className = 'preset-item';
+
+    const dateStr = preset.updated_at
+        ? new Date(preset.updated_at).toLocaleDateString('ko-KR', { month: '2-digit', day: '2-digit' })
+        : '';
+    const dotsHtml = (preset.members || []).map(m => {
+        const safeColor = /^#[0-9a-fA-F]{6}$/.test(m.color) ? m.color : '#888888';
+        return `<span class="pi-dot" style="background:${safeColor}" data-name="${escapeHtml(m.name)}" title="${escapeHtml(m.name)}"></span>`;
+    }).join('');
+
+    const safeId = escapeHtml(preset.id);
+    item.innerHTML =
+        `<div class="preset-item-main">` +
+            `<div class="pi-desc">${escapeHtml(preset.description || '(설명 없음)')}</div>` +
+            `<div class="pi-meta">${escapeHtml(preset.author || '')}${dateStr ? ' · ' + dateStr : ''}</div>` +
+            `<div class="pi-dots">${dotsHtml}</div>` +
+        `</div>` +
+        `<div class="preset-item-actions">` +
+            `<button class="pi-pin-btn${preset.is_pinned ? ' pinned' : ''}" title="즐겨찾기" onclick="event.stopPropagation();togglePin('${safeId}',${!!preset.is_pinned})">★</button>` +
+            `<button class="pi-del-btn" title="삭제" onclick="event.stopPropagation();deletePreset('${safeId}')">🗑</button>` +
+        `</div>`;
+
+    item.addEventListener('click', e => {
+        if (!e.target.closest('.pi-pin-btn') && !e.target.closest('.pi-del-btn')) {
+            loadPreset(preset.id);
+        }
+    });
+    return item;
+}
+
+// ===== 프리셋 저장 =====
+function openSaveModal() {
+    if (!songLoaded) { alert('곡을 먼저 선택해주세요.'); return; }
+    const today = new Date().toISOString().slice(0, 10);
+    const memberNames = customMembers.map(m => m.name).join(', ') || '멤버 없음';
+    document.getElementById('psm-desc').value = `${today} ${memberNames} 세팅`;
+    document.getElementById('psm-author').value = '';
+    document.getElementById('psm-overwrite-btn').classList.toggle('hidden', !activePresetId);
+    document.getElementById('preset-save-modal').classList.add('open');
+    document.getElementById('preset-modal-overlay').classList.add('open');
+    setTimeout(() => document.getElementById('psm-desc').focus(), 50);
+}
+
+function closeSaveModal() {
+    document.getElementById('preset-save-modal').classList.remove('open');
+    document.getElementById('preset-modal-overlay').classList.remove('open');
+}
+
+async function savePreset(isOverwrite) {
+    const desc = document.getElementById('psm-desc').value.trim();
+    const author = document.getElementById('psm-author').value.trim();
+    if (!desc) { document.getElementById('psm-desc').focus(); return; }
+
+    const songTitle = currentSongMeta
+        ? `${currentSongMeta.artist} - ${currentSongMeta.title}`
+        : '(제목 없음)';
+    const now = Date.now();
+    const metaData = {
+        author: author || '관리자',
+        song_title: songTitle,
+        description: desc,
+        updated_at: now,
+        members: JSON.parse(JSON.stringify(customMembers)),
+        is_pinned: false
+    };
+    const fullData = { assignments: customAssignments };
+
+    try {
+        let presetId;
+        if (isOverwrite && activePresetId) {
+            presetId = activePresetId;
+            const existSnap = await db.ref(`lyric_presets_meta/${presetId}/is_pinned`).once('value');
+            metaData.is_pinned = existSnap.val() || false;
+            await Promise.all([
+                db.ref(`lyric_presets_meta/${presetId}`).set(metaData),
+                db.ref(`lyric_presets_data/${presetId}`).set(fullData)
+            ]);
+        } else {
+            const newRef = db.ref('lyric_presets_meta').push();
+            presetId = newRef.key;
+            await Promise.all([
+                newRef.set(metaData),
+                db.ref(`lyric_presets_data/${presetId}`).set(fullData)
+            ]);
+        }
+        activePresetId = presetId;
+        closeSaveModal();
+        loadPresetMeta();
+    } catch(e) {
+        alert('저장에 실패했습니다.');
+    }
+}
+
+// ===== 프리셋 불러오기 =====
+async function loadPreset(presetId) {
+    try {
+        const [metaSnap, dataSnap] = await Promise.all([
+            db.ref(`lyric_presets_meta/${presetId}`).once('value'),
+            db.ref(`lyric_presets_data/${presetId}`).once('value')
+        ]);
+        const meta = metaSnap.val();
+        const data = dataSnap.val();
+        if (!meta || !data) { alert('프리셋 데이터를 불러올 수 없습니다.'); return; }
+
+        presetUndoState = {
+            members: JSON.parse(JSON.stringify(customMembers)),
+            assignments: JSON.parse(JSON.stringify(customAssignments))
+        };
+
+        applyPresetState(meta.members || [], data.assignments || {});
+        activePresetId = presetId;
+        closePresetDrawer();
+        showUndoToast(`✅ "${meta.description}" 세팅을 불러왔습니다.`);
+    } catch(e) {
+        alert('불러오기에 실패했습니다.');
+    }
+}
+
+function applyPresetState(members, assignments) {
+    customMembers = JSON.parse(JSON.stringify(members));
+    customAssignments = JSON.parse(JSON.stringify(assignments));
+    renderMemberPanel();
+    refreshLyricsColors();
+    pushCustomParts();
+}
+
+// ===== 즐겨찾기 토글 =====
+async function togglePin(presetId, currentPinned) {
+    try {
+        await db.ref(`lyric_presets_meta/${presetId}/is_pinned`).set(!currentPinned);
+        loadPresetMeta();
+    } catch(e) {}
+}
+
+// ===== 프리셋 삭제 =====
+async function deletePreset(presetId) {
+    if (!confirm('이 프리셋을 삭제할까요?')) return;
+    try {
+        await Promise.all([
+            db.ref(`lyric_presets_meta/${presetId}`).remove(),
+            db.ref(`lyric_presets_data/${presetId}`).remove()
+        ]);
+        if (activePresetId === presetId) activePresetId = null;
+        loadPresetMeta();
+    } catch(e) {
+        alert('삭제에 실패했습니다.');
+    }
+}
+
+// ===== Undo Toast =====
+let toastTimer = null;
+
+function showUndoToast(msg) {
+    const toast = document.getElementById('preset-toast');
+    document.getElementById('preset-toast-msg').textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 5000);
+}
+
+function undoPresetLoad() {
+    if (!presetUndoState) return;
+    applyPresetState(presetUndoState.members, presetUndoState.assignments);
+    activePresetId = null;
+    presetUndoState = null;
+    document.getElementById('preset-toast').classList.remove('show');
+    clearTimeout(toastTimer);
 }
 
 // ===== 초기화 =====
