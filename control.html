@@ -382,6 +382,7 @@
             display: flex;
             flex-direction: column;
         }
+        #lw-lyrics-wrap.lw-edit-mode { overflow-y: auto; }
         .lw-lyrics-area {
             display: flex;
             flex-direction: column;
@@ -1024,6 +1025,7 @@ let songLoaded = false;
 let currentSongMeta = null;
 let activePresetId = null;
 let presetUndoState = null;
+let pendingPresetOnLoad = null;
 
 // ===== YouTube IFrame API =====
 function initYtPlayer() {
@@ -1131,6 +1133,14 @@ async function loadSong(data) {
     }
     renderMemberPanel();
     pushCustomParts();
+
+    if (pendingPresetOnLoad) {
+        const p = pendingPresetOnLoad;
+        pendingPresetOnLoad = null;
+        applyPresetState(p.members, p.assignments);
+        activePresetId = p.presetId;
+        if (p.description) showUndoToast(`✅ "${p.description}" 세팅을 불러왔습니다.`);
+    }
 }
 
 function resetWidget() {
@@ -1887,15 +1897,47 @@ async function loadPreset(presetId) {
         const data = dataSnap.val();
         if (!meta || !data) { alert('프리셋 데이터를 불러올 수 없습니다.'); return; }
 
+        const prevSong = currentSongs?.find(s =>
+            s.artist === currentSongMeta?.artist && s.title === currentSongMeta?.title
+        );
         presetUndoState = {
             members: JSON.parse(JSON.stringify(customMembers)),
-            assignments: JSON.parse(JSON.stringify(customAssignments))
+            assignments: JSON.parse(JSON.stringify(customAssignments)),
+            song: prevSong ? {
+                title: prevSong.title,
+                artist: prevSong.artist,
+                lyricsFile: prevSong.lyricsFile || '',
+                youtubeId: extractYoutubeId(prevSong.mr) || ''
+            } : null
         };
 
-        applyPresetState(meta.members || [], data.assignments || {});
-        activePresetId = presetId;
+        // song_title = "artist - title" 형식 → currentSongs에서 매칭
+        const parts = (meta.song_title || '').split(' - ');
+        const presetArtist = parts[0]?.trim() || '';
+        const presetTitle = parts.slice(1).join(' - ').trim();
+        const matchedSong = (presetArtist && presetTitle && currentSongs?.length)
+            ? currentSongs.find(s =>
+                s.artist.trim() === presetArtist && s.title.trim() === presetTitle
+              )
+            : null;
+
+        if (matchedSong && matchedSong.mr) {
+            const ytId = extractYoutubeId(matchedSong.mr);
+            pendingPresetOnLoad = {
+                presetId,
+                members: meta.members || [],
+                assignments: data.assignments || {},
+                description: meta.description
+            };
+            customAssignments = {};
+            customMembers = [];
+            sendToWidget(matchedSong.title, matchedSong.artist, matchedSong.lyricsFile || '', ytId || '');
+        } else {
+            applyPresetState(meta.members || [], data.assignments || {});
+            activePresetId = presetId;
+            showUndoToast(`✅ "${meta.description}" 세팅을 불러왔습니다.`);
+        }
         closePresetDrawer();
-        showUndoToast(`✅ "${meta.description}" 세팅을 불러왔습니다.`);
     } catch(e) {
         alert('불러오기에 실패했습니다.');
     }
@@ -1945,11 +1987,19 @@ function showUndoToast(msg) {
 
 function undoPresetLoad() {
     if (!presetUndoState) return;
-    applyPresetState(presetUndoState.members, presetUndoState.assignments);
-    activePresetId = null;
+    const prev = presetUndoState;
     presetUndoState = null;
     document.getElementById('preset-toast').classList.remove('show');
     clearTimeout(toastTimer);
+    if (prev.song?.title) {
+        pendingPresetOnLoad = { presetId: null, members: prev.members, assignments: prev.assignments, description: null };
+        customAssignments = {};
+        customMembers = [];
+        sendToWidget(prev.song.title, prev.song.artist, prev.song.lyricsFile, prev.song.youtubeId);
+    } else {
+        applyPresetState(prev.members, prev.assignments);
+        activePresetId = null;
+    }
 }
 
 // ===== 초기화 =====
